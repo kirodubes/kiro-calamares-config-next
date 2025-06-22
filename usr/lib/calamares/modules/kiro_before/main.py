@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
-import shutil
 import os
+import shutil
 import libcalamares
 from libcalamares.utils import check_target_env_call
 
@@ -18,27 +16,25 @@ def run():
         libcalamares.utils.warning(str(e))
         return (
             "pacman-key-error",
-            "Failed to initialize or populate pacman keys: <pre>{}</pre>".format(e)
+            f"Failed to initialize or populate pacman keys: <pre>{e}</pre>"
         )
 
-    # --- Move arcolinux preset ---
-    libcalamares.utils.debug("-> Moving /etc/mkinitcpio.d/arcolinux to linux.preset...")
+    # --- Move preset inside target system ---
+    libcalamares.utils.debug("-> Moving arcolinux preset to linux.preset in target...")
     try:
-        dst = "/etc/mkinitcpio.d/linux.preset"
-        src = "/etc/mkinitcpio.d/arcolinux"
-        if os.path.exists(dst):
-            os.remove(dst)
-        shutil.move(src, dst)
-
+        target_root = libcalamares.globalstorage.value("rootMountPoint")
+        src = os.path.join(target_root, "etc/mkinitcpio.d/arcolinux")
+        dst = os.path.join(target_root, "etc/mkinitcpio.d/linux.preset")
+        os.replace(src, dst)  # force overwrite in target
     except FileNotFoundError:
-        msg = "Preset file not found: /etc/mkinitcpio.d/arcolinux"
+        msg = f"Preset file not found in target: {src}"
         libcalamares.utils.warning(msg)
         return ("preset-not-found", msg)
     except Exception as e:
         libcalamares.utils.warning(str(e))
         return (
             "preset-rename-error",
-            "Failed to rename preset: <pre>{}</pre>".format(e)
+            f"Failed to rename preset in target: <pre>{e}</pre>"
         )
 
     libcalamares.utils.debug("=== End arcolinux-before module ===")
