@@ -23,7 +23,12 @@ def run():
     # --- Move arcolinux preset ---
     libcalamares.utils.debug("-> Moving /etc/mkinitcpio.d/arcolinux to linux.preset...")
     try:
-        shutil.move("/etc/mkinitcpio.d/arcolinux", "/etc/mkinitcpio.d/linux.preset")
+        dst = "/etc/mkinitcpio.d/linux.preset"
+        src = "/etc/mkinitcpio.d/arcolinux"
+        if os.path.exists(dst):
+            os.remove(dst)
+        shutil.move(src, dst)
+
     except FileNotFoundError:
         msg = "Preset file not found: /etc/mkinitcpio.d/arcolinux"
         libcalamares.utils.warning(msg)
