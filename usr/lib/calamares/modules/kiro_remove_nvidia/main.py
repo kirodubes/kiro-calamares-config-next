@@ -4,6 +4,7 @@ import os
 import time
 import subprocess
 import libcalamares
+from libcalamares.utils import check_target_env_call
 
 def kernel_cmdline(param_name, default=None):
     """Parse /proc/cmdline for a parameter value."""
@@ -22,24 +23,27 @@ def kernel_cmdline(param_name, default=None):
 def wait_for_pacman_lock(max_wait=30):
     """Wait for pacman lock to disappear, max 30 seconds."""
     waited = 0
-    while os.path.exists("/var/lib/pacman/db.lck"):
-        libcalamares.utils.debug("Pacman is not ready yet. Waiting 5 seconds...")
+    lock_path = "/var/lib/pacman/db.lck"
+    while os.path.exists(lock_path):
+        libcalamares.utils.debug("Pacman is locked. Waiting 5 seconds...")
         time.sleep(5)
         waited += 5
         if waited >= max_wait:
-            libcalamares.utils.debug("Warning: removing pacman db.lck after 30 seconds wait.")
+            libcalamares.utils.debug("Timeout reached. Removing pacman lock manually.")
             try:
-                os.remove("/var/lib/pacman/db.lck")
+                os.remove(lock_path)
             except Exception as e:
                 return ("pacman-lock-error", f"Could not remove lock file: {e}")
     return None
 
-def remove_nvidia_packages():
-    packages = ["nvidia-dkms", "nvidia-utils", "nvidia-settings", "egl-wayland"]
+def remove_nvidia_packages_from_target():
+    """Remove NVIDIA-related packages from the target system."""
+    packages = ["nvidia-dkms", "nvidia-utils", "nvidia-settings"]
     try:
-        subprocess.run(["pacman", "-Rns", "--noconfirm"] + packages, check=True)
+        check_target_env_call(["pacman", "-Rns", "--noconfirm"] + packages)
     except subprocess.CalledProcessError as e:
-        return ("nvidia-remove-failed", f"Failed to remove NVIDIA packages: {e}")
+        libcalamares.utils.warning(str(e))
+        return ("nvidia-remove-failed", f"Failed to remove NVIDIA packages: <pre>{e}</pre>")
     return None
 
 def run():
@@ -48,7 +52,7 @@ def run():
     libcalamares.utils.debug("#################################\n")
 
     selection = kernel_cmdline("driver", default="free")
-    libcalamares.utils.debug(f"Selection was {selection}")
+    libcalamares.utils.debug(f"Kernel parameter 'driver' = {selection}")
 
     # Wait for pacman lock
     error = wait_for_pacman_lock()
@@ -56,10 +60,12 @@ def run():
         return error
 
     if selection == "free":
-        libcalamares.utils.debug("Removing all NVIDIA-related packages (driver=free).")
-        error = remove_nvidia_packages()
+        libcalamares.utils.debug("Removing NVIDIA packages because 'driver=free' was specified.")
+        error = remove_nvidia_packages_from_target()
         if error:
             return error
+    else:
+        libcalamares.utils.debug("Skipping NVIDIA removal because 'driver=free' not set.")
 
     libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("End arcolinux-remove-nvidia")
