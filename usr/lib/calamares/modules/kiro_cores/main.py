@@ -36,6 +36,7 @@ def optimize_makepkg_conf():
 
     if cores and cores > 1:
         try:
+            # Set MAKEFLAGS
             libcalamares.utils.debug(f"Setting MAKEFLAGS to -j{cores}")
             subprocess.run([
                 "sed", "-i",
@@ -43,12 +44,22 @@ def optimize_makepkg_conf():
                 makepkg_conf_path
             ], check=True)
 
+            # Set PKGEXT
             libcalamares.utils.debug("Changing PKGEXT to .pkg.tar.zst")
             subprocess.run([
                 "sed", "-i",
                 "s|PKGEXT='.pkg.tar.xz'|PKGEXT='.pkg.tar.zst'|g",
                 makepkg_conf_path
             ], check=True)
+
+            # Change debug to !debug in OPTIONS
+            libcalamares.utils.debug("Disabling debug in OPTIONS")
+            subprocess.run([
+                "sed", "-i",
+                r's|\bdebug\b|!debug|g',
+                makepkg_conf_path
+            ], check=True)
+
         except subprocess.CalledProcessError as e:
             return ("makepkg-optimize-error", f"Failed to update makepkg.conf: {e}")
     else:
