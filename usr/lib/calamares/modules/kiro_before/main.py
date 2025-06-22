@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import shutil
+import os
 import libcalamares
 from libcalamares.utils import check_target_env_call
 
