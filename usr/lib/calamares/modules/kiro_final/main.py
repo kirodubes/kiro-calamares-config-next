@@ -182,25 +182,21 @@ def run():
 
     # --- Desktop-specific ChadWM logic ---
     libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Checking for ChadWM desktop session")
+    libcalamares.utils.debug("Start chadwm build")
     libcalamares.utils.debug("#################################\n")
 
     desktop = detect_x11_session(target_root)
     if desktop is None:
         libcalamares.utils.debug("No X11 session detected.")
     elif desktop == "chadwm.desktop":
-        libcalamares.utils.debug("Detected ChadWM session. Setting theme and building ChadWM.")
-        logout_conf = os.path.join(target_root, "etc/archlinux-logout.conf")
-        if os.path.exists(logout_conf):
-            subprocess.run(["sed", "-i", "s|theme=white|theme=runes|g", logout_conf], check=False)
-            build_chadwm_for_user(target_root)
-        else:
-            libcalamares.utils.warning("Logout config not found for ChadWM.")
+        libcalamares.utils.debug(f"Detected session file: {desktop}")
+        libcalamares.utils.debug("Detected ChadWM session. Building ChadWM.")
+        build_chadwm_for_user(target_root)
     else:
         libcalamares.utils.debug(f"No specific action for session: {desktop}")
 
     libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("End desktop-specific section")
+    libcalamares.utils.debug("End chadwm build")
     libcalamares.utils.debug("#################################\n")
 
     # --- ArcoLinux virtual machine check ---
