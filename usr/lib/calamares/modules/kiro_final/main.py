@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+import time
 import libcalamares
 
 def remove_path(path):
@@ -181,7 +182,7 @@ def run():
 
 
     libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("End chadwm")
+    libcalamares.utils.debug("End desktop-specific section")
     libcalamares.utils.debug("#################################\n")
 
     # --- ArcoLinux virtual machine check ---
@@ -265,7 +266,7 @@ def run():
         ])
 
     libcalamares.utils.debug("End ArcoLinux virtual machine check")
-    
+
     # --- Remove kiro-calamares-config-next package ---
     libcalamares.utils.debug("Removing kiro-calamares-config-next package")
     try:
