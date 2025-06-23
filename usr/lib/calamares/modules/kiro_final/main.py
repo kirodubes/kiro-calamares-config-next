@@ -64,13 +64,16 @@ def build_chadwm_for_user(target_root):
 
 def run():
     libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Start arcolinux-system")
+    libcalamares.utils.debug("Start kiro_final module")
     libcalamares.utils.debug("#################################\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
 
     # --- Permissions of important folders ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Setting permissions for important folders")
+    libcalamares.utils.debug("#################################\n")
+    
     try:
         os.chmod(os.path.join(target_root, "etc/sudoers.d"), 0o750)
         polkit_rules = os.path.join(target_root, "etc/polkit-1/rules.d")
@@ -84,7 +87,10 @@ def run():
         libcalamares.utils.warning(f"Failed to set permissions: {e}")
 
     # --- Copy /etc/skel to /root ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Copying /etc/skel to /root")
+    libcalamares.utils.debug("#################################\n")
+
     try:
         skel = os.path.join(target_root, "etc/skel")
         root_home = os.path.join(target_root, "root")
@@ -93,11 +99,18 @@ def run():
         libcalamares.utils.warning(f"Failed to copy /etc/skel to /root: {e}")
 
     # --- Cleanup autologin root ---
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("Remove autologin")
+    libcalamares.utils.debug("#################################\n")
+
     autologin_path = os.path.join(target_root, "etc/systemd/system/getty@tty1.service.d")
     libcalamares.utils.debug("Cleaning up autologin for root")
     shutil.rmtree(autologin_path, ignore_errors=True)
 
     # --- Set editor to nano ---
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("Nano as editor")
+    libcalamares.utils.debug("#################################\n")
     profile_path = os.path.join(target_root, "etc/profile")
     libcalamares.utils.debug("Setting EDITOR=nano in /etc/profile")
     try:
@@ -107,6 +120,10 @@ def run():
         libcalamares.utils.warning(f"Failed to write to /etc/profile: {e}")
 
     # --- Bluetooth improvements ---
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("Bluetooth")
+    libcalamares.utils.debug("#################################\n")
+
     bt_conf = os.path.join(target_root, "etc/bluetooth/main.conf")
     pa_conf = os.path.join(target_root, "etc/pulse/default.pa")
     libcalamares.utils.debug("Enabling AutoEnable=true in bluetooth config")
@@ -119,7 +136,10 @@ def run():
         libcalamares.utils.warning(f"Failed to append to default.pa: {e}")
 
     # --- Cleanup original files ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Removing unnecessary files and folders")
+    libcalamares.utils.debug("#################################\n")
+    
     paths_to_remove = [
         "etc/sudoers.d/g_wheel",
         "usr/share/backgrounds/xfce",
@@ -130,25 +150,21 @@ def run():
     for rel_path in paths_to_remove:
         remove_path(os.path.join(target_root, rel_path))
 
-    # --- Move arcolinux-release to lsb-release ---
-    src = os.path.join(target_root, "etc/arcolinux-release")
-    dst = os.path.join(target_root, "etc/lsb-release")
-    libcalamares.utils.debug("Renaming arcolinux-release to lsb-release")
-    try:
-        if os.path.exists(src):
-            os.replace(src, dst)
-    except Exception as e:
-        libcalamares.utils.warning(f"Failed to rename release file: {e}")
-
     # --- Set root permissions to 700 ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Setting permissions of /root to 700")
+    libcalamares.utils.debug("#################################\n")
+    
     try:
         os.chmod(os.path.join(target_root, "root"), 0o700)
     except Exception as e:
         libcalamares.utils.warning(f"Failed to set /root permissions: {e}")
 
     # --- Bootloader cleanup if systemd-boot is used ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Checking for systemd-boot setup")
+    libcalamares.utils.debug("#################################\n")
+ 
     loader_conf = os.path.join(target_root, "boot/efi/loader/loader.conf")
     if os.path.exists(loader_conf):
         libcalamares.utils.debug("Detected systemd-boot. Removing GRUB...")
@@ -165,7 +181,10 @@ def run():
             remove_path(os.path.join(target_root, "etc/default", grub_file))
 
     # --- Desktop-specific ChadWM logic ---
+    libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("Checking for ChadWM desktop session")
+    libcalamares.utils.debug("#################################\n")
+
     desktop = detect_x11_session(target_root)
     if desktop is None:
         libcalamares.utils.debug("No X11 session detected.")
@@ -180,13 +199,14 @@ def run():
     else:
         libcalamares.utils.debug(f"No specific action for session: {desktop}")
 
-
     libcalamares.utils.debug("#################################")
     libcalamares.utils.debug("End desktop-specific section")
     libcalamares.utils.debug("#################################\n")
 
     # --- ArcoLinux virtual machine check ---
-    libcalamares.utils.debug("Start ArcoLinux virtual machine check")
+    libcalamares.utils.debug("##############################################")
+    libcalamares.utils.debug("Removing virtual machine packages")
+    libcalamares.utils.debug("##############################################\n")
 
     # Wait for pacman lock
     lock_path = os.path.join(target_root, "var/lib/pacman/db.lck")
@@ -259,16 +279,13 @@ def run():
                 chroot_disable_service("vboxservice.service")
                 chroot_pacman_rm([vbox_pkg])
 
-    if vm_type == "none":
-        cleanup_files([
-            "usr/local/bin/arcolinux-virtual-machine-check",
-            "etc/systemd/system/multi-user.target.wants/virtual-machine-check.service"
-        ])
-
     libcalamares.utils.debug("End ArcoLinux virtual machine check")
 
     # --- Remove kiro-calamares-config-next package ---
+    libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Removing kiro-calamares-config-next package")
+    libcalamares.utils.debug("##############################################\n")
+    
     try:
         subprocess.run(
             ["chroot", target_root, "pacman", "-R", "--noconfirm", "kiro-calamares-config-next"],
@@ -276,5 +293,11 @@ def run():
         )
     except subprocess.CalledProcessError as e:
         libcalamares.utils.warning(f"Failed to remove kiro-calamares-config-next: {e}")
+
+    libcalamares.utils.debug("End removing kiro-calamares-config-next")
+
+    libcalamares.utils.debug("##############################################")
+    libcalamares.utils.debug("End kiro_final module")
+    libcalamares.utils.debug("##############################################\n")
 
     return None
