@@ -19,7 +19,6 @@ detect_desktop_and_configure() {
     echo -e "${YELLOW}Detected desktop session: $desktop${RESET}"
 
     case "$desktop" in
-        leftwm.desktop) configure_leftwm ;;
         chadwm.desktop) configure_chadwm ;;
         *) echo -e "${YELLOW}No specific action for desktop: $desktop${RESET}" ;;
     esac
@@ -29,15 +28,8 @@ detect_desktop_and_configure() {
     echo -e "######################################################${RESET}"
 }
 
-configure_leftwm() {
-    echo -e "${GREEN}Applying LeftWM configurations...${RESET}"
-    sed -i 's/theme=white/theme=runes/g' /etc/archlinux-logout.conf
-    sed -i 's/^neofetch/#neofetch/g' /etc/skel/.bashrc
-}
-
 configure_chadwm() {
     echo -e "${GREEN}Applying ChadWM configurations...${RESET}"
-    sed -i 's/theme=white/theme=runes/g' /etc/archlinux-logout.conf
     user=$(getent passwd 1000 | cut -d: -f1)
     echo -e "${BLUE}Building ChadWM for user: $user${RESET}"
     config_dir="/home/$user/.config/arco-chadwm/chadwm"
