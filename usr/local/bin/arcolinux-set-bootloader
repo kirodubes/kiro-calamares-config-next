@@ -1,0 +1,40 @@
+#!/bin/bash
+
+##############################################################
+##############################################################
+#   NO USE OF SUDO HERE
+##############################################################
+##############################################################
+
+is_package_installed() {
+    if pacman -Q "$1" &> /dev/null; then
+        echo "Package $1 is installed."
+        return 0  # Success
+    else
+        echo "Package $1 is not installed."
+        return 1  # Failure
+    fi
+}
+
+
+echo "######################################################"
+echo "Begin arcolinux-set-bootloader"
+echo "######################################################"
+
+echo "installing systemd-boot packages"
+if [ -f /boot/efi/loader/loader.conf ]; then
+	
+	echo "removing grub"
+	pacman -R --noconfirm grub
+	[ -d /boot/grub ] && rm -r /boot/grub
+
+	shopt -s nullglob
+	files=(/etc/default/grub*)
+	[ ${#files[@]} -gt 0 ] && rm "${files[@]}"
+fi
+
+echo
+echo "#################################"
+echo "End arcolinux-set-bootloader"
+echo "#################################"
+echo

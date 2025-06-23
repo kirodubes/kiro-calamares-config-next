@@ -1,0 +1,45 @@
+#!/bin/bash
+
+echo "######################################################"
+echo "Begin arcolinux-desktop-specific X11"
+echo "######################################################"
+
+# Detect desktop session
+desktop_file=$(ls /usr/share/xsessions/*.desktop 2>/dev/null | head -n 1)
+desktop=$(basename "$desktop_file")
+
+echo "######################################################"
+echo "Detected desktop session: $desktop"
+echo "######################################################"
+
+case "$desktop" in
+  chadwm.desktop)
+    echo "Setting logout theme for ChadWM"
+    sed -i 's/theme=white/theme=runes/g' /etc/archlinux-logout.conf
+
+    # Use getent to find user with UID 1000
+    user=$(getent passwd 1000 | cut -d: -f1)
+
+    echo "###############################################################################"
+    echo "###                 PERSONAL PACMAN HOOK CHADWM START                      ####"
+    echo "###############################################################################"
+    echo
+    echo "Building and installing chadwm for user: $user"
+
+    config_dir="/home/$user/.config/arco-chadwm/chadwm"
+    if [[ -d "$config_dir" ]]; then
+      cd "$config_dir" || exit 1
+      make -B && sudo make install
+    else
+      echo "Directory $config_dir not found. Skipping build."
+    fi
+    ;;
+  
+  *)
+    echo "No specific action for desktop: $desktop"
+    ;;
+esac
+
+echo "######################################################"
+echo "End arcolinux-desktop-specific X11"
+echo "######################################################"
