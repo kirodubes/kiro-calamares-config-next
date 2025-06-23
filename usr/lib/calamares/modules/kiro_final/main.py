@@ -195,10 +195,6 @@ def run():
     else:
         libcalamares.utils.debug(f"No specific action for session: {desktop}")
 
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("End chadwm build")
-    libcalamares.utils.debug("#################################\n")
-
     # --- ArcoLinux virtual machine check ---
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Removing virtual machine packages")
