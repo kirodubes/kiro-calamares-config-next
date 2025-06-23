@@ -271,8 +271,6 @@ def run():
                 chroot_disable_service("vboxservice.service")
                 chroot_pacman_rm([vbox_pkg])
 
-    libcalamares.utils.debug("End ArcoLinux virtual machine check")
-
     # --- Remove kiro-calamares-config-next package ---
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Removing kiro-calamares-config-next package")
@@ -285,8 +283,6 @@ def run():
         )
     except subprocess.CalledProcessError as e:
         libcalamares.utils.warning(f"Failed to remove kiro-calamares-config-next: {e}")
-
-    libcalamares.utils.debug("End removing kiro-calamares-config-next")
 
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("End kiro_final module")
