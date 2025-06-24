@@ -271,6 +271,19 @@ def run():
                 chroot_disable_service("vboxservice.service")
                 chroot_pacman_rm([vbox_pkg])
 
+    # --- Remove xfce4-artwork package ---
+    libcalamares.utils.debug("##############################################")
+    libcalamares.utils.debug("Removing xfce4-artwork package")
+    libcalamares.utils.debug("##############################################\n")
+    
+    try:
+        subprocess.run(
+            ["chroot", target_root, "pacman", "-R", "--noconfirm", "xfce4-artwork"],
+            check=True
+        )
+    except subprocess.CalledProcessError as e:
+        libcalamares.utils.warning(f"Failed to remove xfce4-artwork: {e}")
+
     # --- Remove kiro-calamares-config-next package ---
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Removing kiro-calamares-config-next package")
