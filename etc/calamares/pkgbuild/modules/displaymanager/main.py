@@ -163,7 +163,9 @@ class DesktopEnvironment:
 # /usr/local/bin) then the DE is assumed to be installed
 # and to use that .desktop filename.
 desktop_environments = [
-    DesktopEnvironment('/usr/bin/startplasma-x11', 'plasmax11'),
+    DesktopEnvironment('/usr/bin/startxfce4', 'xfce'),
+    DesktopEnvironment('/usr/bin/exec-chadwm', 'chadwm'),
+    DesktopEnvironment('/usr/bin/startplasma-wayland', 'plasma'),
     DesktopEnvironment(
         '/usr/bin/budgie-desktop', 'budgie-desktop'  # Budgie v10
         ),
@@ -180,7 +182,6 @@ desktop_environments = [
     DesktopEnvironment('/usr/bin/lxqt-session', 'lxqt'),
     DesktopEnvironment('/usr/bin/pekwm', 'pekwm'),
     DesktopEnvironment('/usr/bin/dde-session', 'dde-x11'),
-    DesktopEnvironment('/usr/bin/startxfce4', 'xfce'),
     DesktopEnvironment('/usr/bin/openbox-session', 'openbox'),
     DesktopEnvironment('/usr/bin/i3', 'i3'),
     DesktopEnvironment('/usr/bin/awesome', 'awesome'),
@@ -204,7 +205,6 @@ desktop_environments = [
     DesktopEnvironment('/usr/bin/nimdow', 'nimdow'),
     DesktopEnvironment('/usr/bin/wayfire', 'wayfire'),
     DesktopEnvironment('/usr/local/bin/arcolinux-autostart-dusk', 'dusk'),
-    DesktopEnvironment('/usr/bin/exec-chadwm', 'chadwm'),
     DesktopEnvironment('/usr/bin/run-niri', 'niri'),
 ]
 

@@ -8,7 +8,7 @@ libcalamares.globalstorage.insert("testing", True)
 
 # Module prep-work
 from src.modules.displaymanager import main
-default_desktop_environment = main.DesktopEnvironment("startplasma-x11", "kde-plasma.desktop")
+default_desktop_environment = main.DesktopEnvironment("startplasma-wayland", "plasma.desktop")
 
 # Specific DM test
 d = main.DMsddm("/tmp")
