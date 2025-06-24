@@ -195,7 +195,7 @@ def run():
     else:
         libcalamares.utils.debug(f"No specific action for session: {desktop}")
 
-    # --- ArcoLinux virtual machine check ---
+    # --- Kiro virtual machine check ---
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Removing virtual machine packages")
     libcalamares.utils.debug("##############################################\n")

@@ -10,10 +10,6 @@ RESET='\033[0m'
 #========== DESKTOP SETUP ==========
 
 detect_desktop_and_configure() {
-    echo -e "${BLUE}######################################################"
-    echo -e "#        Begin arcolinux-desktop-specific X11       #"
-    echo -e "######################################################${RESET}"
-
     desktop_file=$(ls /usr/share/xsessions/*.desktop 2>/dev/null | head -n 1)
     desktop=$(basename "$desktop_file")
     echo -e "${YELLOW}Detected desktop session: $desktop${RESET}"
@@ -22,10 +18,6 @@ detect_desktop_and_configure() {
         chadwm.desktop) configure_chadwm ;;
         *) echo -e "${YELLOW}No specific action for desktop: $desktop${RESET}" ;;
     esac
-
-    echo -e "${BLUE}######################################################"
-    echo -e "#          End arcolinux-desktop-specific X11        #"
-    echo -e "######################################################${RESET}"
 }
 
 configure_chadwm() {
@@ -105,10 +97,6 @@ cleanup_none_case() {
 }
 
 virtual_machine_cleanup() {
-    echo -e "${BLUE}###########################################"
-    echo -e "#     Start ArcoLinux virtual machine check     #"
-    echo -e "###########################################${RESET}"
-
     check_pacman_lock
 
     result=$(systemd-detect-virt)
@@ -121,13 +109,34 @@ virtual_machine_cleanup() {
         none)   cleanup_none_case ;;
         *)      echo -e "${YELLOW}Unknown virtualization: $result. Skipping cleanup.${RESET}" ;;
     esac
-
-    echo -e "${BLUE}########################################"
-    echo -e "#        End ArcoLinux VM check        #"
-    echo -e "########################################${RESET}"
 }
 
 #========== MAIN EXECUTION ==========
 
+echo -e "${BLUE}######################################################"
+echo -e "#     Begin kiro-postinstall"
+echo -e "######################################################${RESET}"
+
+echo -e "${BLUE}###########################################"
+echo -e "#     Start Chadwm build"
+echo -e "###########################################${RESET}"
+
 detect_desktop_and_configure
+
+echo -e "${BLUE}###########################################"
+echo -e "#     End Chadwm build"
+echo -e "###########################################${RESET}"
+
+echo -e "${BLUE}###########################################"
+echo -e "#     Start virtual machine check"
+echo -e "###########################################${RESET}"
+
 virtual_machine_cleanup
+
+echo -e "${BLUE}########################################"
+echo -e "#      End virtual machine check"
+echo -e "########################################${RESET}"
+
+echo -e "${BLUE}######################################################"
+echo -e "#      End kiro-postinstall"
+echo -e "######################################################${RESET}"
