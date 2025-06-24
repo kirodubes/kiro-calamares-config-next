@@ -46,6 +46,6 @@ class ConfigController:
 
 def run():
     """Post-install configuration tasks."""
-    libcalamares.utils.debug("=== Running arcolinux-post-install config ===")
+    libcalamares.utils.debug("=== Running kiro_ucode ===")
     config = ConfigController()
     return config.run()
