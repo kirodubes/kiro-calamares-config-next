@@ -38,6 +38,10 @@ class ConfigController:
             target_env_call(["pacman", "-R", "amd-ucode", "--noconfirm"])
         else:
             libcalamares.utils.debug("Unknown CPU vendor or detection failed.")
+        
+        libcalamares.utils.debug("#################################")
+        libcalamares.utils.debug("End kiro_ucode")
+        libcalamares.utils.debug("#################################\n")
 
     def run(self):
         self.handle_ucode()
@@ -46,6 +50,8 @@ class ConfigController:
 
 def run():
     """Post-install configuration tasks."""
-    libcalamares.utils.debug("=== Running kiro_ucode ===")
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("Start kiro_ucode")
+    libcalamares.utils.debug("#################################\n")
     config = ConfigController()
     return config.run()

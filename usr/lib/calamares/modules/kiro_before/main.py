@@ -103,7 +103,9 @@ def move_mkinitcpio_preset():
 
 # === Main run function ===
 def run():
-    libcalamares.utils.debug("=== Start arcolinux-setup module ===")
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("Start kiro_before")
+    libcalamares.utils.debug("#################################\n")
 
     for step_func in [
         wait_for_pacman_lock,
@@ -114,6 +116,7 @@ def run():
         error = step_func()
         if error:
             return error
-
-    libcalamares.utils.debug("=== End arcolinux-setup module ===")
+    libcalamares.utils.debug("#################################")
+    libcalamares.utils.debug("End kiro_before")
+    libcalamares.utils.debug("#################################\n")
     return None
