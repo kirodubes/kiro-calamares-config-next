@@ -91,7 +91,6 @@ cleanup_none_case() {
     remove_virtualbox
     remove_qemu
 
-    rm -f /usr/local/bin/arcolinux-virtual-machine-check
     rm -f /etc/systemd/system/multi-user.target.wants/virtual-machine-check.service
     echo -e "${GREEN}Removed AVM check leftovers.${RESET}"
 }

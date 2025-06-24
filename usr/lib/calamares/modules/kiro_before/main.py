@@ -83,10 +83,10 @@ def initialize_pacman_keys():
 # === Move mkinitcpio preset ===
 def move_mkinitcpio_preset():
     target_root = libcalamares.globalstorage.value("rootMountPoint")
-    src = os.path.join(target_root, "etc/mkinitcpio.d/arcolinux")
+    src = os.path.join(target_root, "etc/mkinitcpio.d/kiro")
     dst = os.path.join(target_root, "etc/mkinitcpio.d/linux.preset")
 
-    libcalamares.utils.debug("-> Moving arcolinux preset to linux.preset in target...")
+    libcalamares.utils.debug("-> Moving kiro preset to linux.preset in target...")
     try:
         os.replace(src, dst)
     except FileNotFoundError:
