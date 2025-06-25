@@ -2,6 +2,12 @@
 #set -e
 
 workdir=$(pwd)
+dir="calamares-3.3.14.r25.g95aa33f"
+source="/home/erik/KIRO/kiro-pkgbuild/"
+destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
+
+rm -r /home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/*
+cp -r $source$dir/* $destiny
 
 # Below command will backup everything inside the project folder
 git add --all .

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Try launching Calamares
+/usr/bin/calamares_polkit %f -d -style breeze
+status=$?
+
+# Check if Calamares failed to launch
+if [ $status -ne 0 ]; then
+    zenity --question \
+        --title="Calamares Error" \
+        --text="Calamares failed to start.\nWould you like to attempt to rebuild and reinstall it?" \
+        --width=300
+
+    if [ $? -eq 0 ]; then
+        if ! command -v alacritty &>/dev/null; then
+            zenity --error --text="Alacritty is not installed. Cannot continue with rebuild." --width=300
+            exit 1
+        fi
+
+        # Check internet connectivity
+        if ping -q -c 1 -W 2 archlinux.org &>/dev/null; then
+            zenity --question \
+                --title="Internet Connection Detected" \
+                --text="Internet is available.\nDo you want to update the system first? (recommended)" \
+                --width=300
+
+            if [ $? -eq 0 ]; then
+                alacritty -e bash -c "sudo pacman -Syyu; echo 'Press Enter to continue...'; read"
+            fi
+        else
+            zenity --warning --text="No internet connection detected. Skipping system update." --width=300
+        fi
+
+        # Move and build Calamares
+        cp -r /etc/calamares/pkgbuild /home/liveuser/Desktop 2>/dev/null
+        alacritty -e bash -c "cd /home/liveuser/Desktop/pkgbuild/ && makepkg -si --noconfirm; echo 'Press Enter to exit...'; read"
+    fi
+fi

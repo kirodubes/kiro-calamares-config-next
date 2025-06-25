@@ -1,8 +1,8 @@
-pkgname=calamares-next
+pkgname=calamares
 _pkgname=calamares
 # change number in prepare as well
 pkgver=3.3.14.r25.g95aa33f  # placeholder; will be auto-generated
-pkgrel=06
+pkgrel=13
 pkgdesc='Distribution-independent installer framework - latest git version'
 arch=('i686' 'x86_64')
 url="https://github.com/calamares/calamares"
@@ -39,6 +39,7 @@ makedepends=(
 	'cmake'
 	'extra-cmake-modules'
 	'git'
+	'fakeroot'
 	'ninja'
 	'python-jsonschema'
 	'python-pyaml'
@@ -51,17 +52,19 @@ backup=('usr/share/calamares/modules/bootloader.conf'
         'usr/share/calamares/modules/unpackfs.conf')
 
 source=("calamares::git+https://github.com/calamares/calamares.git"
-        "cal-kiro-debugging.desktop"
-        "calamares_polkit")
+        "cal-kiro.desktop"
+        "calamares_polkit"
+	"calamares-wrapper")
 sha256sums=('SKIP'
-            '7c38fc1461307e4aff9b72922c6406789776a8252521618c5dcbe85beccb04f5'
-            '966c5f0834039dc6a7529e75f70417ba2510b1e643ffb49fd25855ce9dc244b4')
+            '31a07d76d5c8ffee0e88bf41119c875fafb2e0bcefdae945e748e3f9e6803d6d'
+            '966c5f0834039dc6a7529e75f70417ba2510b1e643ffb49fd25855ce9dc244b4'
+            'e4c9b9601020f2362311b9776de1aa363f6ee5d1d78a4b171ba2630644819f5b')
 
 prepare() {
 	cp -rv ../modules/* "$srcdir/$_pkgname/src/modules/"
 
 	sed -i -e 's/"Install configuration files" OFF/"Install configuration files" ON/' "$srcdir/$_pkgname/CMakeLists.txt"
-	sed -i -e "s/desired_size = 512 \* 1024 \* 1024  \# 512MiB/desired_size = 512 \* 1024 \* 1024 \* 4  \# 2048MiB/" "$srcdir/$_pkgname/src/modules/fstab/main.py"
+	sed -i -e "s/desired_size = 512 \* 1024 \* 1024  \# 512MiB/desired_size = 512 \* 1024 \* 1024 \* 16  \# 8589MiB/" "$srcdir/$_pkgname/src/modules/fstab/main.py"
 }
 
 pkgver() {
@@ -74,6 +77,8 @@ build() {
 
 	cmake -S . -B build \
 		-G Ninja \
+		-DCMAKE_BUILD_RPATH_USE_ORIGIN=ON \
+		-DCMAKE_SKIP_RPATH=ON \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
@@ -108,10 +113,12 @@ package() {
 	cd "$srcdir/$_pkgname/build"
 	DESTDIR="$pkgdir" cmake --install .
 
-	install -Dm644 "$srcdir/cal-kiro-debugging.desktop" "$pkgdir/usr/share/applications/cal-kiro-debugging.desktop"
-	install -Dm755 "$srcdir/cal-kiro-debugging.desktop" "$pkgdir/home/liveuser/Desktop/cal-kiro-debugging.desktop"
-	chmod +x "$pkgdir/home/liveuser/Desktop/cal-kiro-debugging.desktop"
+	install -Dm644 "$srcdir/cal-kiro.desktop" "$pkgdir/usr/share/applications/cal-kiro.desktop"
+	install -Dm755 "$srcdir/cal-kiro.desktop" "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
+	chmod +x "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
 
+	install -Dm644 "$srcdir/calamares-wrapper" "$pkgdir/usr/local/bin/calamares-wrapper"
+	chmod +x "$pkgdir/usr/local/bin/calamares-wrapper"
 	install -Dm755 "$srcdir/calamares_polkit" "$pkgdir/usr/bin/calamares_polkit"
 	rm "$pkgdir/usr/share/applications/calamares.desktop"
 }
