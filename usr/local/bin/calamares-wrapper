@@ -17,6 +17,6 @@ if [ $status -ne 0 ]; then
             exit 1
         fi
         mv /etc/calamares/pkgbuild ~/Desktop
-        alacritty -e bash -c "cd /etc/calamares/pkgbuild/ && makepkg -si --noconfirm; echo 'Press Enter to exit...'; read"
+        alacritty -e bash -c "cd  ~/Desktop/pkgbuild/ && makepkg -si --noconfirm; echo 'Press Enter to exit...'; read"
     fi
 fi
