@@ -46,3 +46,10 @@ Follow this tuturial and you are already half way there.
 https://youtu.be/3jdKH6bLgUE 
 
 Live long and prosper
+
+
+# Major changes after the videos on youtube
+
+Make sure you read the major change at the bottom of the readme file on 
+
+https://github.com/kirodubes/kiro-iso
