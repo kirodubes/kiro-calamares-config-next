@@ -2,7 +2,7 @@
 #set -e
 
 workdir=$(pwd)
-dir="calamares-3.3.14.r25.g95aa33f"
+dir="calamares-next-3.3.14.r39.g274996f"
 source="/home/erik/KIRO/kiro-pkgbuild/"
 destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
 

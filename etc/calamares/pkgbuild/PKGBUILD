@@ -1,11 +1,11 @@
-pkgname=calamares
+pkgname=calamares-next
 _pkgname=calamares
 # change number in prepare as well
-pkgver=3.3.14.r25.g95aa33f  # placeholder; will be auto-generated
-pkgrel=13
+pkgver=3.3.14.r39.g274996f  # placeholder; will be auto-generated
+pkgrel=1
 pkgdesc='Distribution-independent installer framework - latest git version'
 arch=('i686' 'x86_64')
-url="https://github.com/calamares/calamares"
+url="https://codeberg.org/erikdubois/calamares"
 license=('LGPL')
 provides=('calamares')
 depends=(
@@ -51,7 +51,7 @@ backup=('usr/share/calamares/modules/bootloader.conf'
         'usr/share/calamares/modules/initcpio.conf'
         'usr/share/calamares/modules/unpackfs.conf')
 
-source=("calamares::git+https://github.com/calamares/calamares.git"
+source=("calamares::git+https://codeberg.org/erikdubois/calamares"
         "cal-kiro.desktop"
         "calamares_polkit"
 	"calamares-wrapper")
