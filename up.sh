@@ -32,7 +32,7 @@ destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
 
 ##################################################################################################################
 
-rm -r /home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/*
+rm -r $destiny*
 cp -r $source$dir/* $destiny
 
 # Below command will backup everything inside the project folder
