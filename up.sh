@@ -33,7 +33,7 @@ destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
 ##################################################################################################################
 
 rm -r $destiny*
-cp -r $source$dir/* $destiny
+cp -rv $source$dir/* $destiny
 
 # Below command will backup everything inside the project folder
 git add --all .
