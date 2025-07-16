@@ -61,7 +61,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background3
             source: "03cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -89,7 +89,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background5
             source: "05cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -103,7 +103,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background6
             source: "06cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -117,7 +117,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background7
             source: "07cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -131,7 +131,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background8
             source: "08cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -145,7 +145,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background9
             source: "09cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -159,7 +159,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background10
             source: "10cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -173,7 +173,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background11
             source: "11cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
@@ -187,7 +187,7 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
-            id: background4
+            id: background12
             source: "12cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
