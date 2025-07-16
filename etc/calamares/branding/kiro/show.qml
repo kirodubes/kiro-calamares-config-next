@@ -183,6 +183,7 @@ Presentation
 
     }
 
+    Slide {
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
