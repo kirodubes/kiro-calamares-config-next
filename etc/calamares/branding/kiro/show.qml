@@ -36,7 +36,7 @@ Presentation
             source: "01cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -51,7 +51,7 @@ Presentation
             source: "02cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -65,7 +65,7 @@ Presentation
             source: "03cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -79,7 +79,7 @@ Presentation
             source: "04cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -93,7 +93,7 @@ Presentation
             source: "05cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -107,7 +107,7 @@ Presentation
             source: "06cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -121,7 +121,7 @@ Presentation
             source: "07cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -135,7 +135,7 @@ Presentation
             source: "08cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -149,7 +149,7 @@ Presentation
             source: "09cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -163,7 +163,7 @@ Presentation
             source: "10cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -177,7 +177,7 @@ Presentation
             source: "11cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
@@ -191,7 +191,7 @@ Presentation
             source: "12cal.jpg"
             width: parent.width; height: parent.height
             verticalAlignment: Image.AlignTop
-            fillMode: Image.PreserveAspectCrop
+            fillMode: Image.PreserveAspectFit
             anchors.fill: parent
         }
 
