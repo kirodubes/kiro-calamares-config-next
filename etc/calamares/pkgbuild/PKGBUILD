@@ -1,12 +1,13 @@
-pkgname=calamares-next
+pkgname=calamares
 _pkgname=calamares
 # change number in prepare as well
-pkgver=3.3.14.r39.g274996f  # placeholder; will be auto-generated
+pkgver=3.3.14.r63.g814deec  # placeholder; will be auto-generated
 pkgrel=1
 pkgdesc='Distribution-independent installer framework - latest git version'
 arch=('i686' 'x86_64')
 url="https://codeberg.org/erikdubois/calamares"
 license=('LGPL')
+conflicts=('calamares-next' 'calamares-git')
 provides=('calamares')
 depends=(
 	'boost-libs'

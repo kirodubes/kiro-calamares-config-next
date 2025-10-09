@@ -26,13 +26,20 @@ set -eo pipefail
 
 # variables and functions
 workdir=$(pwd)
-dir="calamares-next-3.3.14.r39.g274996f"
+dir="calamares-3.3.14.r63.g814deec-1"
 source="/home/erik/KIRO/kiro-pkgbuild/"
 destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
 
 ##################################################################################################################
 
-rm -r $destiny*
+if [ -d "$destiny" ]; then
+    rm -rf "$destiny"
+fi
+
+if ! [ -d "$destiny" ]; then
+    mkdir "$destiny"
+fi
+
 cp -rv $source$dir/* $destiny
 
 # Below command will backup everything inside the project folder
