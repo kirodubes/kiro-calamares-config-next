@@ -1,8 +1,8 @@
 pkgname=calamares-next
 _pkgname=calamares
 # change number in prepare as well
-pkgver=3.3.14.r71.gc9e4998  # placeholder; will be auto-generated
-pkgrel=2
+pkgver=3.3.14.r81.g55f0c9e  # placeholder; will be auto-generated
+pkgrel=1
 pkgdesc='Distribution-independent installer framework - latest git version'
 arch=('i686' 'x86_64')
 url="https://codeberg.org/erikdubois/calamares"
