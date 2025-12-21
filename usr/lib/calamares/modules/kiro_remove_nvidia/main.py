@@ -38,7 +38,7 @@ def wait_for_pacman_lock(max_wait=30):
 
 def remove_nvidia_packages_from_target():
     """Remove NVIDIA-related packages from the target system."""
-    packages = ["nvidia-dkms", "nvidia-utils", "nvidia-settings"]
+    packages = ["nvidia-open-dkms", "nvidia-utils", "nvidia-settings"]
     try:
         check_target_env_call(["pacman", "-Rns", "--noconfirm"] + packages)
     except subprocess.CalledProcessError as e:
