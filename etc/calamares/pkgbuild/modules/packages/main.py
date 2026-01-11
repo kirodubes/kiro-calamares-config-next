@@ -501,7 +501,7 @@ class PMPacman(PackageManager):
         if self.pacman_disable_timeout is True:
             command.append("--disable-download-timeout")
 
-        nvidia_versions = ["nvidia-340xx-dkms", "nvidia-390xx-dkms", "nvidia-470xx-dkms", "nvidia-525xx-dkms"]
+        nvidia_versions = ["nvidia-340xx-dkms", "nvidia-390xx-dkms", "nvidia-470xx-dkms", "nvidia-580xx-dkms"]
         for pkg in pkgs:
             if pkg in nvidia_versions:
                 # Remove the nvidia-dkms package if installing a specific version of the NVIDIA driver

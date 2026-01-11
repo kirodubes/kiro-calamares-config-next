@@ -26,7 +26,7 @@ set -eo pipefail
 
 # variables and functions
 workdir=$(pwd)
-dir="calamares-next-3.3.14.r81.g55f0c9e-1"
+dir="calamares-3.3.14.r87.g3f6cd83-1"
 source="/home/erik/KIRO/kiro-pkgbuild/"
 destiny="/home/erik/KIRO/kiro-calamares-config-next/etc/calamares/pkgbuild/"
 
