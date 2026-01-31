@@ -36,14 +36,35 @@ def wait_for_pacman_lock(max_wait=30):
                 return ("pacman-lock-error", f"Could not remove lock file: {e}")
     return None
 
-def remove_nvidia_packages_from_target():
-    """Remove NVIDIA-related packages from the target system."""
-    packages = ["nvidia-open-dkms", "nvidia-utils", "nvidia-settings"]
+def _is_installed_in_target(pkg: str) -> bool:
+    """
+    Returns True if pkg is installed in the target environment.
+    Uses: pacman -Q <pkg> (exit 0 if installed, non-zero if not).
+    """
     try:
-        check_target_env_call(["pacman", "-Rns", "--noconfirm"] + packages)
+        check_target_env_call(["pacman", "-Q", pkg])
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+def remove_nvidia_packages_from_target():
+    """Remove NVIDIA-related packages from the target system (only if installed)."""
+    candidates = ["nvidia-open-dkms", "nvidia-utils", "nvidia-settings"]
+
+    # Only remove packages that are actually installed in the target.
+    installed = [p for p in candidates if _is_installed_in_target(p)]
+
+    if not installed:
+        libcalamares.utils.debug("No NVIDIA packages installed in target; skipping removal.")
+        return None  # Continue Calamares normally.
+
+    try:
+        check_target_env_call(["pacman", "-Rns", "--noconfirm"] + installed)
     except subprocess.CalledProcessError as e:
+        # At this point something *real* failed (deps, locks, etc.)
         libcalamares.utils.warning(str(e))
         return ("nvidia-remove-failed", f"Failed to remove NVIDIA packages: <pre>{e}</pre>")
+
     return None
 
 def run():
