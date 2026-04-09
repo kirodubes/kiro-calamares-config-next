@@ -157,11 +157,11 @@ strings:
 #
 # These filenames can also use substitutions from os-release (see above).
 images:
-    # productBanner:		"banner.png"
-    productLogo:			"squid.png"
-    productIcon:			"logo.png"
+    # productBanner:        "banner.png"
+    productLogo:            "squid.png"
+    productIcon:            "logo.png"
     # productWallpaper:    "wallpaper.png"
-    productWelcome:			"01cal.jpg"
+    productWelcome:            "01cal.jpg"
 
 # Colors for text and background components.
 #
