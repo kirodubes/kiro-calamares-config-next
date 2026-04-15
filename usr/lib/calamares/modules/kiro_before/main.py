@@ -51,10 +51,11 @@ def optimize_makepkg_conf():
                 makepkg_conf_path
             ], check=True)
 
-            libcalamares.utils.debug("Disabling debug in OPTIONS")
+            libcalamares.utils.debug("Disabling debug in OPTIONS (only in OPTIONS line)")
+            # FIXED: Only modify the OPTIONS line, not the entire file
             subprocess.run([
                 "sed", "-i",
-                r's|\([^!]\)debug|\1!debug|g',
+                '/^OPTIONS=/s/\\bdebug\\b/!debug/',
                 makepkg_conf_path
             ], check=True)
 
