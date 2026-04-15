@@ -24,6 +24,10 @@ set -eo pipefail
 #tput setaf 8 = light blue
 ##################################################################################################################
 
+echo "Remember to change the pkgbuild for calamares if needed"
+
+sleep 3
+
 # variables and functions
 workdir=$(pwd)
 dir="calamares-next-3.3.14.r87.g3f6cd83-1"

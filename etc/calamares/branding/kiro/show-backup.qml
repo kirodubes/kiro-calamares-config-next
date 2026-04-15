@@ -47,6 +47,48 @@ Presentation
         anchors.fill: parent
         anchors.verticalCenterOffset: 0
         Image {
+            id: background2
+            source: "02cal.jpg"
+            width: parent.width; height: parent.height
+            verticalAlignment: Image.AlignTop
+            fillMode: Image.PreserveAspectFit
+            anchors.fill: parent
+        }
+
+    }
+
+    Slide {
+        anchors.fill: parent
+        anchors.verticalCenterOffset: 0
+        Image {
+            id: background3
+            source: "03cal.jpg"
+            width: parent.width; height: parent.height
+            verticalAlignment: Image.AlignTop
+            fillMode: Image.PreserveAspectFit
+            anchors.fill: parent
+        }
+
+    }
+
+    Slide {
+        anchors.fill: parent
+        anchors.verticalCenterOffset: 0
+        Image {
+            id: background4
+            source: "04cal.jpg"
+            width: parent.width; height: parent.height
+            verticalAlignment: Image.AlignTop
+            fillMode: Image.PreserveAspectFit
+            anchors.fill: parent
+        }
+
+    }
+
+    Slide {
+        anchors.fill: parent
+        anchors.verticalCenterOffset: 0
+        Image {
             id: background5
             source: "05cal.jpg"
             width: parent.width; height: parent.height
