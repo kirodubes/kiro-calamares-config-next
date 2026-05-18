@@ -284,7 +284,7 @@ def run():
     libcalamares.utils.debug("Removing installer package")
     try:
         subprocess.run(
-            ["chroot", target_root, "pacman", "-R", "--noconfirm", "kiro-calamares-config"],
+            ["chroot", target_root, "pacman", "-R", "--noconfirm", "kiro-calamares-config-next"],
             check=True
         )
         results["Remove installer package"] = "SUCCESS"
