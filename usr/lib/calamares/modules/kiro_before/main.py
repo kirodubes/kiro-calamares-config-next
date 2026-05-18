@@ -96,12 +96,12 @@ def initialize_pacman_keys():
     return None
 
 def move_mkinitcpio_preset():
-    """Move kiro mkinitcpio preset to linux.preset."""
+    """Move kiro mkinitcpio preset to linux-lqx.preset."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     src = os.path.join(target_root, "etc/mkinitcpio.d/kiro")
-    dst = os.path.join(target_root, "etc/mkinitcpio.d/linux.preset")
+    dst = os.path.join(target_root, "etc/mkinitcpio.d/linux-lqx.preset")
 
-    libcalamares.utils.debug("Moving kiro preset to linux.preset in target...")
+    libcalamares.utils.debug("Moving kiro preset to linux-lqx.preset in target...")
     try:
         os.replace(src, dst)
     except FileNotFoundError:
