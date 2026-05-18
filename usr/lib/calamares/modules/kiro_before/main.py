@@ -1,32 +1,38 @@
 #!/usr/bin/env python3
+"""
+Calamares module for pre-installation system configuration.
+Handles pacman lock management, key initialization, mkinitcpio preset migration, and makepkg optimization.
+"""
 
 import os
 import time
-import shutil
 import subprocess
 import libcalamares
 from libcalamares.utils import check_target_env_call
 
-# === Utility: Wait for pacman lock ===
+
 def wait_for_pacman_lock(max_wait=30):
+    """Wait for pacman lock to be released, force remove if timeout exceeded."""
     lock_path = "/var/lib/pacman/db.lck"
     waited = 0
+
     while os.path.exists(lock_path):
         libcalamares.utils.debug("Pacman is locked. Waiting 5 seconds...")
         time.sleep(5)
         waited += 5
         if waited >= max_wait:
-            libcalamares.utils.debug("Timeout reached. Removing pacman lock manually.")
+            libcalamares.utils.debug(f"Pacman lock timeout after {max_wait}s. Forcing removal.")
             try:
                 os.remove(lock_path)
             except Exception as e:
                 return ("pacman-lock-error", f"Could not remove lock file: {e}")
     return None
 
-# === Optimize makepkg.conf ===
 def optimize_makepkg_conf():
+    """Optimize makepkg.conf for system configuration (MAKEFLAGS, PKGEXT, OPTIONS)."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     makepkg_conf_path = os.path.join(target_root, "etc/makepkg.conf")
+    libcalamares.utils.debug("Optimizing makepkg.conf")
 
     try:
         cores = os.cpu_count()
@@ -66,9 +72,17 @@ def optimize_makepkg_conf():
 
     return None
 
-# === Initialize pacman keys ===
 def initialize_pacman_keys():
-    libcalamares.utils.debug("-> Initializing pacman-key and populating keys...")
+    """Initialize pacman keys and populate keyrings (archlinux, chaotic)."""
+    target_root = libcalamares.globalstorage.value("rootMountPoint")
+    keyring_path = os.path.join(target_root, "etc/pacman.d/gnupg/pubring.gpg")
+
+    # Skip if keyring already exists (ISO has pre-initialized keys)
+    if os.path.exists(keyring_path):
+        libcalamares.utils.debug("Pacman keyring already initialized. Skipping.")
+        return None
+
+    libcalamares.utils.debug("Initializing pacman-key and populating keys...")
     try:
         check_target_env_call(["pacman-key", "--init"])
         check_target_env_call(["pacman-key", "--populate", "archlinux"])
@@ -81,13 +95,13 @@ def initialize_pacman_keys():
         )
     return None
 
-# === Move mkinitcpio preset ===
 def move_mkinitcpio_preset():
+    """Move kiro mkinitcpio preset to linux.preset."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     src = os.path.join(target_root, "etc/mkinitcpio.d/kiro")
     dst = os.path.join(target_root, "etc/mkinitcpio.d/linux.preset")
 
-    libcalamares.utils.debug("-> Moving kiro preset to linux.preset in target...")
+    libcalamares.utils.debug("Moving kiro preset to linux.preset in target...")
     try:
         os.replace(src, dst)
     except FileNotFoundError:
@@ -102,22 +116,36 @@ def move_mkinitcpio_preset():
         )
     return None
 
-# === Main run function ===
 def run():
-    libcalamares.utils.debug("#################################")
+    """Execute pre-installation configuration steps in sequence."""
+    libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Start kiro_before")
-    libcalamares.utils.debug("#################################\n")
+    libcalamares.utils.debug("##############################################\n")
 
-    for step_func in [
-        wait_for_pacman_lock,
-        initialize_pacman_keys,
-        move_mkinitcpio_preset,
-        optimize_makepkg_conf
-    ]:
+    libcalamares.utils.debug("This module will perform the following operations:")
+    libcalamares.utils.debug("  1. Wait for pacman lock to be released")
+    libcalamares.utils.debug("  2. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
+    libcalamares.utils.debug("  3. Move mkinitcpio kiro preset to linux.preset")
+    libcalamares.utils.debug("  4. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+
+    functions = [
+        ("Wait for pacman lock", wait_for_pacman_lock),
+        ("Initialize pacman keys", initialize_pacman_keys),
+        ("Move mkinitcpio preset", move_mkinitcpio_preset),
+        ("Optimize makepkg.conf", optimize_makepkg_conf)
+    ]
+
+    results = {}
+    for func_name, step_func in functions:
         error = step_func()
         if error:
+            results[func_name] = "FAILED"
             return error
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("End kiro_before")
-    libcalamares.utils.debug("#################################\n")
+        results[func_name] = "SUCCESS"
+
+    libcalamares.utils.debug("##############################################")
+    libcalamares.utils.debug("End kiro_before - Function Results:")
+    for func_name, status in results.items():
+        libcalamares.utils.debug(f"  {func_name}: {status}")
+    libcalamares.utils.debug("##############################################\n")
     return None

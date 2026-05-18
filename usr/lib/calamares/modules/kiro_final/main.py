@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
+"""
+Calamares module for final system configuration and cleanup.
+Handles permissions, file cleanup, bootloader configuration, and VM package removal.
+"""
 
 import os
 import shutil
 import subprocess
 import time
 import libcalamares
+
 
 def remove_path(path):
     """Remove file or directory safely."""
@@ -15,6 +20,7 @@ def remove_path(path):
             os.remove(path)
     except Exception as e:
         libcalamares.utils.warning(f"Failed to remove {path}: {e}")
+
 
 def is_package_installed(package_name, target_root):
     """Check if a package is installed in the target system."""
@@ -29,51 +35,87 @@ def is_package_installed(package_name, target_root):
         libcalamares.utils.warning(f"Failed to check package {package_name}: {e}")
         return False
 
-def detect_x11_session(target_root):
-    """Detect the X11 session in the target system."""
-    xsessions_path = os.path.join(target_root, "usr/share/xsessions")
-    try:
-        for entry in os.listdir(xsessions_path):
-            if entry.endswith(".desktop"):
-                return entry
-    except Exception as e:
-        libcalamares.utils.warning(f"Failed to detect X11 session: {e}")
-    return None
 
-def build_chadwm_for_user(target_root):
-    """Build ChadWM for user with UID 1000 in the target system."""
+def chroot_pacman_remove(target_root, packages):
+    """Remove packages in the target system using pacman."""
+    try:
+        subprocess.run(
+            ["chroot", target_root, "pacman", "-Rns", "--noconfirm"] + packages,
+            check=True
+        )
+        return True
+    except subprocess.CalledProcessError as e:
+        libcalamares.utils.warning(f"Failed to remove packages: {e}")
+        return False
+
+
+def chroot_disable_service(target_root, service):
+    """Disable a systemd service in the target system."""
+    subprocess.run(
+        ["chroot", target_root, "systemctl", "disable", service],
+        check=False
+    )
+
+
+def detect_virtualization(target_root):
+    """Detect if system is running in a virtual machine."""
     try:
         result = subprocess.run(
-            ["chroot", target_root, "getent", "passwd", "1000"],
-            capture_output=True,
+            ["chroot", target_root, "systemd-detect-virt"],
+            stdout=subprocess.PIPE,
             text=True,
             check=True
         )
-        username = result.stdout.split(":")[0]
-        config_path = f"/home/{username}/.config/arco-chadwm/chadwm"
-        full_path = os.path.join(target_root, config_path)
-
-        if os.path.isdir(full_path):
-            libcalamares.utils.debug(f"Building ChadWM at {config_path}")
-            subprocess.run(["make", "-B"], cwd=full_path, check=True)
-            subprocess.run(["make", "install"], cwd=full_path, check=True)
-        else:
-            libcalamares.utils.warning(f"Directory {config_path} not found. Skipping ChadWM build.")
+        return result.stdout.strip()
     except Exception as e:
-        libcalamares.utils.warning(f"Failed to build ChadWM: {e}")
+        libcalamares.utils.warning(f"Failed to detect virtualization: {e}")
+        return "unknown"
+
+
+def wait_for_pacman_lock(target_root, timeout=30):
+    """Wait for pacman lock to be released, force remove if timeout exceeded."""
+    lock_path = os.path.join(target_root, "var/lib/pacman/db.lck")
+    waited = 0
+
+    while os.path.exists(lock_path):
+        if waited >= timeout:
+            libcalamares.utils.debug(f"Pacman lock timeout after {timeout}s. Forcing removal.")
+            try:
+                os.remove(lock_path)
+            except Exception as e:
+                libcalamares.utils.warning(f"Could not remove pacman lock: {e}")
+            break
+
+        libcalamares.utils.debug("Pacman is locked. Waiting 5 seconds...")
+        time.sleep(5)
+        waited += 5
 
 def run():
-    libcalamares.utils.debug("#################################")
+    """Execute final system configuration and cleanup."""
+    libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Start kiro_final module")
-    libcalamares.utils.debug("#################################\n")
+    libcalamares.utils.debug("##############################################\n")
+
+    libcalamares.utils.debug("This module will perform the following operations:")
+    libcalamares.utils.debug("  1. Set permissions for security directories (sudoers.d, polkit-1)")
+    libcalamares.utils.debug("  2. Copy /etc/skel to /root home directory")
+    libcalamares.utils.debug("  3. Set /root permissions to 0o700")
+    libcalamares.utils.debug("  4. Remove installation-related files and folders")
+    libcalamares.utils.debug("  5. Configure system environment (EDITOR=nano)")
+    libcalamares.utils.debug("  6. Configure Bluetooth and PulseAudio")
+    libcalamares.utils.debug("  7. Check bootloader configuration (remove GRUB if systemd-boot detected)")
+    libcalamares.utils.debug("  8. Detect virtualization and remove unnecessary VM packages")
+    libcalamares.utils.debug("  9. Remove installer package (kiro-calamares-config)\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
+    results = {}
 
-    # --- Permissions of important folders ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Setting permissions for important folders")
-    libcalamares.utils.debug("#################################\n")
-    
+    # ========================
+    # File System Configuration
+    # ========================
+
+    # Set directory permissions
+    libcalamares.utils.debug("Setting permissions for security directories")
     try:
         os.chmod(os.path.join(target_root, "etc/sudoers.d"), 0o750)
         polkit_rules = os.path.join(target_root, "etc/polkit-1/rules.d")
@@ -82,223 +124,177 @@ def run():
             shutil.chown(polkit_rules, group="polkitd")
         except LookupError:
             libcalamares.utils.warning("Group 'polkitd' not found; skipping chown.")
-
+        results["Set security directory permissions"] = "SUCCESS"
     except Exception as e:
         libcalamares.utils.warning(f"Failed to set permissions: {e}")
+        results["Set security directory permissions"] = "FAILED"
 
-    # --- Copy /etc/skel to /root ---
-    libcalamares.utils.debug("#################################")
+    # Copy skeleton files to root home
     libcalamares.utils.debug("Copying /etc/skel to /root")
-    libcalamares.utils.debug("#################################\n")
-
     try:
         skel = os.path.join(target_root, "etc/skel")
         root_home = os.path.join(target_root, "root")
         shutil.copytree(skel, root_home, dirs_exist_ok=True)
+        results["Copy /etc/skel to /root"] = "SUCCESS"
     except Exception as e:
         libcalamares.utils.warning(f"Failed to copy /etc/skel to /root: {e}")
+        results["Copy /etc/skel to /root"] = "FAILED"
 
-    # --- Cleanup autologin root ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Remove autologin")
-    libcalamares.utils.debug("#################################\n")
-
-    autologin_path = os.path.join(target_root, "etc/systemd/system/getty@tty1.service.d")
-    libcalamares.utils.debug("Cleaning up autologin for root")
-    shutil.rmtree(autologin_path, ignore_errors=True)
-
-    # --- Set editor to nano ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Nano as editor")
-    libcalamares.utils.debug("#################################\n")
-    profile_path = os.path.join(target_root, "etc/profile")
-    libcalamares.utils.debug("Setting EDITOR=nano in /etc/profile")
-    try:
-        with open(profile_path, "a") as profile:
-            profile.write("\nEDITOR=nano\n")
-    except Exception as e:
-        libcalamares.utils.warning(f"Failed to write to /etc/profile: {e}")
-
-    # --- Bluetooth improvements ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Bluetooth")
-    libcalamares.utils.debug("#################################\n")
-
-    bt_conf = os.path.join(target_root, "etc/bluetooth/main.conf")
-    pa_conf = os.path.join(target_root, "etc/pulse/default.pa")
-    libcalamares.utils.debug("Enabling AutoEnable=true in bluetooth config")
-    subprocess.run(["sed", "-i", "s|#AutoEnable=true|AutoEnable=true|g", bt_conf], check=False)
-    libcalamares.utils.debug("Appending module-switch-on-connect to default.pa")
-    try:
-        with open(pa_conf, "a") as pa:
-            pa.write("\nload-module module-switch-on-connect\n")
-    except Exception as e:
-        libcalamares.utils.warning(f"Failed to append to default.pa: {e}")
-
-    # --- Cleanup original files ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Removing unnecessary files and folders")
-    libcalamares.utils.debug("#################################\n")
-    
-    paths_to_remove = [
-        "etc/sudoers.d/g_wheel",
-        "usr/share/backgrounds/xfce",
-        "etc/polkit-1/rules.d/49-nopasswd_global.rules",
-        "root/.automated_script.sh",
-        "root/.zlogin"
-    ]
-    for rel_path in paths_to_remove:
-        remove_path(os.path.join(target_root, rel_path))
-
-    # --- Set root permissions to 700 ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Setting permissions of /root to 700")
-    libcalamares.utils.debug("#################################\n")
-    
+    # Set root home permissions
     try:
         os.chmod(os.path.join(target_root, "root"), 0o700)
+        results["Set /root permissions"] = "SUCCESS"
     except Exception as e:
         libcalamares.utils.warning(f"Failed to set /root permissions: {e}")
+        results["Set /root permissions"] = "FAILED"
 
-    # --- Bootloader cleanup if systemd-boot is used ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Checking for systemd-boot setup")
-    libcalamares.utils.debug("#################################\n")
- 
-    loader_conf = os.path.join(target_root, "boot/efi/loader/loader.conf")
-    if os.path.exists(loader_conf):
-        libcalamares.utils.debug("Detected systemd-boot. Removing GRUB...")
-        try:
-            if is_package_installed("grub", target_root):
-                subprocess.run(["chroot", target_root, "pacman", "-R", "--noconfirm", "grub"], check=True)
-        except Exception as e:
-            libcalamares.utils.warning(f"Failed to remove GRUB: {e}")
+    # ========================
+    # Cleanup Installation Files
+    # ========================
 
-        remove_path(os.path.join(target_root, "boot/grub"))
-
-        grub_defaults = [f for f in os.listdir(os.path.join(target_root, "etc/default")) if f.startswith("grub")]
-        for grub_file in grub_defaults:
-            remove_path(os.path.join(target_root, "etc/default", grub_file))
-
-    # --- Desktop-specific ChadWM logic ---
-    libcalamares.utils.debug("#################################")
-    libcalamares.utils.debug("Start chadwm build")
-    libcalamares.utils.debug("#################################\n")
-
-    desktop = detect_x11_session(target_root)
-    if desktop is None:
-        libcalamares.utils.debug("No X11 session detected.")
-    elif desktop == "chadwm.desktop":
-        libcalamares.utils.debug(f"Detected session file: {desktop}")
-        libcalamares.utils.debug("Detected ChadWM session. Building ChadWM.")
-        build_chadwm_for_user(target_root)
-    else:
-        libcalamares.utils.debug(f"No specific action for session: {desktop}")
-
-    # --- Kiro virtual machine check ---
-    libcalamares.utils.debug("##############################################")
-    libcalamares.utils.debug("Removing virtual machine packages")
-    libcalamares.utils.debug("##############################################\n")
-
-    # Wait for pacman lock
-    lock_path = os.path.join(target_root, "var/lib/pacman/db.lck")
-    waited = 0
-    while os.path.exists(lock_path):
-        libcalamares.utils.debug("Pacman is locked. Waiting 5 seconds...")
-        time.sleep(5)
-        waited += 5
-        if waited >= 30:
-            libcalamares.utils.debug("Removing pacman lock after timeout.")
-            try:
-                os.remove(lock_path)
-            except Exception as e:
-                libcalamares.utils.warning(f"Could not remove pacman lock: {e}")
-            break
-
-    # Detect virtualization
+    libcalamares.utils.debug("Removing unnecessary files and folders")
     try:
-        result = subprocess.run(
-            ["chroot", target_root, "systemd-detect-virt"],
-            stdout=subprocess.PIPE,
-            text=True,
-            check=True
-        )
-        vm_type = result.stdout.strip()
-        libcalamares.utils.debug(f"Detected virtualization: {vm_type}")
+        paths_to_remove = [
+            "etc/sudoers.d/g_wheel",
+            "etc/polkit-1/rules.d/49-nopasswd_global.rules",
+            "root/.automated_script.sh",
+            "root/.zlogin",
+            "etc/systemd/system/getty@tty1.service.d",  # Autologin cleanup
+        ]
+        for rel_path in paths_to_remove:
+            remove_path(os.path.join(target_root, rel_path))
+        results["Remove installation files"] = "SUCCESS"
     except Exception as e:
-        libcalamares.utils.warning(f"Failed to detect virtualization: {e}")
-        vm_type = "unknown"
+        libcalamares.utils.warning(f"Failed to remove installation files: {e}")
+        results["Remove installation files"] = "FAILED"
 
-    def chroot_pacman_rm(packages):
-        try:
-            subprocess.run(
-                ["chroot", target_root, "pacman", "-Rns", "--noconfirm"] + packages,
-                check=True
+    # ========================
+    # System Configuration
+    # ========================
+
+    # Configure shell environment
+    libcalamares.utils.debug("Configuring system environment")
+    try:
+        profile_path = os.path.join(target_root, "etc/profile")
+        with open(profile_path, "a") as profile:
+            profile.write("\nEDITOR=nano\n")
+        results["Configure system environment"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to write to /etc/profile: {e}")
+        results["Configure system environment"] = "FAILED"
+
+    # Configure Bluetooth and PulseAudio
+    libcalamares.utils.debug("Configuring Bluetooth and audio")
+    try:
+        bt_conf = os.path.join(target_root, "etc/bluetooth/main.conf")
+        pa_conf = os.path.join(target_root, "etc/pulse/default.pa")
+
+        subprocess.run(
+            ["sed", "-i", "s|#AutoEnable=true|AutoEnable=true|g", bt_conf],
+            check=False
+        )
+        with open(pa_conf, "a") as pa:
+            pa.write("\nload-module module-switch-on-connect\n")
+        results["Configure Bluetooth and PulseAudio"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to configure audio services: {e}")
+        results["Configure Bluetooth and PulseAudio"] = "FAILED"
+
+    # ========================
+    # Bootloader Configuration
+    # ========================
+
+    libcalamares.utils.debug("Checking bootloader configuration")
+    try:
+        loader_conf = os.path.join(target_root, "boot/efi/loader/loader.conf")
+        if os.path.exists(loader_conf):
+            # systemd-boot is in use, remove GRUB
+            libcalamares.utils.debug("systemd-boot detected. Removing GRUB")
+            try:
+                if is_package_installed("grub", target_root):
+                    subprocess.run(
+                        ["chroot", target_root, "pacman", "-R", "--noconfirm", "grub"],
+                        check=True
+                    )
+            except Exception as e:
+                libcalamares.utils.warning(f"Failed to remove GRUB: {e}")
+
+            remove_path(os.path.join(target_root, "boot/grub"))
+
+            # Remove GRUB configuration files
+            try:
+                grub_defaults_dir = os.path.join(target_root, "etc/default")
+                grub_files = [f for f in os.listdir(grub_defaults_dir) if f.startswith("grub")]
+                for grub_file in grub_files:
+                    remove_path(os.path.join(grub_defaults_dir, grub_file))
+            except Exception as e:
+                libcalamares.utils.warning(f"Failed to remove GRUB defaults: {e}")
+        results["Configure bootloader"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to configure bootloader: {e}")
+        results["Configure bootloader"] = "FAILED"
+
+    # ========================
+    # Virtual Machine Cleanup
+    # ========================
+
+    libcalamares.utils.debug("Checking for virtual machine environment")
+    try:
+        wait_for_pacman_lock(target_root)
+
+        vm_type = detect_virtualization(target_root)
+        libcalamares.utils.debug(f"Virtualization type: {vm_type}")
+
+        # VMware cleanup (applies to oracle, kvm, vmware, none)
+        if vm_type in ["oracle", "kvm", "vmware", "none"]:
+            remove_path(os.path.join(target_root, "etc/xdg/autostart/vmware-user.desktop"))
+            if is_package_installed("open-vm-tools", target_root):
+                chroot_disable_service(target_root, "vmtoolsd.service")
+                chroot_disable_service(target_root, "vmware-vmblock-fuse.service")
+                chroot_pacman_remove(target_root, ["open-vm-tools"])
+            if is_package_installed("xf86-video-vmware", target_root):
+                chroot_pacman_remove(target_root, ["xf86-video-vmware"])
+            remove_path(
+                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vmtoolsd.service")
             )
-            return True
-        except subprocess.CalledProcessError as e:
-            libcalamares.utils.warning(f"Failed to remove packages: {e}")
-            return False
 
-    def chroot_disable_service(service):
-        subprocess.run(["chroot", target_root, "systemctl", "disable", service], check=False)
+        # QEMU cleanup (applies to oracle, vmware, none)
+        if vm_type in ["oracle", "vmware", "none"]:
+            if is_package_installed("qemu-guest-agent", target_root):
+                chroot_disable_service(target_root, "qemu-guest-agent.service")
+                chroot_pacman_remove(target_root, ["qemu-guest-agent"])
 
-    def cleanup_files(paths):
-        for path in paths:
-            remove_path(os.path.join(target_root, path))
+        # VirtualBox cleanup (applies to kvm, vmware, none)
+        if vm_type in ["kvm", "vmware", "none"]:
+            for vbox_pkg in ["virtualbox-guest-utils", "virtualbox-guest-utils-nox"]:
+                if is_package_installed(vbox_pkg, target_root):
+                    chroot_disable_service(target_root, "vboxservice.service")
+                    chroot_pacman_remove(target_root, [vbox_pkg])
 
-    if vm_type in ["oracle", "kvm", "vmware", "none"]:
-        # Common VMware cleanup
-        cleanup_files(["etc/xdg/autostart/vmware-user.desktop"])
-        if is_package_installed("open-vm-tools", target_root):
-            chroot_disable_service("vmtoolsd.service")
-            chroot_disable_service("vmware-vmblock-fuse.service")
-            chroot_pacman_rm(["open-vm-tools"])
-        if is_package_installed("xf86-video-vmware", target_root):
-            chroot_pacman_rm(["xf86-video-vmware"])
-        cleanup_files(["etc/systemd/system/multi-user.target.wants/vmtoolsd.service"])
+        results["Virtual machine cleanup"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed during VM cleanup: {e}")
+        results["Virtual machine cleanup"] = "FAILED"
 
-    if vm_type in ["oracle", "vmware", "none"]:
-        # QEMU removal
-        if is_package_installed("qemu-guest-agent", target_root):
-            chroot_disable_service("qemu-guest-agent.service")
-            chroot_pacman_rm(["qemu-guest-agent"])
+    # ========================
+    # Final Cleanup
+    # ========================
 
-    if vm_type in ["kvm", "vmware", "none"]:
-        # VirtualBox cleanup
-        for vbox_pkg in ["virtualbox-guest-utils", "virtualbox-guest-utils-nox"]:
-            if is_package_installed(vbox_pkg, target_root):
-                chroot_disable_service("vboxservice.service")
-                chroot_pacman_rm([vbox_pkg])
-
-    # --- Remove xfce4-artwork package ---
-    libcalamares.utils.debug("##############################################")
-    libcalamares.utils.debug("Removing xfce4-artwork package")
-    libcalamares.utils.debug("##############################################\n")
-    
+    libcalamares.utils.debug("Removing installer package")
     try:
         subprocess.run(
-            ["chroot", target_root, "pacman", "-R", "--noconfirm", "xfce4-artwork"],
+            ["chroot", target_root, "pacman", "-R", "--noconfirm", "kiro-calamares-config"],
             check=True
         )
+        results["Remove installer package"] = "SUCCESS"
     except subprocess.CalledProcessError as e:
-        libcalamares.utils.warning(f"Failed to remove xfce4-artwork: {e}")
-
-    # --- Remove kiro-calamares-config-next package ---
-    libcalamares.utils.debug("##############################################")
-    libcalamares.utils.debug("Removing kiro-calamares-config-next package")
-    libcalamares.utils.debug("##############################################\n")
-    
-    try:
-        subprocess.run(
-            ["chroot", target_root, "pacman", "-R", "--noconfirm", "kiro-calamares-config-next"],
-            check=True
-        )
-    except subprocess.CalledProcessError as e:
-        libcalamares.utils.warning(f"Failed to remove kiro-calamares-config-next: {e}")
+        libcalamares.utils.warning(f"Failed to remove kiro-calamares-config: {e}")
+        results["Remove installer package"] = "FAILED"
 
     libcalamares.utils.debug("##############################################")
-    libcalamares.utils.debug("End kiro_final module")
+    libcalamares.utils.debug("End kiro_final module - Function Results:")
+    for func_name, status in results.items():
+        libcalamares.utils.debug(f"  {func_name}: {status}")
     libcalamares.utils.debug("##############################################\n")
 
     return None

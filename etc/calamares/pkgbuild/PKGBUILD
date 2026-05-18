@@ -115,8 +115,7 @@ package() {
 	DESTDIR="$pkgdir" cmake --install .
 
 	install -Dm644 "$srcdir/cal-kiro.desktop" "$pkgdir/usr/share/applications/cal-kiro.desktop"
-	install -Dm755 "$srcdir/cal-kiro.desktop" "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
-	chmod +x "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
+	install -Dm644 "$srcdir/cal-kiro.desktop" "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
 
 	install -Dm644 "$srcdir/calamares-wrapper" "$pkgdir/usr/local/bin/calamares-wrapper"
 	chmod +x "$pkgdir/usr/local/bin/calamares-wrapper"
