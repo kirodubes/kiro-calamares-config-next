@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Repository Role
+
+**BETA / TESTING** — this is the experimental Calamares installer config, paired with `kiro-iso-next`.
+
+| Repo | Role | ISO repo |
+|---|---|---|
+| `kiro-calamares-config` | **Production** — stable, released to users | `kiro-iso` |
+| `kiro-calamares-config-next` | **Beta/Testing** — experimental changes under evaluation | `kiro-iso-next` |
+
+Changes here must be tested with a full install run before being mirrored to `kiro-calamares-config`.
+The current experiment: **Liquorix kernel** — `unpackfs2.conf` updated to copy `vmlinuz-linux-lqx`.
+
 ## What This Is
 
 Calamares installer configuration for the Kiro Linux distribution (Arch-based). Contains the full installation pipeline: module configs, custom Python extension modules, branding/QML slideshow, bundled microcode packages, and a custom Calamares PKGBUILD.
