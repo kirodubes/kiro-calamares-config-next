@@ -14,6 +14,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Changes here must be tested with a full install run before being mirrored to `kiro-calamares-config`.
 The current experiment: **Liquorix kernel** — `unpackfs2.conf` updated to copy `vmlinuz-linux-lqx`.
 
+## Beta Build Workflow
+
+**After making changes here, always follow this order:**
+
+```
+1. Commit and push: ./up.sh
+2. Wait 5–10 minutes for kiro_repo (GitHub Pages) to rebuild and serve the updated package
+3. Then trigger the ISO build in kiro-iso-next: cd ~/KIRO/kiro-iso-next/build-scripts && bash build-the-iso.sh
+```
+
+**Do not build the ISO immediately after pushing** — GitHub Pages needs a few minutes to rebuild. Building too soon pulls the old Calamares package and your changes won't be in the ISO.
+
 ## What This Is
 
 Calamares installer configuration for the Kiro Linux distribution (Arch-based). Contains the full installation pipeline: module configs, custom Python extension modules, branding/QML slideshow, bundled microcode packages, and a custom Calamares PKGBUILD.

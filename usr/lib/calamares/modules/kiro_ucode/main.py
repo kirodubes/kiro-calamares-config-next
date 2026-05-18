@@ -63,16 +63,28 @@ class ConfigController:
             libcalamares.utils.warning(f"Failed to install {package_name}: {e}")
             return False
 
+    def remove_ucode_package(self, package_name):
+        """Remove wrong microcode package from the installed target."""
+        libcalamares.utils.debug(f"Removing {package_name} from target...")
+        try:
+            target_env_call(["pacman", "-R", "--noconfirm", package_name])
+            libcalamares.utils.debug(f"Successfully removed {package_name}")
+        except Exception as e:
+            # Non-fatal — package may already be absent
+            libcalamares.utils.warning(f"Could not remove {package_name}: {e}")
+
     def handle_ucode(self):
-        """Install appropriate microcode package based on detected CPU vendor."""
+        """Install correct microcode and remove the non-matching one."""
         vendor = self.detect_cpu_vendor()
 
         if vendor == "AuthenticAMD":
             libcalamares.utils.debug("Installing amd-ucode for AMD CPU.")
             self.install_ucode_package("amd-ucode")
+            self.remove_ucode_package("intel-ucode")
         elif vendor == "GenuineIntel":
             libcalamares.utils.debug("Installing intel-ucode for Intel CPU.")
             self.install_ucode_package("intel-ucode")
+            self.remove_ucode_package("amd-ucode")
         else:
             libcalamares.utils.debug("Unknown CPU vendor or detection failed. Skipping microcode installation.")
 
