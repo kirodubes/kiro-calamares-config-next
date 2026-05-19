@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-05-19 — Liquorix Changes Promoted to Production
+
+All Liquorix kernel changes validated in this repo have been mirrored to `kiro-calamares-config` (production):
+
+- `unpackfs2.conf` — linux-lqx kernel copy
+- `kiro_before/main.py` — linux-lqx.preset rename
+- `kiro_final/main.py` — linux.preset live-artifact cleanup + ucode removal improvement
+- `kiro_ucode/main.py` — `remove_ucode_package()` cleanup method
+
+---
+
 ## 2026-04-26
 - **`amd-ucode`** package updated → `20260410-1`
 
