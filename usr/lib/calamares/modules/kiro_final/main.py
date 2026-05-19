@@ -161,6 +161,7 @@ def run():
             "root/.zlogin",
             "etc/systemd/system/getty@tty1.service.d",  # Autologin cleanup
             "etc/mkinitcpio.d/linux.preset",             # Archiso live-only artifact; linux-lqx.preset from the kernel package is the correct one
+            "etc/ssh/sshd_config.d/10-archiso.conf",
         ]
         for rel_path in paths_to_remove:
             remove_path(os.path.join(target_root, rel_path))
