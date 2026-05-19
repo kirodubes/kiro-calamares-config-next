@@ -4,14 +4,53 @@
 
 ---
 
-## 2026-05-19 — Liquorix Changes Promoted to Production
+## 2026-05-19 — Liquorix Kernel Experiment Validated and Promoted to Production
 
-All Liquorix kernel changes validated in this repo have been mirrored to `kiro-calamares-config` (production):
+### What Changed
 
-- `unpackfs2.conf` — linux-lqx kernel copy
-- `kiro_before/main.py` — linux-lqx.preset rename
-- `kiro_final/main.py` — linux.preset live-artifact cleanup + ucode removal improvement
-- `kiro_ucode/main.py` — `remove_ucode_package()` cleanup method
+The Liquorix kernel experiment that originated in this repo has been declared stable and fully mirrored to `kiro-calamares-config` (production). Kiro now ships `linux-lqx` as the default installed kernel on both the stable and beta ISO tracks.
+
+### Why
+
+The Liquorix kernel (`linux-lqx`) is a patched Linux kernel targeting desktop responsiveness and low latency. By shipping it as the default, Kiro users get improved desktop performance without any manual post-install steps. The beta track validated the installer pipeline handles `linux-lqx` correctly end-to-end before it went to production.
+
+### Technical Details
+
+Seven files were reviewed for promotion. Four were copied verbatim; one required a package-name correction; two were left unchanged because each repo correctly references its own package name.
+
+**Files promoted to `kiro-calamares-config`:**
+
+- **`unpackfs2.conf`** — updated source from `vmlinuz-linux` to `vmlinuz-linux-lqx` and destination from `/boot/vmlinuz-linux` to `/boot/vmlinuz-linux-lqx`. This is the step that physically copies the kernel binary into the installed target root.
+- **`kiro_before/main.py`** — the mkinitcpio preset rename now targets `linux-lqx.preset` instead of `linux.preset`. The preset filename must match the kernel package name so mkinitcpio knows which config to use when generating the initramfs.
+- **`kiro_final/main.py`** — two improvements merged: (1) `linux.preset` added to the live-only artifact cleanup list, because the archiso environment ships a `linux.preset` for the live system that would otherwise persist into the installed target and conflict with the `linux-lqx.preset` from the kernel package; (2) self-removal pacman command corrected from `kiro-calamares-config-next` to `kiro-calamares-config` (production package name).
+- **`kiro_ucode/main.py`** — new `remove_ucode_package()` method added. Previously, the correct microcode was installed but the wrong one (the other vendor's package) could remain on disk. Now the module installs the matching microcode and explicitly removes the non-matching one, keeping the installed system clean.
+- **`displaymanager.conf`** — trailing newline normalised (cosmetic).
+
+**Files left at their production values:**
+
+- **`packages.conf`** — removes `calamares` at the end of install (not `calamares-next`). Each repo removes its own package.
+- **`PKGBUILD`** — `pkgname=calamares` in production, `pkgname=calamares-next` in this repo. Not changed.
+
+A post-promotion grep scan of the production repo confirmed no stale `-next` references survived in code or config. Legitimate occurrences (Python `__next__`, `provides=('calamares-next')` virtual package, Calamares config key `hide-back-and-next-during-exec`) were verified as intentional.
+
+### Workflow Corrections Logged
+
+Two standing rules were added to memory this session:
+
+1. Always grep production repo for `-next` after any promotion before committing.
+2. The calamares config repo always pairs with its matching ISO repo — `kiro-calamares-config-next` → `kiro-iso-next`, never `kiro-iso`.
+
+### Files Modified
+
+- `etc/calamares/modules/unpackfs2.conf`
+- `etc/calamares/modules/displaymanager.conf`
+- `usr/lib/calamares/modules/kiro_before/main.py`
+- `usr/lib/calamares/modules/kiro_final/main.py`
+- `usr/lib/calamares/modules/kiro_ucode/main.py`
+- `CHANGELOG.md` (this file)
+- `TODO.md` — active items marked done
+- `IDEAS.md` — stub created
+- `~/.claude/projects/.../memory/` — two new memory files written
 
 ---
 

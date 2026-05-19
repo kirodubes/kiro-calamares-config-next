@@ -190,10 +190,13 @@ def run():
         bt_conf = os.path.join(target_root, "etc/bluetooth/main.conf")
         pa_conf = os.path.join(target_root, "etc/pulse/default.pa")
 
-        subprocess.run(
-            ["sed", "-i", "s|#AutoEnable=true|AutoEnable=true|g", bt_conf],
-            check=False
-        )
+        if os.path.exists(bt_conf):
+            subprocess.run(
+                ["sed", "-i", "s|#AutoEnable=true|AutoEnable=true|g", bt_conf],
+                check=True
+            )
+        else:
+            libcalamares.utils.warning(f"Bluetooth config not found: {bt_conf}")
         with open(pa_conf, "a") as pa:
             pa.write("\nload-module module-switch-on-connect\n")
         results["Configure Bluetooth and PulseAudio"] = "SUCCESS"
