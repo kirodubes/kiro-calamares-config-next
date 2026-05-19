@@ -5,7 +5,6 @@ Handles pacman lock management, key initialization, mkinitcpio preset migration,
 """
 
 import os
-import re
 import time
 import subprocess
 import libcalamares
@@ -96,42 +95,6 @@ def initialize_pacman_keys():
         )
     return None
 
-def configure_mkinitcpio():
-    """Write a proper mkinitcpio.conf for the installed system.
-
-    Replaces the archiso-specific HOOKS with a standard installed-system set.
-    Adds the 'resume' hook when a swap partition is present (suspend/hibernate).
-    """
-    target_root = libcalamares.globalstorage.value("rootMountPoint")
-    mkinitcpio_path = os.path.join(target_root, "etc/mkinitcpio.conf")
-
-    partitions = libcalamares.globalstorage.value("partitions") or []
-    has_swap = any(p.get("fs") == "linuxswap" for p in partitions)
-
-    hooks = [
-        "base", "udev", "autodetect", "microcode", "modconf", "kms",
-        "keyboard", "keymap", "consolefont", "block",
-    ]
-    if has_swap:
-        hooks.append("resume")
-    hooks.extend(["filesystems", "fsck"])
-
-    hooks_line = "HOOKS=({})".format(" ".join(hooks))
-    libcalamares.utils.debug(f"Setting mkinitcpio HOOKS: {hooks_line}")
-
-    try:
-        with open(mkinitcpio_path, "r") as f:
-            content = f.read()
-        new_content = re.sub(r"^HOOKS=\(.*\)$", hooks_line, content, flags=re.MULTILINE)
-        with open(mkinitcpio_path, "w") as f:
-            f.write(new_content)
-    except Exception as e:
-        libcalamares.utils.warning(f"Failed to configure mkinitcpio.conf: {e}")
-        return ("mkinitcpio-conf-error", f"Failed to configure mkinitcpio.conf: <pre>{e}</pre>")
-
-    return None
-
-
 def move_mkinitcpio_preset():
     """Move kiro mkinitcpio preset to linux-lqx.preset."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
@@ -163,15 +126,13 @@ def run():
     libcalamares.utils.debug("  1. Wait for pacman lock to be released")
     libcalamares.utils.debug("  2. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
     libcalamares.utils.debug("  3. Move mkinitcpio kiro preset to linux.preset")
-    libcalamares.utils.debug("  4. Configure mkinitcpio.conf HOOKS for the installed system")
-    libcalamares.utils.debug("  5. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+    libcalamares.utils.debug("  4. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
 
     functions = [
         ("Wait for pacman lock", wait_for_pacman_lock),
         ("Initialize pacman keys", initialize_pacman_keys),
         ("Move mkinitcpio preset", move_mkinitcpio_preset),
-        ("Configure mkinitcpio", configure_mkinitcpio),
-        ("Optimize makepkg.conf", optimize_makepkg_conf),
+        ("Optimize makepkg.conf", optimize_makepkg_conf)
     ]
 
     results = {}
