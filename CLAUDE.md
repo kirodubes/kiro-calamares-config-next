@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **BETA / TESTING** — this is the experimental Calamares installer config, paired with `kiro-iso-next`.
 
-| Repo | Role | ISO repo |
-|---|---|---|
-| `kiro-calamares-config` | **Production** — stable, released to users | `kiro-iso` |
+| Repo                         | Role                                                     | ISO repo        |
+|------------------------------|----------------------------------------------------------|-----------------|
+| `kiro-calamares-config`      | **Production** — stable, released to users               | `kiro-iso`      |
 | `kiro-calamares-config-next` | **Beta/Testing** — experimental changes under evaluation | `kiro-iso-next` |
 
 Changes here must be tested with a full install run before being mirrored to `kiro-calamares-config`.
@@ -91,12 +91,12 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 
 **Return convention:** all functions return `None` on success or a `(error_title, error_description)` tuple on failure. The `run()` entrypoint aggregates these. Non-fatal errors log via `libcalamares.utils.warning()` and do not abort the install.
 
-| Module | Position in exec | Purpose |
-|---|---|---|
-| `kiro_before` | After networkcfg | Pacman lock wait, keyring init, mkinitcpio preset rename (`kiro` → `linux-lqx.preset`), makepkg optimization |
-| `kiro_remove_nvidia` | After kiro_before | Reads `driver=` kernel param; **defaults to removing NVIDIA** unless `driver=nonfree` |
-| `kiro_ucode` | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/` |
-| `kiro_final` | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, self-removal |
+| Module               | Position in exec     | Purpose                                                                                                          |
+|----------------------|----------------------|------------------------------------------------------------------------------------------------------------------|
+| `kiro_before`        | After networkcfg     | Pacman lock wait, keyring init, mkinitcpio preset rename (`kiro` → `linux-lqx.preset`), makepkg optimization     |
+| `kiro_remove_nvidia` | After kiro_before    | Reads `driver=` kernel param; **defaults to removing NVIDIA** unless `driver=nonfree`                            |
+| `kiro_ucode`         | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/`              |
+| `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, self-removal |
 
 ### kiro_remove_nvidia — default behaviour
 `kernel_cmdline("driver", default="free")` — the default is `"free"`, so NVIDIA packages are removed unless the ISO is booted with `driver=nonfree` on the kernel cmdline. Packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`.
@@ -104,13 +104,13 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 ### VM Detection (kiro_final)
 Uses `systemd-detect-virt` and removes packages for VMs you are **not** running in. The set-based logic:
 
-| Detected VM | VMware tools removed? | QEMU agent removed? | VirtualBox utils removed? |
-|---|---|---|---|
-| `none` (bare metal) | yes | yes | yes |
-| `vmware` | yes | yes | yes |
-| `oracle` (VirtualBox) | yes | yes | no |
-| `kvm` | yes | no | yes |
-| `qemu` | no | no | no |
+| Detected VM           | VMware tools removed? | QEMU agent removed? | VirtualBox utils removed? |
+|-----------------------|-----------------------|---------------------|---------------------------|
+| `none` (bare metal)   | yes                   | yes                 | yes                       |
+| `vmware`              | yes                   | yes                 | yes                       |
+| `oracle` (VirtualBox) | yes                   | yes                 | no                        |
+| `kvm`                 | yes                   | no                  | yes                       |
+| `qemu`                | no                    | no                  | no                        |
 
 ## Module Configs
 
