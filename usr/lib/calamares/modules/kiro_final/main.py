@@ -59,14 +59,16 @@ def chroot_disable_service(target_root, service):
 
 def detect_virtualization(target_root):
     """Detect if system is running in a virtual machine."""
+    # systemd-detect-virt exits 1 on bare metal (no virt found) while still
+    # printing "none" to stdout, so we must not pass check=True.
     try:
         result = subprocess.run(
             ["chroot", target_root, "systemd-detect-virt"],
             stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            check=True
         )
-        return result.stdout.strip()
+        return result.stdout.strip() or "unknown"
     except Exception as e:
         libcalamares.utils.warning(f"Failed to detect virtualization: {e}")
         return "unknown"
@@ -89,6 +91,63 @@ def wait_for_pacman_lock(target_root, timeout=30):
         libcalamares.utils.debug("Pacman is locked. Waiting 5 seconds...")
         time.sleep(5)
         waited += 5
+
+
+# Cleanup profiles for VM-related packages and orphan service symlinks.
+# Each profile is what to strip when the target is NOT this kind of VM.
+VM_CLEANUP_PROFILES = {
+    "vmware": {
+        "packages": ("open-vm-tools", "xf86-video-vmware"),
+        "disable_services": ("vmtoolsd.service", "vmware-vmblock-fuse.service"),
+        "orphan_symlinks": (
+            "etc/systemd/system/multi-user.target.wants/vmtoolsd.service",
+            "etc/systemd/system/multi-user.target.wants/vmware-vmblock-fuse.service",
+        ),
+        "extra_paths": ("etc/xdg/autostart/vmware-user.desktop",),
+    },
+    "qemu": {
+        "packages": ("qemu-guest-agent",),
+        "disable_services": ("qemu-guest-agent.service",),
+        "orphan_symlinks": (
+            "etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service",
+        ),
+        "extra_paths": (),
+    },
+    "vbox": {
+        "packages": ("virtualbox-guest-utils", "virtualbox-guest-utils-nox"),
+        "disable_services": ("vboxservice.service",),
+        "orphan_symlinks": (
+            "etc/systemd/system/multi-user.target.wants/vboxservice.service",
+        ),
+        "extra_paths": (),
+    },
+}
+
+# For each detected virt type, which profiles to clean up.
+# Anything not listed (e.g. "qemu", "unknown") gets no cleanup — safer default
+# than guessing and uninstalling the host's own guest tools.
+VM_CLEANUP_BY_TYPE = {
+    "none":   ("vmware", "qemu", "vbox"),  # bare metal — strip all
+    "oracle": ("vmware", "qemu"),          # VirtualBox guest — keep vbox tools
+    "kvm":    ("vmware", "vbox"),          # KVM guest — keep qemu-guest-agent
+    "vmware": ("vmware", "qemu", "vbox"),  # preserved from prior behavior
+}
+
+
+def cleanup_vm_profile(target_root, profile_name):
+    """Remove packages and orphan service symlinks for one VM profile."""
+    profile = VM_CLEANUP_PROFILES[profile_name]
+    installed = [p for p in profile["packages"] if is_package_installed(p, target_root)]
+    if installed:
+        for svc in profile["disable_services"]:
+            chroot_disable_service(target_root, svc)
+        chroot_pacman_remove(target_root, installed)
+    # Symlinks and stray paths are removed unconditionally — `pacman -Rns`
+    # does not unlink enable-time symlinks, and `systemctl disable` inside
+    # the chroot is unreliable without a running dbus.
+    for rel_path in profile["orphan_symlinks"] + profile["extra_paths"]:
+        remove_path(os.path.join(target_root, rel_path))
+
 
 def run():
     """Execute final system configuration and cleanup."""
@@ -250,44 +309,12 @@ def run():
         vm_type = detect_virtualization(target_root)
         libcalamares.utils.debug(f"Virtualization type: {vm_type}")
 
-        # VMware cleanup (applies to oracle, kvm, vmware, none)
-        if vm_type in ["oracle", "kvm", "vmware", "none"]:
-            remove_path(os.path.join(target_root, "etc/xdg/autostart/vmware-user.desktop"))
-            if is_package_installed("open-vm-tools", target_root):
-                chroot_disable_service(target_root, "vmtoolsd.service")
-                chroot_disable_service(target_root, "vmware-vmblock-fuse.service")
-                chroot_pacman_remove(target_root, ["open-vm-tools"])
-            if is_package_installed("xf86-video-vmware", target_root):
-                chroot_pacman_remove(target_root, ["xf86-video-vmware"])
-            remove_path(
-                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vmtoolsd.service")
-            )
-            remove_path(
-                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vmware-vmblock-fuse.service")
-            )
-
-        # QEMU cleanup (applies to oracle, vmware, none)
-        if vm_type in ["oracle", "vmware", "none"]:
-            if is_package_installed("qemu-guest-agent", target_root):
-                chroot_disable_service(target_root, "qemu-guest-agent.service")
-                chroot_pacman_remove(target_root, ["qemu-guest-agent"])
-            remove_path(
-                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service")
-            )
-
-        # VirtualBox cleanup (applies to kvm, vmware, none)
-        if vm_type in ["kvm", "vmware", "none"]:
-            for vbox_pkg in ["virtualbox-guest-utils", "virtualbox-guest-utils-nox"]:
-                if is_package_installed(vbox_pkg, target_root):
-                    chroot_disable_service(target_root, "vboxservice.service")
-                    chroot_pacman_remove(target_root, [vbox_pkg])
-            # Symlink in /etc/systemd/system/multi-user.target.wants/ is created by
-            # the live ISO's systemctl enable and is not removed by `pacman -Rns`;
-            # systemctl disable inside the chroot is unreliable without a live dbus,
-            # so unlink the orphan explicitly to avoid a broken symlink on bare metal.
-            remove_path(
-                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vboxservice.service")
-            )
+        profiles = VM_CLEANUP_BY_TYPE.get(vm_type, ())
+        if not profiles:
+            libcalamares.utils.debug(f"No VM cleanup profiles for vm_type={vm_type}")
+        for profile_name in profiles:
+            libcalamares.utils.debug(f"Applying VM cleanup profile: {profile_name}")
+            cleanup_vm_profile(target_root, profile_name)
 
         results["Virtual machine cleanup"] = "SUCCESS"
     except Exception as e:

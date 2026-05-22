@@ -2,3 +2,4 @@ name: "kiro_before"
 type: "job"
 interface: "python"
 script: "main.py"
+noconfig: true
