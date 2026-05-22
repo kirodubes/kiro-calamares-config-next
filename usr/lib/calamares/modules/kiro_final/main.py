@@ -179,7 +179,7 @@ def run():
     try:
         profile_path = os.path.join(target_root, "etc/profile")
         with open(profile_path, "a") as profile:
-            profile.write("\nEDITOR=nano\n")
+            profile.write("\nexport EDITOR=nano\n")
         results["Configure system environment"] = "SUCCESS"
     except Exception as e:
         libcalamares.utils.warning(f"Failed to write to /etc/profile: {e}")
@@ -262,12 +262,18 @@ def run():
             remove_path(
                 os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vmtoolsd.service")
             )
+            remove_path(
+                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vmware-vmblock-fuse.service")
+            )
 
         # QEMU cleanup (applies to oracle, vmware, none)
         if vm_type in ["oracle", "vmware", "none"]:
             if is_package_installed("qemu-guest-agent", target_root):
                 chroot_disable_service(target_root, "qemu-guest-agent.service")
                 chroot_pacman_remove(target_root, ["qemu-guest-agent"])
+            remove_path(
+                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service")
+            )
 
         # VirtualBox cleanup (applies to kvm, vmware, none)
         if vm_type in ["kvm", "vmware", "none"]:
@@ -275,6 +281,13 @@ def run():
                 if is_package_installed(vbox_pkg, target_root):
                     chroot_disable_service(target_root, "vboxservice.service")
                     chroot_pacman_remove(target_root, [vbox_pkg])
+            # Symlink in /etc/systemd/system/multi-user.target.wants/ is created by
+            # the live ISO's systemctl enable and is not removed by `pacman -Rns`;
+            # systemctl disable inside the chroot is unreliable without a live dbus,
+            # so unlink the orphan explicitly to avoid a broken symlink on bare metal.
+            remove_path(
+                os.path.join(target_root, "etc/systemd/system/multi-user.target.wants/vboxservice.service")
+            )
 
         results["Virtual machine cleanup"] = "SUCCESS"
     except Exception as e:
