@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-05-22 — Silence "No config file" warnings for kiro_* modules
+
+### What Changed
+
+Added `noconfig: true` to the `module.desc` of all four custom Python modules: `kiro_before`, `kiro_final`, `kiro_remove_nvidia`, `kiro_ucode`. Mirrored from the same fix in `kiro-calamares-config` (production) — kept in sync so beta installs stay quiet too.
+
+### Why
+
+The fix originated from inspecting `/var/log/Calamares.log` on a production install: Calamares only searches `/etc/calamares/modules/<module>.conf` and `/usr/share/calamares/modules/<module>.conf` for module configs, never inside the module's own code directory. None of the four kiro modules actually reads any module-level config — they only use `libcalamares.globalstorage` and `libcalamares.utils`. The `noconfig: true` flag in `module.desc` ([Descriptor.cpp:96](https://codeberg.org/erikdubois/calamares/src/branch/master/src/libcalamares/modulesystem/Descriptor.cpp#L96), [ModuleManager.cpp:165](https://codeberg.org/erikdubois/calamares/src/branch/master/src/libcalamaresui/modulesystem/ModuleManager.cpp#L165)) tells Calamares to skip the config lookup entirely — the truthful, zero-maintenance fix.
+
+### Technical Details
+
+- `noconfig: true` was appended to each of the four `module.desc` files; the indentation matches the existing keys (the `kiro_ucode` descriptor uses padded alignment, the others do not).
+- No dummy `.conf` files existed in `-next` so no deletions were required here (production had four misplaced dummies that were deleted in its companion commit).
+
+### Files Modified
+
+- `usr/lib/calamares/modules/kiro_before/module.desc`
+- `usr/lib/calamares/modules/kiro_final/module.desc`
+- `usr/lib/calamares/modules/kiro_remove_nvidia/module.desc`
+- `usr/lib/calamares/modules/kiro_ucode/module.desc`
+
+---
+
 ## 2026-05-19 — Liquorix Kernel Experiment Validated and Promoted to Production
 
 ### What Changed

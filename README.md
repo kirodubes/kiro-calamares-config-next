@@ -1,6 +1,8 @@
 # Kiro Calamares configuration
 
-![Kiro Logo](kiro.jpg)
+<p align="center">
+  <img src="kiro.jpg" alt="Kiro" width="220" />
+</p>
 
 ![Kiro Logo](kiro-xfce.jpg)
 
