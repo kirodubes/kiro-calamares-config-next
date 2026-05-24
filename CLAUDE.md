@@ -20,12 +20,23 @@ Changes here must be tested with a full install run before being mirrored to `ki
 **After making changes here, always follow this order:**
 
 ```
-1. Commit and push: ./up.sh
-2. Wait 5–10 minutes for kiro_repo (GitHub Pages) to rebuild and serve the updated package
-3. Then trigger the ISO build in kiro-iso-next: cd ~/KIRO/kiro-iso-next/build-scripts && bash build-the-iso.sh
+1. Push config source:  cd ~/KIRO/kiro-calamares-config-next && ./up.sh
+2. Build the package:    cd ~/KIRO-PKG-BUILD/kiro-calamares-config-next && bash build.sh
+                         (pulls the just-pushed config, builds via chroot, drops the
+                          .pkg.tar.zst into ~/KIRO/kiro_repo/x86_64/)
+3. Publish the repo:     cd ~/KIRO/kiro_repo && ./repo.sh && ./up.sh
+                         (repo.sh regenerates the pacman db, up.sh pushes to GitHub Pages)
+4. Wait 5–10 minutes for kiro_repo (GitHub Pages) to serve the new package
+5. Build the ISO:        cd ~/KIRO/kiro-iso-next/build-scripts && bash build-the-iso.sh
+6. Full install run to validate
 ```
 
-**Do not build the ISO immediately after pushing** — GitHub Pages needs a few minutes to rebuild. Building too soon pulls the old Calamares package and your changes won't be in the ISO.
+**Steps 2–3 are mandatory** — `up.sh` here only pushes the config *source* to GitHub. The
+Calamares config is repackaged from that GitHub repo by `build.sh` in `KIRO-PKG-BUILD`, and the
+resulting package only reaches the ISO after `kiro_repo` is regenerated and pushed to GitHub Pages.
+
+**Do not build the ISO immediately after step 3** — GitHub Pages needs a few minutes to rebuild.
+Building too soon pulls the old Calamares package and your changes won't be in the ISO.
 
 ## What This Is
 
