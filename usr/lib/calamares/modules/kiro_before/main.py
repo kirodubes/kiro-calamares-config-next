@@ -72,6 +72,32 @@ def optimize_makepkg_conf():
 
     return None
 
+def sync_pacman_databases():
+    """Refresh pacman sync databases inside the target chroot.
+
+    Without this, the ISO's pre-bundled /var/lib/pacman/sync/ may be empty
+    or stale, and every later chroot `pacman -R`/`-Q` call in kiro_*
+    modules emits warnings like:
+        warning: database file for 'core' does not exist (use '-Sy')
+    """
+    # Calamares' welcome module probes connectivity and sets "hasInternet"
+    # in globalstorage. Explicit False = offline, so skip cleanly instead
+    # of waiting on a pacman timeout. None/unset = unknown, attempt anyway.
+    if libcalamares.globalstorage.value("hasInternet") is False:
+        libcalamares.utils.debug("hasInternet=False — skipping pacman -Sy")
+        return None
+
+    libcalamares.utils.debug("Refreshing pacman sync databases in target chroot")
+    try:
+        check_target_env_call(["pacman", "-Sy", "--noconfirm"])
+    except Exception as e:
+        # Best-effort: a flaky mirror or transient DNS hiccup should not
+        # abort the install — the rest of the pipeline still works
+        # (just with warnings), as it did before this step existed.
+        libcalamares.utils.warning(f"pacman -Sy failed (continuing): {e}")
+    return None
+
+
 def initialize_pacman_keys():
     """Initialize pacman keys and populate keyrings (archlinux, chaotic)."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
@@ -125,12 +151,14 @@ def run():
     libcalamares.utils.debug("This module will perform the following operations:")
     libcalamares.utils.debug("  1. Wait for pacman lock to be released")
     libcalamares.utils.debug("  2. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
-    libcalamares.utils.debug("  3. Move mkinitcpio kiro preset to linux.preset")
-    libcalamares.utils.debug("  4. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+    libcalamares.utils.debug("  3. Refresh pacman sync databases (pacman -Sy)")
+    libcalamares.utils.debug("  4. Move mkinitcpio kiro preset to linux.preset")
+    libcalamares.utils.debug("  5. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
 
     functions = [
         ("Wait for pacman lock", wait_for_pacman_lock),
         ("Initialize pacman keys", initialize_pacman_keys),
+        ("Sync pacman databases", sync_pacman_databases),
         ("Move mkinitcpio preset", move_mkinitcpio_preset),
         ("Optimize makepkg.conf", optimize_makepkg_conf)
     ]
