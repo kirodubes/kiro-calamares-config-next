@@ -101,6 +101,53 @@ git_pull() {
     git -C "${SCRIPT_DIR}" pull || log_warn "Git pull failed — continuing with local state"
 }
 
+# Fetch the latest amd-ucode / intel-ucode from the pacman repos and replace the
+# bundled copies in etc/calamares/packages/. Relies on the local sync db, so it
+# only sees a newer version after a `sudo pacman -Sy`.
+update_ucode() {
+    local pkg_dir="${SCRIPT_DIR}/etc/calamares/packages"
+    local pkg url newfile
+
+    log_section "Updating microcode packages"
+
+    if ! command -v curl >/dev/null 2>&1; then
+        log_warn "curl not found — skipping microcode update"
+        return 0
+    fi
+
+    for pkg in amd-ucode intel-ucode; do
+        url="$(pacman -Sp "${pkg}" 2>/dev/null || true)"
+        if [[ -z "${url}" ]]; then
+            log_warn "Could not resolve ${pkg} URL — sync the pacman db (sudo pacman -Sy) and retry"
+            continue
+        fi
+
+        newfile="$(basename "${url}")"
+        if [[ -f "${pkg_dir}/${newfile}" ]]; then
+            log_info "${pkg} already current (${newfile})"
+            continue
+        fi
+
+        log_info "Fetching ${newfile}"
+        if ! curl -fL --retry 3 -o "${pkg_dir}/${newfile}" "${url}"; then
+            log_error "Download of ${newfile} failed — skipping ${pkg}"
+            rm -f "${pkg_dir}/${newfile}"
+            continue
+        fi
+        if ! curl -fL --retry 3 -o "${pkg_dir}/${newfile}.sig" "${url}.sig"; then
+            log_warn "Signature for ${newfile} unavailable — removing partial package"
+            rm -f "${pkg_dir}/${newfile}" "${pkg_dir}/${newfile}.sig"
+            continue
+        fi
+
+        # Drop the old versions of this package, keeping the one just downloaded.
+        find "${pkg_dir}" -maxdepth 1 -type f -name "${pkg}-*.pkg.tar.zst*" \
+            ! -name "${newfile}" ! -name "${newfile}.sig" -delete
+
+        log_success "Updated ${pkg} → ${newfile}"
+    done
+}
+
 ensure_git_remote_configured() {
     local remote_url
     if ! git -C "${SCRIPT_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -142,6 +189,7 @@ main() {
     ensure_git_remote_configured
     git_pull
     clean_pycache
+    update_ucode
 
     if [[ -f "${SCRIPT_DIR}/chaotic.sh" ]]; then
         log_section "Running chaotic.sh"
