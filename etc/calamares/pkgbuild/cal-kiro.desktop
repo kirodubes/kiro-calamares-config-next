@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install ArcoLinux
-Comment=Installer for ArcoLinux
+Name=Install kiro
+Comment=Installer for kiro
 GenericName=System Installer
 Keywords=calamares;system;installer;
 TryExec=/usr/bin/calamares_polkit %f -d -style breeze
