@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-05-25 — kiro_final: remove live-only do-not-suspend.conf
+
+### What Changed
+
+- **`kiro_final` now removes `/etc/systemd/logind.conf.d/do-not-suspend.conf` on the installed system.** This drop-in (`HandleSuspendKey` / `HandleHibernateKey` / `HandleLidSwitch=ignore`) ships in the airootfs overlay so the live ISO does not suspend mid-install, but it was never cleaned up afterward — it persisted on every installed system and silently disabled suspend / hibernate / lid handling for end users (notably on laptops). Added it to the `paths_to_remove` list alongside the other live-only artifacts. Kept in sync with the production `kiro-calamares-config` fix.
+
+### Technical Details
+
+- One-line addition to `paths_to_remove` in `kiro_final/main.py`, grouped with the existing live-only cleanups (getty autologin, `linux.preset`, `10-archiso.conf`); reuses the existing `remove_path()` helper, so no change to the removal loop.
+- Caught by `kiro-check` on an installed Kiro system. `kiro-audit` has no check for this file, so the leak had been passing the audit clean.
+
+### Files Modified
+
+- `usr/lib/calamares/modules/kiro_final/main.py`
+- `CHANGELOG.md`
+
 ## 2026-05-22 — Silence "No config file" warnings for kiro_* modules
 
 ### What Changed
