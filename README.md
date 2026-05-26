@@ -14,7 +14,7 @@ You can download the latest Kiro ISO from [our SourceForge page](https://sourcef
 
 **Kiro** is a customizable Arch Linux ISO builder based on the ArcoLinux project. It provides a simple way to build your own Arch-based installation medium with your choice of packages, settings, and scripts.
 
-Kiro is my personal choice:
+Kiro ships with opinionated defaults so it works out of the box:
 
 - systemboot
 - ext4

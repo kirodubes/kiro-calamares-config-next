@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-05-26 — README: community framing, dropped "personal"
+
+### What Changed
+
+- **README no longer calls Kiro "my personal choice".** The defaults list (systemboot, ext4, sddm, xfce4 and chadwm, free software) is now introduced as "Kiro ships with opinionated defaults so it works out of the box" — community framing instead of the early single-user wording. Rule codified in [Kiro-HQ/ASSISTANT.md](../../Insync/Kiro/Kiro-HQ/ASSISTANT.md). README only; no installer behaviour changed, no rebuild needed.
+
 ## 2026-05-25 — kiro_final: remove live-only do-not-suspend.conf
 
 ### What Changed
