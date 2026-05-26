@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-05-26 — cups printing enabled on installed system (socket activation)
+
+### What Changed
+
+- **`services-systemd` now enables `cups.socket`.** Printing was off after a fresh install + reboot. The live ISO enabled CUPS via airootfs symlinks, but those are not carried into the installed system, and the Calamares `services-systemd` unit list (ananicy-cpp, tuned, tuned-ppd, firewalld) never enabled cups. Added a `cups.socket` → `enable` → `mandatory: true` entry. Socket activation only — `cups.service` starts on demand when a client opens the print socket, so there is no always-running daemon. Kept in sync with the production `kiro-calamares-config` fix; paired with `kiro-iso-next` trimming its airootfs cups symlinks to socket-only.
+
+### Files Modified
+
+- [etc/calamares/modules/services-systemd.conf](etc/calamares/modules/services-systemd.conf)
+
 ## 2026-05-26 — README: community framing, dropped "personal"
 
 ### What Changed
