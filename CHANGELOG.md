@@ -4,6 +4,10 @@
 
 ---
 
+## 2026-05-27 — kiro_final: remove the live-only desktop-launcher trust helper
+
+`kiro_final` now removes **`/usr/local/bin/kiro-trust-desktop-launchers`** from the installed system. That helper is a new live-ISO autostart (added in `kiro-iso-next`) that pre-trusts the **Install kiro** desktop launcher so XFCE/Thunar doesn't prompt — useful only on the live session, so it's added to the `paths_to_remove` list. Its autostart entry under `/home/liveuser/.config/autostart/` needs no explicit cleanup: `removeuser` deletes the live user's home earlier in the sequence, so listing it could even error depending on timing.
+
 ## 2026-05-27 — kernel-agnostic installer (new `kiro_kernel` module)
 
 ### What Changed

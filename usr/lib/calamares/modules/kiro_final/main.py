@@ -222,6 +222,7 @@ def run():
             "etc/systemd/logind.conf.d/do-not-suspend.conf",  # Live-only: keeps the installer awake; must not disable suspend/lid handling on the installed system
             "etc/mkinitcpio.d/linux.preset",             # Archiso live-only artifact; linux-lqx.preset from the kernel package is the correct one
             "etc/ssh/sshd_config.d/10-archiso.conf",
+            "usr/local/bin/kiro-trust-desktop-launchers",  # Live-only: pre-trusts the live desktop launcher; useless on the installed system (its autostart entry goes with the deleted liveuser home)
         ]
         for rel_path in paths_to_remove:
             remove_path(os.path.join(target_root, rel_path))
