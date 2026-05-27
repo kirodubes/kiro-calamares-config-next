@@ -121,27 +121,6 @@ def initialize_pacman_keys():
         )
     return None
 
-def move_mkinitcpio_preset():
-    """Move kiro mkinitcpio preset to linux-lqx.preset."""
-    target_root = libcalamares.globalstorage.value("rootMountPoint")
-    src = os.path.join(target_root, "etc/mkinitcpio.d/kiro")
-    dst = os.path.join(target_root, "etc/mkinitcpio.d/linux-lqx.preset")
-
-    libcalamares.utils.debug("Moving kiro preset to linux-lqx.preset in target...")
-    try:
-        os.replace(src, dst)
-    except FileNotFoundError:
-        msg = f"Preset file not found in target: {src}"
-        libcalamares.utils.warning(msg)
-        return ("preset-not-found", msg)
-    except Exception as e:
-        libcalamares.utils.warning(str(e))
-        return (
-            "preset-rename-error",
-            f"Failed to rename preset in target: <pre>{e}</pre>"
-        )
-    return None
-
 def run():
     """Execute pre-installation configuration steps in sequence."""
     libcalamares.utils.debug("##############################################")
@@ -152,14 +131,12 @@ def run():
     libcalamares.utils.debug("  1. Wait for pacman lock to be released")
     libcalamares.utils.debug("  2. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
     libcalamares.utils.debug("  3. Refresh pacman sync databases (pacman -Sy)")
-    libcalamares.utils.debug("  4. Move mkinitcpio kiro preset to linux.preset")
-    libcalamares.utils.debug("  5. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+    libcalamares.utils.debug("  4. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
 
     functions = [
         ("Wait for pacman lock", wait_for_pacman_lock),
         ("Initialize pacman keys", initialize_pacman_keys),
         ("Sync pacman databases", sync_pacman_databases),
-        ("Move mkinitcpio preset", move_mkinitcpio_preset),
         ("Optimize makepkg.conf", optimize_makepkg_conf)
     ]
 

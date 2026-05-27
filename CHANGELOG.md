@@ -1,8 +1,31 @@
 # CHANGELOG — kiro-calamares-config
 
-> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_remove_nvidia`, `kiro_ucode`.
+> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_kernel`, `kiro_remove_nvidia`, `kiro_ucode`.
 
 ---
+
+## 2026-05-27 — kernel-agnostic installer (new `kiro_kernel` module)
+
+### What Changed
+
+- **New `kiro_kernel` module makes the installer independent of the ISO's kernel package.** Previously three places hardcoded `linux-lqx`: the `unpackfs@vmlinuz` job (copied `vmlinuz-linux-lqx` from the live medium), `kiro_before`'s preset rename (`kiro` → `linux-lqx.preset`), and the static `kiro` preset content. A fork that swapped `linux-lqx` for `linux-zen` (or any kernel) in the ISO would get a broken install. `kiro_kernel` now **detects** the kernel from the live boot medium (`/run/archiso/bootmnt/arch/boot/x86_64/vmlinuz-*`), **copies** the image to `/boot/vmlinuz-<kernel>`, **generates** a matching `/etc/mkinitcpio.d/<kernel>.preset`, and **removes** the live-only preset artifacts (`kiro`, `linux.preset`). Result: changing the ISO's kernel needs **zero edits to the calamares config**.
+- **`unpackfs@vmlinuz` removed.** Replaced in the exec sequence by `kiro_kernel` (same slot, right after `unpackfs@rootfs`). The `vmlinuz` unpackfs instance and `unpackfs2.conf` are deleted.
+- **`kiro_before` no longer renames the mkinitcpio preset.** `move_mkinitcpio_preset()` and its step are removed; preset handling now lives entirely in `kiro_kernel`.
+
+### Technical Details
+
+- `initcpio.conf` runs `mkinitcpio -P` (all presets). `kiro_kernel` removes `linux.preset` **before** `initcpio` runs (it was previously removed later in `kiro_final`), so exactly one correct preset is processed and one initramfs (`/boot/initramfs-<kernel>.img`) is built. `kiro_final`'s `linux.preset` removal is left as a guarded no-op for safety.
+- The detected kernel name is stored in Calamares globalstorage as `kiroKernel` for downstream use / debugging.
+- `bootloader.conf` (`kernelPattern: "^vmlinuz.*"`) and the package-provided `/usr/lib/modules/*` kernel dir already make boot-entry generation kernel-agnostic — no change needed there.
+- Developed on branch `feature/kernel-agnostic` (restore point: tag `stable-pre-kernel-agnostic`). **Not yet mirrored to production `kiro-calamares-config`** — pending VM validation. Scope is the installer only; making the *ISO itself* boot a different kernel is a separate `kiro-iso` change (boot entries + airootfs presets).
+
+### Files Modified
+
+- [usr/lib/calamares/modules/kiro_kernel/main.py](usr/lib/calamares/modules/kiro_kernel/main.py) (new)
+- [usr/lib/calamares/modules/kiro_kernel/module.desc](usr/lib/calamares/modules/kiro_kernel/module.desc) (new)
+- [etc/calamares/settings.conf](etc/calamares/settings.conf)
+- [usr/lib/calamares/modules/kiro_before/main.py](usr/lib/calamares/modules/kiro_before/main.py)
+- [etc/calamares/modules/unpackfs2.conf](etc/calamares/modules/unpackfs2.conf) (deleted)
 
 ## 2026-05-26 — cups printing + logrotate.timer enabled on installed system
 
