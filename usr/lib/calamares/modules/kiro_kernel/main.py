@@ -26,16 +26,12 @@ BOOTMNT_KERNEL_GLOB = "/run/archiso/bootmnt/arch/boot/x86_64/vmlinuz-*"
 LIVE_PRESET_ARTIFACTS = ("kiro", "linux.preset")
 
 
-def detect_kernel():
-    """Return (image_path, kernel_name) from the live medium, or (None, None)."""
-    matches = sorted(glob.glob(BOOTMNT_KERNEL_GLOB))
-    if not matches:
-        return None, None
-    src = matches[0]
-    if len(matches) > 1:
-        libcalamares.utils.warning(f"Multiple kernel images found, using first: {matches}")
-    kernel = os.path.basename(src)[len("vmlinuz-"):]
-    return src, kernel
+def detect_kernels():
+    """Return [(image_path, kernel_name), ...] for every kernel on the live medium."""
+    return [
+        (src, os.path.basename(src)[len("vmlinuz-"):])
+        for src in sorted(glob.glob(BOOTMNT_KERNEL_GLOB))
+    ]
 
 
 def copy_kernel_image(src, kernel, target_root):
@@ -81,26 +77,32 @@ def run():
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
 
-    src, kernel = detect_kernel()
-    if kernel is None:
+    kernels = detect_kernels()
+    if not kernels:
         msg = f"No kernel image found at {BOOTMNT_KERNEL_GLOB}"
         libcalamares.utils.warning(msg)
         return ("kiro_kernel: no kernel found", msg)
 
-    libcalamares.utils.debug(f"Detected kernel: {kernel}")
+    names = [name for _, name in kernels]
+    libcalamares.utils.debug(f"Detected kernel(s): {', '.join(names)}")
 
     try:
-        copy_kernel_image(src, kernel, target_root)
-        write_preset(kernel, target_root)
+        # Remove the live-only presets FIRST: when the plain 'linux' kernel is one of
+        # the installed kernels, write_preset() below regenerates a real linux.preset
+        # that must not then be deleted as an archiso artifact.
         remove_live_presets(target_root)
+        for src, name in kernels:
+            copy_kernel_image(src, name, target_root)
+            write_preset(name, target_root)
     except Exception as e:
         libcalamares.utils.warning(str(e))
-        return ("kiro_kernel: error", f"Failed to install kernel '{kernel}': <pre>{e}</pre>")
+        return ("kiro_kernel: error", f"Failed to install kernel(s) {names}: <pre>{e}</pre>")
 
-    # Expose the detected kernel name for downstream modules / debugging.
-    libcalamares.globalstorage.insert("kiroKernel", kernel)
+    # Expose for downstream modules: primary (first) for back-compat, plus the full list.
+    libcalamares.globalstorage.insert("kiroKernel", names[0])
+    libcalamares.globalstorage.insert("kiroKernels", names)
 
     libcalamares.utils.debug("##############################################")
-    libcalamares.utils.debug(f"End kiro_kernel - installed kernel '{kernel}'")
+    libcalamares.utils.debug(f"End kiro_kernel - installed kernel(s): {', '.join(names)}")
     libcalamares.utils.debug("##############################################\n")
     return None
