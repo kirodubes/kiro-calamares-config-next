@@ -1,0 +1,11 @@
+[Unit]
+Description=Trust Kiro live desktop launchers (XFCE)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /usr/local/bin/kiro-trust-desktop-launchers
+
+[Install]
+WantedBy=graphical-session.target
