@@ -1,2 +1,12 @@
 .codex/
 .claude/
+
+# makepkg build artifacts left in etc/calamares/pkgbuild/ when updpkgsums or
+# makepkg runs there. The bare 'calamares' git clone is ~90 MB; tracking it
+# bloats both this repo and every .pkg.tar.zst built from it
+# (observed 2026-05-28: kiro-calamares-config-26.05-54 hit 97 MB).
+etc/calamares/pkgbuild/calamares/
+etc/calamares/pkgbuild/pkg/
+etc/calamares/pkgbuild/src/
+etc/calamares/pkgbuild/*.pkg.tar.zst
+etc/calamares/pkgbuild/*.log

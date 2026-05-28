@@ -274,9 +274,10 @@ def run():
     libcalamares.utils.debug("  4. Remove installation-related files and folders")
     libcalamares.utils.debug("  5. Configure system environment (EDITOR=nano)")
     libcalamares.utils.debug("  6. Configure Bluetooth and PulseAudio")
-    libcalamares.utils.debug("  7. Check bootloader configuration (remove GRUB if systemd-boot detected)")
-    libcalamares.utils.debug("  8. Detect virtualization and remove unnecessary VM packages")
-    libcalamares.utils.debug("  9. Remove installer package (kiro-calamares-config)\n")
+    libcalamares.utils.debug("  7. Pin tuned ppd_base_profile = performance")
+    libcalamares.utils.debug("  8. Check bootloader configuration (remove GRUB if systemd-boot detected)")
+    libcalamares.utils.debug("  9. Detect virtualization and remove unnecessary VM packages")
+    libcalamares.utils.debug(" 10. Remove installer package (kiro-calamares-config)\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     results = {}
@@ -376,6 +377,23 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed to configure audio services: {e}")
         results["Configure Bluetooth and PulseAudio"] = "FAILED"
+
+    # ========================
+    # Power Profile Pinning
+    # ========================
+
+    # The tuned package's pacman install writes /etc/tuned/ppd_base_profile = balanced,
+    # which short-circuits ppd.conf's `default=performance` fallback. Overwrite here in
+    # kiro_final (last module) so the package's default does not survive the install.
+    libcalamares.utils.debug("Pinning tuned ppd_base_profile = performance")
+    try:
+        ppd_base = os.path.join(target_root, "etc/tuned/ppd_base_profile")
+        with open(ppd_base, "w") as f:
+            f.write("performance\n")
+        results["Pin tuned ppd_base_profile"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to pin ppd_base_profile: {e}")
+        results["Pin tuned ppd_base_profile"] = "FAILED"
 
     # ========================
     # Bootloader Configuration

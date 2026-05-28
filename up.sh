@@ -149,18 +149,22 @@ update_ucode() {
 }
 
 # Copy the latest hand-built PKGBUILD folder from the KIRO-PKG-BUILD repo into
-# etc/calamares/pkgbuild/. This is the beta/-next config repo, so only the
-# "calamares-next-*" beta folders are considered; the production "calamares-3*"
-# folders (which belong to the stable config repo) are skipped. The highest version
-# wins (sort -V). Source is left untouched.
+# etc/calamares/pkgbuild/. Only folders starting with "calamares-3" are considered,
+# so the "calamares-next-*" beta folders (which belong to the -next config repo) are
+# skipped. The highest version wins (sort -V). Source is left untouched.
 #
 # up.sh, setup.sh, .current-version and .previous-version belong to KIRO-PKG-BUILD,
 # not the config repo, so they are stripped from the destination after the copy.
-# Removing them unconditionally also clears any remnants left by earlier syncs.
+# Same for makepkg's build artifacts (calamares/ bare clone from the git source,
+# plus pkg/ and src/ build dirs) — if updpkgsums or makepkg has run in the source
+# folder, those would balloon the resulting .pkg.tar.zst (observed 2026-05-28:
+# kiro-calamares-config-26.05-54 hit 97 MB, GitHub's 50 MB push warning fired).
+# rm -rf so directories are removed too. Stripping unconditionally also clears
+# any remnants left by earlier syncs.
 update_pkgbuild() {
     local src_root="${HOME}/KIRO-PKG-BUILD"
     local dst="${SCRIPT_DIR}/etc/calamares/pkgbuild"
-    local strip=(up.sh setup.sh .current-version .previous-version)
+    local strip=(up.sh setup.sh .current-version .previous-version calamares pkg src)
     local latest f
 
     log_section "Syncing PKGBUILD from ${src_root}"
@@ -181,7 +185,7 @@ update_pkgbuild() {
     cp -af "${src_root}/${latest}/." "${dst}/"
 
     for f in "${strip[@]}"; do
-        rm -f "${dst}/${f}"
+        rm -rf "${dst}/${f}"
     done
 
     log_success "PKGBUILD synced from ${latest}"
