@@ -337,6 +337,30 @@ def run():
         libcalamares.utils.warning(f"Failed to remove kiro-calamares-config: {e}")
         results["Remove installer package"] = "FAILED"
 
+    # ========================
+    # Restore mkinitcpio hook (paired with kiro_before suppression)
+    # ========================
+    # MUST run after every pacman operation in this module and at the very end
+    # of the install — leaving the /dev/null symlink behind would break the
+    # user's first kernel upgrade (no initramfs rebuild). Wrapped in its own
+    # try/except so an earlier kiro_final failure cannot skip the restore.
+    libcalamares.utils.debug("Restoring upstream mkinitcpio pacman hook")
+    try:
+        hook_override = os.path.join(target_root, "etc/pacman.d/hooks/90-mkinitcpio-install.hook")
+        if os.path.islink(hook_override) and os.readlink(hook_override) == "/dev/null":
+            os.unlink(hook_override)
+            libcalamares.utils.debug(f"Removed mkinitcpio hook override: {hook_override}")
+            results["Restore mkinitcpio hook"] = "SUCCESS"
+        else:
+            # Not our symlink (or never set) — leave it alone, log for diagnosis.
+            libcalamares.utils.debug(
+                f"mkinitcpio hook override not found at {hook_override} — nothing to restore"
+            )
+            results["Restore mkinitcpio hook"] = "NOT-NEEDED"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to restore mkinitcpio hook: {e}")
+        results["Restore mkinitcpio hook"] = "FAILED"
+
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("End kiro_final module - Function Results:")
     for func_name, status in results.items():
