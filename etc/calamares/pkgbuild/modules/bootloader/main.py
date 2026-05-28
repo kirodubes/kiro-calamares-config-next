@@ -133,7 +133,16 @@ def have_program_in_target(program : str):
 def get_kernel_params(uuid):
     # Configured kernel parameters (default "quiet"), if plymouth installed, add splash
     # screen parameter and then "rw".
-    kernel_params = libcalamares.job.configuration.get("kernelParams", ["quiet"])
+    #
+    # The list() wrapper is a defensive copy — libcalamares.job.configuration.get()
+    # returns a reference to the config-stored list, so subsequent .append()/.extend()
+    # calls would mutate the shared config-backed list. When get_kernel_params() is
+    # called more than once per install (e.g. one create_systemd_boot_conf per kernel
+    # on a multi-kernel install), every call after the first would start from an
+    # already-mutated list and re-append, producing duplicate `rw root=UUID=…` entries
+    # in /etc/kernel/cmdline. Observed 2026-05-28 on a cachyos+zen install: cachyos
+    # boot entry clean (first call), zen entry duplicated (second call).
+    kernel_params = list(libcalamares.job.configuration.get("kernelParams", ["quiet"]))
     if have_program_in_target("plymouth"):
         kernel_params.append("splash")
     kernel_params.append("rw")
@@ -647,7 +656,7 @@ def run_grub_install(fw_type, partitions, efi_directory, install_hybrid_grub):
                 efi_install_path = "/boot/efi"
             find_esp_disk_command = f"lsblk -o PKNAME \"$(df --output=source '{efi_install_path}' | tail -n1)\""
             boot_loader_install_path = check_target_env_output(["sh", "-c", find_esp_disk_command]).strip()
-            if not "\n" in boot_loader_install_path:
+            if "\n" not in boot_loader_install_path:
                 libcalamares.utils.warning(_("Cannot find the drive containing the EFI system partition!"))
                 return
             boot_loader_install_path = "/dev/" + boot_loader_install_path.split("\n")[1]
@@ -846,7 +855,6 @@ def install_refind(efi_directory):
     except KeyError:
         libcalamares.utils.warning('Global storage value "rootMountPoint" missing')
 
-    install_efi_directory = installation_root_path + efi_directory
     uuid = get_uuid()
     kernel_params = " ".join(get_kernel_params(uuid))
     conf_path = os.path.join(installation_root_path, "boot/refind_linux.conf")
@@ -884,7 +892,7 @@ def prepare_bootloader(fw_type, install_hybrid_grub):
             efi_boot_loader = libcalamares.globalstorage.value(gs_name)
         else:
             libcalamares.utils.warning(
-                f"Specified global storage value not found in global storage")
+                "Specified global storage value not found in global storage")
             return None
     except KeyError:
         # If the conf value for using global storage is not set, use the setting from the config file.
@@ -937,7 +945,7 @@ def run():
     install_hybrid_grub = libcalamares.job.configuration.get("installHybridGRUB", False)
     efi_boot_loader = libcalamares.job.configuration.get("efiBootLoader", "")
 
-    if install_hybrid_grub == True and efi_boot_loader != "grub":
+    if install_hybrid_grub and efi_boot_loader != "grub":
         raise ValueError(f"efi_boot_loader '{efi_boot_loader}' is illegal when install_hybrid_grub is 'true'!")
 
     if boot_loader is None and fw_type != "efi":

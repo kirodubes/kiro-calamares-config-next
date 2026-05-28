@@ -221,6 +221,17 @@ build_package() {
             printf "%s\n" "${search}" | tee -a /tmp/installed
             find "${destiny}" -maxdepth 1 -name "${search}*" -exec basename {} \; | tee -a /tmp/installed
         fi
+
+        # Push kiro_repo so the new package lands on the remote.
+        # Non-fatal — a push failure logs a warning but doesn't abort the
+        # build; pacman repo-db (repo.sh) registration is a separate step.
+        local repo_up="${HOME}/KIRO/kiro_repo/up.sh"
+        if [[ -x "${repo_up}" ]]; then
+            log_section "Pushing kiro_repo"
+            bash "${repo_up}" || log_warn "kiro_repo up.sh failed — push manually"
+        else
+            log_warn "kiro_repo up.sh not found at ${repo_up} — skipping repo push"
+        fi
     fi
 
     log_section "Cleaning up"

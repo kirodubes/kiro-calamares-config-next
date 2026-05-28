@@ -4,6 +4,61 @@
 
 ---
 
+## 2026-05-28 — Hardware-aware install via **chwd**: new Calamares module (paired with `kiro-iso-next`)
+
+First step of the install-time driver-selection experiment. The companion change in [kiro-iso-next](../kiro-iso-next/) added `chwd`, `b43-fwcutter`, `broadcom-wl-dkms`, and `hwdetect` to the live ISO. This repo provides the Calamares wiring that actually invokes chwd during install.
+
+### What Changed
+
+**New module: `usr/lib/calamares/modules/chwd/`**
+
+Two-file Python jobmodule pattern, modelled after CachyOS's own `cachyos-calamares/src/modules/chwd/`:
+
+- **[module.desc](usr/lib/calamares/modules/chwd/module.desc)** — five-line descriptor declaring this as a Python `job` module pointing at `main.py`.
+- **[main.py](usr/lib/calamares/modules/chwd/main.py)** — runs `arch-chroot $rootMountPoint chwd --autoconfigure` inside the target chroot. chwd then inspects PCI/USB devices, picks the highest-priority matching TOML profile per device class, and installs the right driver bundle (NVIDIA 470xx / 580xx / nvidia-open-dkms / nouveau / AMD / Intel / Broadcom Wi-Fi / hybrid PRIME variants for laptops detected via DMI chassis types 8/9/10/11). Output is piped into the Calamares debug log via `libcalamares.utils.debug` with a `chwd:` prefix for traceability.
+
+The module **honours the existing GRUB-menu `driver=` kernel cmdline**: when `driver=free` is set, `kernel_cmdline()` returns `"free"` and chwd is skipped entirely — `kiro_remove_nvidia` has already removed proprietary NVIDIA at that point, and nouveau ships in the kernel. Only `driver=nonfree` (or no `driver=` at all) triggers chwd's hardware-detection run.
+
+**Settings.conf — chwd added to exec sequence**
+
+[etc/calamares/settings.conf](etc/calamares/settings.conf) line 36: `chwd` inserted between `kiro_remove_nvidia` and `initcpiocfg`. The position matters: DKMS modules that chwd installs need to be in place before `initcpiocfg` writes the mkinitcpio preset and `initcpio` regenerates the initramfs.
+
+### Why
+
+Up to now Kiro's NVIDIA driver was chosen **at build time** in `kiro-iso-next/build-scripts/build-the-iso.sh` (the `nvidia_driver` variable: `open` / `580xx` / `390xx`) — meaning one ISO per generation. chwd flips that around: one ISO ships with `nvidia-open-dkms` as the sensible default (so the live env boots), and the **installed** system gets the right variant based on what chwd actually detects on the user's hardware. Same ISO serves modern Turing+, legacy Maxwell/Pascal, and old Fermi/Kepler boxes — and laptops with hybrid graphics automatically get `nvidia-prime` + `switcheroo-control` because chwd's `.prime` profile matches DMI chassis types 8/9/10/11.
+
+For non-NVIDIA hardware it's purely additive: chwd installs AMD/Intel-specific bits (currently a no-op since those drivers are in-tree), pulls `broadcom-wl-dkms` if it detects the right Broadcom chipset, and applies handheld-specific tweaks if it's somehow installed on a Steam Deck / ROG Ally / Intel MSI Claw.
+
+### Why keep `kiro_remove_nvidia`
+
+The two modules are complementary, not overlapping:
+
+- `kiro_remove_nvidia` — fast path for `driver=free`: removes the baked-in `nvidia-open-dkms` / `nvidia-utils` / `nvidia-settings` so the user gets a pure nouveau install.
+- `chwd` — smart path for `driver=nonfree`: looks at the actual GPU and decides which proprietary variant fits.
+
+A future cleanup could fold both into a single module, but that's a separate refactor — for now keeping them split makes the boundary obvious and means the previously-validated `driver=free` path is untouched.
+
+### chwd source
+
+- Upstream: [github.com/CachyOS/chwd](https://github.com/CachyOS/chwd) — Rust, GPL-3.0
+- Profiles: TOML files under `/var/lib/chwd/db/pci/` and `db/usb/`, with NVIDIA device-ID allowlists in `/var/lib/chwd/ids/`
+- Installed in the live ISO via `nemesis_repo` (Kiro mirrors the upstream PKGBUILD into our own repo to keep the dependency under our control rather than pinning users to `[cachyos]`)
+
+### Validation pre-merge
+
+Source-reviewed the entire chwd profile catalog (priorities, device_id matching, DMI chassis-type gating) before committing. Compared CachyOS's own integration recipe verbatim against this implementation — same Python jobmodule pattern, same `arch-chroot ... chwd --autoconfigure` invocation, same position relative to `unpackfs`/`initcpiocfg`. Smoke-tested `chwd-arch-git` on the dev host: correct Intel GPU detection, correct profile match.
+
+### Pairs With
+
+- [kiro-iso-next](../kiro-iso-next/) — added `chwd`, `b43-fwcutter`, `broadcom-wl-dkms`, and `hwdetect` to `archiso/packages.x86_64` so the live ISO carries everything the module + its installed-system rerun (`sudo chwd -a`) needs.
+
+**Files modified**
+- `usr/lib/calamares/modules/chwd/module.desc` (new)
+- `usr/lib/calamares/modules/chwd/main.py` (new)
+- `etc/calamares/settings.conf` — `chwd` inserted into exec sequence between `kiro_remove_nvidia` and `initcpiocfg`
+
+---
+
 ## 2026-05-28 — install-perf bundle synced from production
 
 All four install-time performance optimisations developed and validated in `kiro-calamares-config` on this same date are now mirrored here. None of these is a beta-only experiment — they all passed a full install + first-boot validation on the production VM before sync.

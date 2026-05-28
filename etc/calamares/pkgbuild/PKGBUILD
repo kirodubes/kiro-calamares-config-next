@@ -2,7 +2,7 @@ pkgname=calamares-next
 _pkgname=calamares
 # change number in prepare as well
 pkgver=3.4.2.r4.g841b478  # placeholder; will be auto-generated
-pkgrel=4
+pkgrel=6
 pkgdesc='Distribution-independent installer framework - latest git version'
 arch=('i686' 'x86_64')
 url="https://codeberg.org/erikdubois/calamares"
@@ -60,7 +60,7 @@ source=("calamares::git+https://codeberg.org/erikdubois/calamares"
 	"calamares-wrapper")
 sha256sums=('SKIP'
             '2f0205c64d26eebed8c296419a383a6bae893e7d328bb85467fc1748b57909b6'
-            'c5efc7cec0dc7b2eb3771f046c33585aafc3b323ac0f4aad5dc16043aee9b404'
+            '4a5b19d5e274e11f6e3d1d17fcab87a5099322e1b4787791f8da0b730eff9fe2'
             '21fb4eea2177335a6002014ae101a13cf15cf309710589ac72c32dd5634a59e2'
             '966c5f0834039dc6a7529e75f70417ba2510b1e643ffb49fd25855ce9dc244b4'
             'e4c9b9601020f2362311b9776de1aa363f6ee5d1d78a4b171ba2630644819f5b')
@@ -122,8 +122,8 @@ package() {
 	install -Dm755 "$srcdir/cal-kiro.desktop" "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
 	install -Dm644 "$srcdir/kiro-trust-launchers.service" "$pkgdir/home/liveuser/.config/systemd/user/kiro-trust-launchers.service"
 	# Enable the user service by shipping its WantedBy symlink — build time can't run `systemctl --user enable`
-	install -d "$pkgdir/home/liveuser/.config/systemd/user/graphical-session.target.wants"
-	ln -sf ../kiro-trust-launchers.service "$pkgdir/home/liveuser/.config/systemd/user/graphical-session.target.wants/kiro-trust-launchers.service"
+	install -d "$pkgdir/home/liveuser/.config/systemd/user/default.target.wants"
+	ln -sf ../kiro-trust-launchers.service "$pkgdir/home/liveuser/.config/systemd/user/default.target.wants/kiro-trust-launchers.service"
 	chmod +x "$pkgdir/home/liveuser/Desktop/cal-kiro.desktop"
 
 	install -Dm644 "$srcdir/calamares-wrapper" "$pkgdir/usr/local/bin/calamares-wrapper"
