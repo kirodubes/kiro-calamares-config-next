@@ -4,6 +4,33 @@
 
 ---
 
+## 2026-05-28 — install-perf bundle synced from production
+
+All four install-time performance optimisations developed and validated in `kiro-calamares-config` on this same date are now mirrored here. None of these is a beta-only experiment — they all passed a full install + first-boot validation on the production VM before sync.
+
+### Changes synced
+
+**`kiro_before/main.py`** — new `CACHE_TRIGGER_DIRS` tuple + new `snapshot_cache_trigger_mtimes()` step; the old `suppress_mkinitcpio_hook()` is generalised into `suppress_pacman_hooks()` driven by a `SUPPRESSED_HOOKS` tuple covering `90-mkinitcpio-install.hook` plus six heavyweight cache-rebuild hooks (`gtk-update-icon-cache`, `update-desktop-database`, `30-update-mime-database`, `fontconfig`, `dconf-update`, `xorg-mkfontscale`). Each is shadowed to `/dev/null` under `/etc/pacman.d/hooks/` for the duration of the install.
+
+**`kiro_final/main.py`** — mirror `SUPPRESSED_HOOKS` tuple; new `CACHE_REBUILD_STEPS` carrying `(description, shell command, trigger dir)` per cache; new `_cache_trigger_changed()` helper that compares each current trigger-dir mtime against the baseline kiro_before snapshotted pre-install and skips no-op rebuilds; the old single-hook restore is replaced with `restore_suppressed_hooks()` looping over the same tuple; new `rebuild_caches_once()` runs each underlying cache command in the chroot exactly once per install, gated on the mtime check. Without the gate, `update-mime-database` alone cost ~8 s; with the gate, it only runs when something actually changed `/usr/share/mime/packages/`.
+
+**`kiro_ucode/main.py`** — added `_detect_target_virt()` and an early-return at the top of `run()` when `systemd-detect-virt` in the target chroot returns anything other than `none`. Microcode install + wrong-vendor removal is pure waste on a VM (hypervisor handles guest microcode); the VM-skip branch saves ~5 s per VM install. Bare metal is unaffected. Also added an `is_installed_in_target()` guard inside `remove_ucode_package()` so the wrong-vendor `pacman -R` is skipped when nothing's installed (~2-3 s saving when applicable).
+
+### Measured impact
+
+On a VirtualBox install: ~10 s of real work removed (~5 s kiro_ucode VM skip + ~5 s skipped cache rebuilds). Wall-clock didn't visibly drop on a single A/B run because unpackfs/partition variance was on the same order, but across runs the saving is consistent. First-boot freshness is preserved: every cache that could be stale gets rebuilt; only verifiably no-op rebuilds are skipped.
+
+### Beta-specific divergence preserved
+
+`kiro_final` still removes `kiro-calamares-config-next` (not `kiro-calamares-config`) as the installer's self-cleanup step. That one-line difference is the only intentional divergence between this repo and production after the sync.
+
+**Files modified**
+- `usr/lib/calamares/modules/kiro_before/main.py`
+- `usr/lib/calamares/modules/kiro_final/main.py`
+- `usr/lib/calamares/modules/kiro_ucode/main.py`
+
+---
+
 ## 2026-05-27 — kiro_final: remove the live-only desktop-launcher trust helper
 
 `kiro_final` now removes **`/usr/local/bin/kiro-trust-desktop-launchers`** from the installed system. That helper is a new live-ISO autostart (added in `kiro-iso-next`) that pre-trusts the **Install kiro** desktop launcher so XFCE/Thunar doesn't prompt — useful only on the live session, so it's added to the `paths_to_remove` list. Its autostart entry under `/home/liveuser/.config/autostart/` needs no explicit cleanup: `removeuser` deletes the live user's home earlier in the sequence, so listing it could even error depending on timing.

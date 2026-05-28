@@ -98,43 +98,96 @@ def sync_pacman_databases():
     return None
 
 
-def suppress_mkinitcpio_hook():
-    """Symlink the upstream mkinitcpio pacman hook to /dev/null in the chroot so
-    package operations during install don't trigger redundant initramfs rebuilds.
+# Cache trigger directories whose mtime is sampled here so kiro_final can skip
+# cache rebuilds whose source data wasn't touched during install. Must mirror
+# the trigger paths in kiro_final.CACHE_REBUILD_STEPS.
+CACHE_TRIGGER_DIRS = (
+    "usr/share/icons",            # gtk-update-icon-cache
+    "usr/share/applications",     # update-desktop-database
+    "usr/share/mime/packages",    # update-mime-database
+    "usr/share/fonts",            # fontconfig + xorg-mkfontscale
+    "etc/dconf/db",               # dconf update
+)
 
-    Calamares' own `initcpiocfg` + `Creating initramfs with mkinitcpio…` job runs
-    `mkinitcpio -P` explicitly with the final mkinitcpio.conf — that's the source
-    of truth. Every other rebuild during install (nvidia-* removal via DKMS,
-    `mkinitcpio-archiso` removal in the packages module, `kiro_ucode` microcode
-    swap, kiro_final VM cleanup) is throwaway work: same kernels, same config,
-    each pass building the same N images. Observed 2026-05-28: 5 hook-triggered
-    rebuilds during a 2-kernel install (10 image builds total), ~30-60s of churn.
 
-    Suppressing the install hook eliminates those passes; the explicit Calamares
-    mkinitcpio job still runs because it invokes mkinitcpio directly, not via
-    the hook. kiro_final reverses this symlink at the very end of the install so
-    the user's first `pacman -Syu` rebuilds initramfs normally on kernel
-    upgrades — the override MUST be removed there, otherwise a stuck /dev/null
-    symlink leaves the user's system unable to refresh initramfs after a kernel
-    package change.
+# Pacman hooks shadowed to /dev/null in the target chroot during install so
+# heavyweight cache rebuilds don't fire once per pacman transaction. Each
+# transaction (kiro_remove_nvidia, packages, kiro_ucode, kiro_final removals)
+# otherwise re-runs the same expensive rebuild from scratch.
+#
+# kiro_final unlinks every entry below at the very end of the install and runs
+# the corresponding underlying command exactly ONCE so the installed system
+# boots with correct caches. MUST stay in sync with kiro_final.SUPPRESSED_HOOKS.
+SUPPRESSED_HOOKS = (
+    "90-mkinitcpio-install.hook",     # initramfs rebuild — explicit Calamares initcpio job is source of truth
+    "gtk-update-icon-cache.hook",     # icon theme caches
+    "update-desktop-database.hook",   # .desktop MIME cache
+    "30-update-mime-database.hook",   # shared MIME database
+    "fontconfig.hook",                # fc-cache
+    "dconf-update.hook",              # system dconf databases
+    "xorg-mkfontscale.hook",          # X font dir indices
+)
+
+
+def snapshot_cache_trigger_mtimes():
+    """Snapshot mtimes of every cache trigger dir into globalstorage.
+
+    kiro_final compares these against the post-install mtimes and skips
+    cache rebuilds whose trigger dir was untouched during the install. The
+    snapshot must happen BEFORE any pacman operation in the install pipeline
+    so we capture the pristine post-unpackfs state.
+    """
+    target_root = libcalamares.globalstorage.value("rootMountPoint")
+    snapshot = {}
+    for rel in CACHE_TRIGGER_DIRS:
+        full = os.path.join(target_root, rel)
+        try:
+            snapshot[rel] = os.stat(full).st_mtime if os.path.exists(full) else None
+        except Exception as e:
+            libcalamares.utils.warning(f"Could not stat {full} for cache baseline: {e}")
+            snapshot[rel] = None
+    libcalamares.globalstorage.insert("kiroCacheMtimeBaseline", snapshot)
+    libcalamares.utils.debug(f"Cache trigger mtime baseline: {snapshot}")
+    return None
+
+
+def suppress_pacman_hooks():
+    """Symlink heavyweight pacman cache-rebuild hooks to /dev/null in the chroot.
+
+    Pacman searches /etc/pacman.d/hooks/ before /usr/share/libalpm/hooks/, so a
+    same-name /dev/null symlink in the former shadows the upstream hook for
+    every pacman transaction during the install. The 90-mkinitcpio-install
+    suppression has been in place since 2026-05-28 and saved ~30-60s by
+    eliminating 5 throwaway initramfs rebuilds during a 2-kernel install. The
+    same anti-pattern applies to icon/desktop/MIME/font/dconf hooks — each
+    fires per transaction and rebuilds the same caches every time.
+
+    kiro_final MUST restore these symlinks at the end and run each underlying
+    rebuild once — leaving a /dev/null symlink behind would prevent the user's
+    first `pacman -Syu` from refreshing the relevant cache, leading to stale
+    icons/fonts/MIME types/initramfs after future upgrades.
     """
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     hooks_dir = os.path.join(target_root, "etc/pacman.d/hooks")
-    hook_override = os.path.join(hooks_dir, "90-mkinitcpio-install.hook")
 
     try:
         os.makedirs(hooks_dir, exist_ok=True)
-        # Idempotent: drop any existing override so re-runs don't ENOENT.
-        if os.path.lexists(hook_override):
-            os.unlink(hook_override)
-        os.symlink("/dev/null", hook_override)
-        libcalamares.utils.debug(
-            f"Suppressed upstream mkinitcpio pacman hook: {hook_override} -> /dev/null"
-        )
     except Exception as e:
-        # Best-effort optimisation — a failure here only loses the speed-up,
-        # it does not break the install.
-        libcalamares.utils.warning(f"Could not suppress mkinitcpio hook (continuing): {e}")
+        libcalamares.utils.warning(f"Could not create hooks dir (continuing): {e}")
+        return None
+
+    for hook in SUPPRESSED_HOOKS:
+        path = os.path.join(hooks_dir, hook)
+        try:
+            # Idempotent: drop any existing override so re-runs don't ENOENT.
+            if os.path.lexists(path):
+                os.unlink(path)
+            os.symlink("/dev/null", path)
+            libcalamares.utils.debug(f"Suppressed pacman hook: {path} -> /dev/null")
+        except Exception as e:
+            # Best-effort optimisation — a failure on one hook only loses that
+            # hook's speed-up, it does not break the install.
+            libcalamares.utils.warning(f"Could not suppress {hook} (continuing): {e}")
     return None
 
 
@@ -169,14 +222,16 @@ def run():
 
     libcalamares.utils.debug("This module will perform the following operations:")
     libcalamares.utils.debug("  1. Wait for pacman lock to be released")
-    libcalamares.utils.debug("  2. Suppress mkinitcpio pacman hook (perf — restored in kiro_final)")
-    libcalamares.utils.debug("  3. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
-    libcalamares.utils.debug("  4. Refresh pacman sync databases (pacman -Sy)")
-    libcalamares.utils.debug("  5. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+    libcalamares.utils.debug("  2. Snapshot cache trigger dir mtimes (perf — paired with kiro_final)")
+    libcalamares.utils.debug("  3. Suppress heavyweight pacman hooks (perf — restored in kiro_final)")
+    libcalamares.utils.debug("  4. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
+    libcalamares.utils.debug("  5. Refresh pacman sync databases (pacman -Sy)")
+    libcalamares.utils.debug("  6. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
 
     functions = [
         ("Wait for pacman lock", wait_for_pacman_lock),
-        ("Suppress mkinitcpio hook", suppress_mkinitcpio_hook),
+        ("Snapshot cache mtimes", snapshot_cache_trigger_mtimes),
+        ("Suppress pacman hooks", suppress_pacman_hooks),
         ("Initialize pacman keys", initialize_pacman_keys),
         ("Sync pacman databases", sync_pacman_databases),
         ("Optimize makepkg.conf", optimize_makepkg_conf)

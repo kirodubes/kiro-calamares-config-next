@@ -74,6 +74,118 @@ def detect_virtualization(target_root):
         return "unknown"
 
 
+# Pacman hooks shadowed to /dev/null by kiro_before. Must stay in sync with
+# kiro_before.SUPPRESSED_HOOKS.
+SUPPRESSED_HOOKS = (
+    "90-mkinitcpio-install.hook",
+    "gtk-update-icon-cache.hook",
+    "update-desktop-database.hook",
+    "30-update-mime-database.hook",
+    "fontconfig.hook",
+    "dconf-update.hook",
+    "xorg-mkfontscale.hook",
+)
+
+# Each suppressed hook's underlying command, run exactly ONCE in the target
+# chroot at the very end of kiro_final after the symlinks are removed. The
+# mkinitcpio hook has no entry here — Calamares' explicit initcpio job
+# already rebuilt initramfs before kiro_final runs.
+#
+# Each tuple is (description, shell command, trigger dir relative to target
+# root). The trigger dir is the same path the suppressed hook watches; we
+# compare its current mtime against the baseline kiro_before snapshotted
+# pre-install and SKIP rebuilds whose source data was never touched. Without
+# the skip we paid ~8s/run for update-mime-database, ~2s for fc-cache, etc.,
+# even though the install transactions (kiro_remove_nvidia, packages,
+# kiro_ucode, kiro_final removals) typically don't touch MIME / fonts /
+# dconf data at all. Two trigger dirs are shared (fontconfig + xorg-mkfontscale
+# both watch usr/share/fonts) — that's fine, the mtime check is symmetric.
+CACHE_REBUILD_STEPS = (
+    ("gtk-update-icon-cache",
+     'for d in /usr/share/icons/*/; do [ -e "${d}index.theme" ] && gtk-update-icon-cache -q "$d" || true; done',
+     "usr/share/icons"),
+    ("update-desktop-database",
+     "update-desktop-database --quiet",
+     "usr/share/applications"),
+    ("update-mime-database",
+     "update-mime-database /usr/share/mime",
+     "usr/share/mime/packages"),
+    ("fontconfig (fc-cache)",
+     "fc-cache -s",
+     "usr/share/fonts"),
+    ("dconf update",
+     "dconf update",
+     "etc/dconf/db"),
+    ("xorg-mkfontscale",
+     'for d in /usr/share/fonts/*/; do [ "${d%/}" = /usr/share/fonts/encodings ] && continue; mkfontscale "$d" 2>/dev/null || true; mkfontdir "$d" 2>/dev/null || true; done',
+     "usr/share/fonts"),
+)
+
+
+def restore_suppressed_hooks(target_root):
+    """Unlink the /dev/null shadow symlinks placed by kiro_before."""
+    hooks_dir = os.path.join(target_root, "etc/pacman.d/hooks")
+    restored = 0
+    for hook in SUPPRESSED_HOOKS:
+        path = os.path.join(hooks_dir, hook)
+        try:
+            if os.path.islink(path) and os.readlink(path) == "/dev/null":
+                os.unlink(path)
+                libcalamares.utils.debug(f"Removed hook override: {path}")
+                restored += 1
+            else:
+                libcalamares.utils.debug(f"Hook override not present, skipping: {path}")
+        except Exception as e:
+            libcalamares.utils.warning(f"Failed to restore {hook}: {e}")
+    return restored
+
+
+def _cache_trigger_changed(target_root, trigger_rel, baseline):
+    """Return True if trigger_rel's mtime changed since kiro_before's snapshot.
+
+    Defensive default: returns True (rebuild) when:
+      - no baseline available (kiro_before didn't run, or globalstorage lost)
+      - mtime cannot be read
+      - dir came into / went out of existence
+
+    Limits: only the trigger dir's own mtime is checked, not files inside its
+    subdirs. That catches additions/removals at the watched level (which is
+    what the pacman hook triggers on too) without an expensive recursive walk.
+    """
+    if not baseline:
+        return True
+    previous = baseline.get(trigger_rel)
+    full = os.path.join(target_root, trigger_rel)
+    try:
+        current = os.stat(full).st_mtime if os.path.exists(full) else None
+    except Exception:
+        return True
+    return current != previous
+
+
+def rebuild_caches_once(target_root):
+    """Run each suppressed hook's underlying command exactly once in the chroot.
+
+    Skips rebuilds whose trigger dir mtime is unchanged vs kiro_before's
+    snapshot — the typical Kiro install touches very few cache trigger paths,
+    so update-mime-database / fc-cache / dconf / mkfontscale usually have
+    nothing to do.
+    """
+    baseline = libcalamares.globalstorage.value("kiroCacheMtimeBaseline") or {}
+    for desc, cmd, trigger_rel in CACHE_REBUILD_STEPS:
+        if not _cache_trigger_changed(target_root, trigger_rel, baseline):
+            libcalamares.utils.debug(f"Cache trigger unchanged, skipping rebuild: {desc}")
+            continue
+        libcalamares.utils.debug(f"Rebuilding cache once: {desc}")
+        try:
+            subprocess.run(
+                ["chroot", target_root, "sh", "-c", cmd],
+                check=False,
+            )
+        except Exception as e:
+            libcalamares.utils.warning(f"Cache rebuild '{desc}' failed (continuing): {e}")
+
+
 def wait_for_pacman_lock(target_root, timeout=30):
     """Wait for pacman lock to be released, force remove if timeout exceeded."""
     lock_path = os.path.join(target_root, "var/lib/pacman/db.lck")
@@ -334,32 +446,32 @@ def run():
         )
         results["Remove installer package"] = "SUCCESS"
     except subprocess.CalledProcessError as e:
-        libcalamares.utils.warning(f"Failed to remove kiro-calamares-config: {e}")
+        libcalamares.utils.warning(f"Failed to remove kiro-calamares-config-next: {e}")
         results["Remove installer package"] = "FAILED"
 
     # ========================
-    # Restore mkinitcpio hook (paired with kiro_before suppression)
+    # Restore suppressed pacman hooks + rebuild caches once
     # ========================
     # MUST run after every pacman operation in this module and at the very end
-    # of the install — leaving the /dev/null symlink behind would break the
-    # user's first kernel upgrade (no initramfs rebuild). Wrapped in its own
-    # try/except so an earlier kiro_final failure cannot skip the restore.
-    libcalamares.utils.debug("Restoring upstream mkinitcpio pacman hook")
+    # of the install — leaving a /dev/null symlink behind would block the
+    # corresponding cache rebuild on the user's first `pacman -Syu` (stale
+    # initramfs/icons/MIME/fonts/dconf). Wrapped in their own try/except so an
+    # earlier kiro_final failure cannot skip the restore.
+    libcalamares.utils.debug("Restoring suppressed pacman hooks")
     try:
-        hook_override = os.path.join(target_root, "etc/pacman.d/hooks/90-mkinitcpio-install.hook")
-        if os.path.islink(hook_override) and os.readlink(hook_override) == "/dev/null":
-            os.unlink(hook_override)
-            libcalamares.utils.debug(f"Removed mkinitcpio hook override: {hook_override}")
-            results["Restore mkinitcpio hook"] = "SUCCESS"
-        else:
-            # Not our symlink (or never set) — leave it alone, log for diagnosis.
-            libcalamares.utils.debug(
-                f"mkinitcpio hook override not found at {hook_override} — nothing to restore"
-            )
-            results["Restore mkinitcpio hook"] = "NOT-NEEDED"
+        restored = restore_suppressed_hooks(target_root)
+        results["Restore suppressed hooks"] = f"SUCCESS ({restored}/{len(SUPPRESSED_HOOKS)})"
     except Exception as e:
-        libcalamares.utils.warning(f"Failed to restore mkinitcpio hook: {e}")
-        results["Restore mkinitcpio hook"] = "FAILED"
+        libcalamares.utils.warning(f"Failed to restore suppressed hooks: {e}")
+        results["Restore suppressed hooks"] = "FAILED"
+
+    libcalamares.utils.debug("Rebuilding caches once (post-install)")
+    try:
+        rebuild_caches_once(target_root)
+        results["Rebuild caches once"] = "SUCCESS"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed during cache rebuild: {e}")
+        results["Rebuild caches once"] = "FAILED"
 
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("End kiro_final module - Function Results:")

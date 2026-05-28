@@ -9,7 +9,7 @@ import libcalamares
 import subprocess
 import os
 import glob
-from libcalamares.utils import target_env_call
+from libcalamares.utils import target_env_call, check_target_env_call
 
 
 class ConfigController:
@@ -63,14 +63,25 @@ class ConfigController:
             libcalamares.utils.warning(f"Failed to install {package_name}: {e}")
             return False
 
+    def is_installed_in_target(self, package_name):
+        """Return True if package_name is installed in the target chroot."""
+        try:
+            check_target_env_call(["pacman", "-Q", package_name])
+            return True
+        except subprocess.CalledProcessError:
+            return False
+
     def remove_ucode_package(self, package_name):
-        """Remove wrong microcode package from the installed target."""
+        """Remove wrong microcode package from the installed target if present."""
+        if not self.is_installed_in_target(package_name):
+            libcalamares.utils.debug(f"{package_name} not installed in target; skipping removal.")
+            return
         libcalamares.utils.debug(f"Removing {package_name} from target...")
         try:
             target_env_call(["pacman", "-R", "--noconfirm", package_name])
             libcalamares.utils.debug(f"Successfully removed {package_name}")
         except Exception as e:
-            # Non-fatal — package may already be absent
+            # Non-fatal — guarded above, but keep the catch for races.
             libcalamares.utils.warning(f"Could not remove {package_name}: {e}")
 
     def handle_ucode(self):
@@ -94,6 +105,21 @@ class ConfigController:
         return None
 
 
+def _detect_target_virt(target_root):
+    """Return systemd-detect-virt's verdict for the target chroot, or 'none' on failure."""
+    try:
+        result = subprocess.run(
+            ["chroot", target_root, "systemd-detect-virt"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        return result.stdout.strip() or "none"
+    except Exception as e:
+        libcalamares.utils.warning(f"systemd-detect-virt failed (assuming bare metal): {e}")
+        return "none"
+
+
 def run():
     """Execute CPU microcode configuration."""
     libcalamares.utils.debug("##############################################")
@@ -101,8 +127,25 @@ def run():
     libcalamares.utils.debug("##############################################\n")
 
     libcalamares.utils.debug("This module will perform the following operations:")
-    libcalamares.utils.debug("  1. Detect CPU vendor (AuthenticAMD or GenuineIntel)")
-    libcalamares.utils.debug("  2. Install appropriate microcode package from /etc/calamares/packages\n")
+    libcalamares.utils.debug("  1. Skip cleanly on VM installs (hypervisor handles guest microcode)")
+    libcalamares.utils.debug("  2. Detect CPU vendor (AuthenticAMD or GenuineIntel)")
+    libcalamares.utils.debug("  3. Install appropriate microcode package from /etc/calamares/packages\n")
+
+    # Skip on VMs — guest microcode is the hypervisor's job; running pacman -U
+    # for ucode and pacman -R for the wrong-vendor ucode is pure waste inside
+    # a VM (~5s/install). Both ucodes stay installed in their live-ISO state;
+    # kernel ignores them on a guest CPU. Bare metal continues to get the
+    # vendor-matched ucode and removal of the wrong one.
+    target_root = libcalamares.globalstorage.value("rootMountPoint")
+    virt = _detect_target_virt(target_root)
+    if virt != "none":
+        libcalamares.utils.debug(
+            f"Detected virtualization '{virt}' in target — skipping microcode setup."
+        )
+        libcalamares.utils.debug("##############################################")
+        libcalamares.utils.debug("End kiro_ucode (skipped — VM detected)")
+        libcalamares.utils.debug("##############################################\n")
+        return None
 
     results = {}
     config = ConfigController()
