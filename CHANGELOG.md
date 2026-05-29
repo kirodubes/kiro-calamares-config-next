@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-05-29 — Dark installer: KiroDark Kvantum theme + dark branding
+
+**What Changed**
+
+Made the Calamares installer fully **dark**, matching the Kiro website (navy `#0F172A` background, sky-blue `#0EA5E9` accent) instead of the light-grey default. Root cause of the grey: the installer launched with `-style breeze`, but the `breeze` style was never installed, so Qt fell back to its light default. Fix: a custom **KiroDark** Kvantum theme launched via `-style kvantum` (kvantum is already on the ISO — zero new runtime deps). Branding updated for dark: sidebar selected-step highlight to brand blue with white text, nav-button **hover** text to white (it was an unreadable blue-on-light), combo/list/tree selections to brand blue, and a dark-navy K for the welcome logo + window icon.
+
+**Technical Details**
+
+- **KiroDark** = the ArcDark Kvantum theme with its palette remapped to Kiro (greys → navy, Arc blue `#5294e2` → `#0ea5e9`), forced **opaque** (`translucent_windows=false`, `reduce_window_opacity=0` — translucency bled the wallpaper through dense pages like Summary), and white button text (`[PanelButtonCommand]` `text.normal/focus/press/toggle=#ffffff`). It ships in the ISO at `/root/.config/Kvantum/KiroDark/` (Calamares runs as root via pkexec, so it reads root's config) and is selected by `/root/.config/Kvantum/kvantum.kvconfig` → `theme=KiroDark`.
+- **branding.desc**: `SidebarTextHighlight #0EA5E9`, `SidebarSelect #FFFFFF`, `productIcon` + `productWelcome` → `welcome.png` (dark-navy K, blends into the panel — no white box).
+- **stylesheet.qss**: accent `#0EA5E9` → `#0284C7`; nav-button `:hover` color → `#FFFFFF` (fixes the blue-on-light mush); list/combo/tree selections → white text on `#0284C7`.
+- The previously light panel surfaces (e.g. Summary section headers) are now handled by the dark Qt **style**, not per-widget QSS hacks.
+- Validated live on the beta VM via an SSH loop (edit theme → relaunch Calamares as root on `:0` → screenshot).
+
+**Files Modified**
+- `etc/calamares/branding/kiro/stylesheet.qss`
+- `etc/calamares/branding/kiro/branding.desc`
+- `etc/calamares/branding/kiro/welcome.png` (new)
+
+**Cross-repo:** `kiro-iso-next` ships the KiroDark theme + `kvantum.kvconfig` under `airootfs/root/.config/Kvantum/` and adds `kvantum` to `packages.x86_64`. The launcher change (drop `calamares-wrapper`; set `cal-kiro.desktop` `Exec` → `calamares_polkit -d -style kvantum`) is handled in the KIRO-PKG-BUILD `calamares-next` source.
+
 ## 2026-05-29 — Installer visual refresh: brand-aligned chrome + text slideshow
 
 **What Changed**
