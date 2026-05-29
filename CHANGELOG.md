@@ -4,6 +4,26 @@
 
 ---
 
+## 2026-05-29 — Installer visual refresh: brand-aligned chrome + slate slideshow backdrop
+
+**What Changed**
+
+Gave the Calamares branding a "shining" pass so the installer chrome matches the brand instead of fighting it. The slideshow images are current Kiro-website screenshots — near-black slate with a vivid sky-blue accent — but the surrounding installer used a medium-grey sidebar (`#353945`) and a muted blue accent (`#58B2D7`), so the frame and the slides looked like two different products. The chrome now uses the website's own palette (sky `#0EA5E9`/`#38BDF8` accent, slate-900 sidebar), and the slideshow gets an on-brand slate gradient behind the letterboxed images so it reads as one cohesive surface.
+
+**Technical Details**
+
+- **branding.desc** — `SidebarBackground` `#353945` → slate-900 `#0F172A`; `SidebarText` → slate-200 `#E2E8F0`. Only the two proven keys were touched (selected-step highlight still falls back to the app palette).
+- **stylesheet.qss** — every flat `#58B2D7` (selections, tooltip, progress chunk, scrollbar handle, combo/tree/list highlights) → brand `#0EA5E9` (accent-500, good contrast with white text); the three nav-button `:hover` states use the brighter `#38BDF8` (accent-400). `#sidebarMenuApp` background matched to `#0F172A`; the jarring light `#efefef` scrollbar track darkened to slate-800 `#1E293B`.
+- **show.qml / show-backup.qml** — added a full-window `Rectangle` (`z: -1`) with a `#020617` → `#0F172A` vertical gradient behind the slides, so the bands around `PreserveAspectFit` screenshots match the screenshots' own background rather than the default flat fill.
+
+**Files Modified**
+- `etc/calamares/branding/kiro/branding.desc`
+- `etc/calamares/branding/kiro/stylesheet.qss`
+- `etc/calamares/branding/kiro/show.qml`
+- `etc/calamares/branding/kiro/show-backup.qml`
+
+---
+
 ## 2026-05-29 — `[cachyos]` repo disabled by default on the installed system
 
 **What Changed**

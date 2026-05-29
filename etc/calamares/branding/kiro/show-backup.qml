@@ -15,6 +15,18 @@ Presentation
 {
     id: presentation
 
+    // Kiro brand backdrop: fills the letterbox bands around each slide
+    // with the same near-black slate gradient the screenshots use, so the
+    // slideshow reads as one cohesive surface instead of letterboxed images.
+    Rectangle {
+        anchors.fill: parent
+        z: -1
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#020617" }
+            GradientStop { position: 1.0; color: "#0F172A" }
+        }
+    }
+
     function nextSlide() {
         console.log("QML Component (default slideshow) Next slide");
         presentation.goToNextSlide();

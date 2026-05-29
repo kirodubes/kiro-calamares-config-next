@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 Calamares module that installs the live ISO's kernel into the target,
-independent of which kernel package the ISO shipped (linux, linux-lqx,
+independent of which kernel package the ISO shipped (linux, linux-cachyos,
 linux-zen, ...).
 
 It detects the kernel from the live boot medium, copies the image into the
 target /boot, generates a matching mkinitcpio preset, and removes the
 live-only preset artifacts so the later `mkinitcpio -P` builds exactly one
 correct initramfs. This replaces the old hardcoded unpackfs@vmlinuz copy and
-the linux-lqx preset rename in kiro_before.
+the hardcoded preset rename in kiro_before.
 """
 
 import glob
