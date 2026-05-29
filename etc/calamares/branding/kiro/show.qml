@@ -35,7 +35,7 @@ Presentation
 
     Timer {
         id: advanceTimer
-        interval: 6500
+        interval: 10000
         running: presentation.activatedInCalamares
         repeat: true
         onTriggered: nextSlide()
@@ -105,7 +105,7 @@ Presentation
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 visible: kicker.length > 0
-                text: kicker.toUpperCase()
+                text: kicker
                 color: "#38BDF8"
                 font.family: "Noto Sans"; font.bold: true
                 font.pixelSize: masterHeight * 0.022
@@ -188,24 +188,24 @@ Presentation
         kicker: "Software"
         headline: "Everything ready to install"
         lines: [
-            "chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.",
-            "yay, paru and the pamac-aur GUI built in.",
+            "Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.",
+            "Yay, paru and the pamac-aur GUI built in.",
             "Erik's nemesis_repo enabled out of the box."
         ]
     }
 
     KiroSlide {
-        kicker: "ATT"
+        kicker: "ArchLinux Tweak Tool"
         headline: "Your Arch, one click at a time."
         lines: [
-            "archlinux-tweak-tool — the GUI for the tweaks you'd otherwise hunt down in the wiki.",
+            "The GUI for the tweaks you'd otherwise hunt down in the wiki.",
             "Kernels, services, fixes and settings — point and click.",
             "Swap between 13 desktops on demand."
         ]
     }
 
     KiroSlide {
-        kicker: "alacritty-tweak-tool"
+        kicker: "Alacritty-tweak-tool"
         headline: "Point, click, done. Your terminal, dialled in."
         lines: [
             "Fonts, colours, opacity and themes — set in a window, not a TOML file.",
@@ -265,7 +265,7 @@ Presentation
         kicker: "Security"
         headline: "Secure and resilient"
         lines: [
-            "firewalld enabled by default.",
+            "Firewalld enabled by default.",
             "A sysctl hardening layer, already applied.",
             "No telemetry — your data stays on your machine."
         ]
