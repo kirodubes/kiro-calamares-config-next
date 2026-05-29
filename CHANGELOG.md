@@ -4,17 +4,18 @@
 
 ---
 
-## 2026-05-29 — Installer visual refresh: brand-aligned chrome + slate slideshow backdrop
+## 2026-05-29 — Installer visual refresh: brand-aligned chrome + text slideshow
 
 **What Changed**
 
-Gave the Calamares branding a "shining" pass so the installer chrome matches the brand instead of fighting it. The slideshow images are current Kiro-website screenshots — near-black slate with a vivid sky-blue accent — but the surrounding installer used a medium-grey sidebar (`#353945`) and a muted blue accent (`#58B2D7`), so the frame and the slides looked like two different products. The chrome now uses the website's own palette (sky `#0EA5E9`/`#38BDF8` accent, slate-900 sidebar), and the slideshow gets an on-brand slate gradient behind the letterboxed images so it reads as one cohesive surface.
+Gave the Calamares branding a "shining" pass so the installer chrome matches the brand instead of fighting it, and replaced the slideshow with professional brand text slides. The old slideshow cycled nine static Kiro-website screenshots (near-black slate, vivid sky-blue accent), while the surrounding installer used a medium-grey sidebar (`#353945`) and a muted blue accent (`#58B2D7`) — so the frame and the slides looked like two different products. The chrome now uses the website's own palette (sky `#0EA5E9`/`#38BDF8` accent, slate-900 sidebar), and the slideshow is a custom QML text deck — kicker, headline, gradient divider and a few short feature lines per slide on the slate gradient backdrop — with every line sourced from the website feature list.
 
 **Technical Details**
 
 - **branding.desc** — `SidebarBackground` `#353945` → slate-900 `#0F172A`; `SidebarText` → slate-200 `#E2E8F0`. Only the two proven keys were touched (selected-step highlight still falls back to the app palette).
 - **stylesheet.qss** — every flat `#58B2D7` (selections, tooltip, progress chunk, scrollbar handle, combo/tree/list highlights) → brand `#0EA5E9` (accent-500, good contrast with white text); the three nav-button `:hover` states use the brighter `#38BDF8` (accent-400). `#sidebarMenuApp` background matched to `#0F172A`; the jarring light `#efefef` scrollbar track darkened to slate-800 `#1E293B`.
-- **show.qml / show-backup.qml** — added a full-window `Rectangle` (`z: -1`) with a `#020617` → `#0F172A` vertical gradient behind the slides, so the bands around `PreserveAspectFit` screenshots match the screenshots' own background rather than the default flat fill.
+- **show.qml / show-backup.qml** — rewritten from a 9-image screenshot loop to a text slideshow: a `z: -1` slate gradient backdrop (`#020617`→`#0F172A`), two inline QML components (`KiroTitleSlide`, `KiroSlide`) for a DRY layout, and 7 slides (title → Pure Arch / Software / Performance / Desktop / Security → "Enjoy Kiro"). Headlines `#F1F5F9`, sky kicker `#38BDF8`, slate body `#CBD5E1`, blue→green gradient dividers, opacity fade-in per slide, 6.5 s auto-advance. No author byline (the website's "creator of ArcoLinux" is stale vs. the current "creator of Kiro"). The `01–12cal.jpg` screenshots are now unused by the QML.
+- Rendered and verified on the dev box via the locally-built Calamares fork — see `~/.bin/kiro-calamares-preview.sh`.
 
 **Files Modified**
 - `etc/calamares/branding/kiro/branding.desc`

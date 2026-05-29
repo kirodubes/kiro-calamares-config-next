@@ -36,6 +36,11 @@ Use gammaray
 	width : 250px;
 }
 
+#logoApp {
+	margin-top: 20px;
+	margin-bottom: 6px;
+}
+
 #mainText{
 	font : bold 16px;
 }
