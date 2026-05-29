@@ -135,7 +135,7 @@ All in [etc/calamares/modules/](etc/calamares/modules/). Key non-obvious setting
 
 [etc/calamares/branding/kiro/](etc/calamares/branding/kiro/) — dark theme, 1200×800 window, sidebar widget layout.
 
-**Slideshow:** `show.qml` (QML API v2) cycles through `01cal.jpg`–`12cal.jpg`. To add/remove slides, edit both the QML and the image files. `show-backup.qml` is a fallback copy.
+**Slideshow:** `show.qml` (QML API v2) is a text-based slideshow — inline `KiroTitleSlide` / `KiroSlide` components, no screenshots. To add/remove slides, edit the slide blocks in the QML. The `01cal.jpg`–`12cal.jpg` images are unused by the current QML.
 
 **Translations:** Qt `.ts` format in `lang/` — en, fr, nl, ar, eo.
 

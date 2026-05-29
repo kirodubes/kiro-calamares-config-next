@@ -156,6 +156,26 @@ Presentation
     }
 
     KiroSlide {
+        kicker: "Open & teachable"
+        headline: "Arch Linux, with a teacher in the box"
+        lines: [
+            "The distro you can watch being made — every step, on YouTube.",
+            "Fork it, rebuild it, ship your own ISO.",
+            "Free and open, always. No telemetry, no agenda."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Learn & grow"
+        headline: "Use Kiro today, master Linux for life."
+        lines: [
+            "Real Arch underneath — what you learn here, you keep.",
+            "Hundreds of video tutorials to level up at your own pace.",
+            "From your first install to building your own ISO."
+        ]
+    }
+
+    KiroSlide {
         kicker: "Pure Arch"
         headline: "Arch underneath, curated above"
         lines: [
@@ -175,12 +195,50 @@ Presentation
     }
 
     KiroSlide {
+        kicker: "ATT"
+        headline: "Your Arch, one click at a time."
+        lines: [
+            "archlinux-tweak-tool — the GUI for the tweaks you'd otherwise hunt down in the wiki.",
+            "Kernels, services, fixes and settings — point and click.",
+            "Swap between 13 desktops on demand."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "alacritty-tweak-tool"
+        headline: "Point, click, done. Your terminal, dialled in."
+        lines: [
+            "Fonts, colours, opacity and themes — set in a window, not a TOML file.",
+            "Every Alacritty setting in one place, no config hunting."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Archlinux-logout"
+        headline: "Go out in style."
+        lines: [
+            "Log out, lock, reboot, suspend or shut down — one clean screen.",
+            "Every way to leave, a keystroke away."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Hardware"
+        headline: "Detects your hardware. Sorts the rest."
+        lines: [
+            "The right CPU microcode, installed automatically.",
+            "NVIDIA drivers if you want them, gone if you don't.",
+            "Running in a VM? The guest tools sort themselves out."
+        ]
+    }
+
+    KiroSlide {
         kicker: "Performance"
         headline: "Tuned for speed"
         lines: [
-            "Boots linux-cachyos, with linux-zen on standby.",
-            "BBR, autotuned buffers, ananicy-cpp and zram — pre-applied.",
-            "Kernel-agnostic: bring linux-hardened, an LTS, or your own."
+            "Faster boot, snappier apps, smoother under heavy load.",
+            "The speed tuning is done before you ever log in.",
+            "Prefer a different kernel later? Swap it anytime."
         ]
     }
 
@@ -189,8 +247,17 @@ Presentation
         headline: "Your desktop, your way"
         lines: [
             "Xfce and Ohmychadwm ready at first login.",
-            "13 desktops — 7 tilers, 6 full DEs — on demand from ATT.",
-            "Themed and polished out of the box, no ricing required."
+            "13 desktops — 7 tilers, 6 full DEs — on demand from ATT."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Design"
+        headline: "Eye candy, out of the box."
+        lines: [
+            "Curated themes, icons and wallpapers — already set up for you.",
+            "Consistent and polished from the very first login.",
+            "No ricing required."
         ]
     }
 
@@ -200,7 +267,27 @@ Presentation
         lines: [
             "firewalld enabled by default.",
             "A sysctl hardening layer, already applied.",
-            "No telemetry. Timeshift snapshots roll back a bad update in minutes."
+            "No telemetry — your data stays on your machine."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Rollback"
+        headline: "Break something? Roll back in minutes."
+        lines: [
+            "Timeshift snapshots, ready from day one.",
+            "A bad update or a wrong move — just undo it.",
+            "Experiment freely. You can always go back."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Learn as you go"
+        headline: "Stuck? There's already a video for that."
+        lines: [
+            "Step-by-step video tutorials for nearly every task.",
+            "Install, customize, troubleshoot — all on screen.",
+            "The manual is a playlist."
         ]
     }
 
