@@ -11,6 +11,13 @@ Honours the GRUB-menu `driver=` kernel cmdline:
                      up proprietary NVIDIA, leave nouveau in place.
   - driver=nonfree -> run chwd; let it pick the right NVIDIA / AMD / Intel
                      profile from the detected device IDs.
+
+If chwd cannot complete (e.g. a detected profile needs a package that is not
+in the configured repos), the failure is treated as non-fatal: pacman's
+transaction is atomic so nothing is installed, chwd's own pre_remove hook
+removes any mkinitcpio drop-ins it wrote, and the install continues on the
+open driver (nouveau/mesa). A breadcrumb is left at
+/var/log/kiro-chwd-skipped.log so post-install audits can flag the skip.
 """
 
 import os
@@ -68,6 +75,23 @@ def run_in_host(command, line_func):
     return None
 
 
+def _record_skip(root_mount_point, detail):
+    marker = os.path.join(root_mount_point, "var/log/kiro-chwd-skipped.log")
+    try:
+        with open(marker, "w") as f:
+            f.write(
+                "chwd was skipped during installation because it could not complete.\n"
+                f"Reason: {detail}\n"
+                "The system booted on the open driver (nouveau/mesa). To retry:\n"
+                "  chwd --autoconfigure\n"
+                "Some driver packages come only from the [cachyos] repo, which Kiro ships\n"
+                "disabled by default. If the retry still cannot find a package, uncomment\n"
+                "[cachyos] in /etc/pacman.conf first, then run chwd --autoconfigure again.\n"
+            )
+    except OSError as e:
+        libcalamares.utils.warning(f"Could not write chwd skip marker: {e}")
+
+
 def run():
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Start chwd")
@@ -100,7 +124,15 @@ def run():
 
     error = run_in_host(chwd_command, line_cb)
     if error:
-        return error
+        _title, detail = error
+        libcalamares.utils.warning(
+            f"chwd did not complete ({detail}); continuing on the open "
+            "driver (nouveau/mesa). The system is usable; proprietary "
+            "drivers can be installed later with 'chwd --autoconfigure'."
+        )
+        _record_skip(root_mount_point, detail)
+        libcalamares.job.setprogress(1.0)
+        return None
 
     libcalamares.job.setprogress(1.0)
 

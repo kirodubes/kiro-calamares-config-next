@@ -261,6 +261,38 @@ def cleanup_vm_profile(target_root, profile_name):
         remove_path(os.path.join(target_root, rel_path))
 
 
+def _disable_repo(target_root, repo):
+    # Comment out a repo section (the [repo] header and its body lines) in the
+    # target pacman.conf. Idempotent. See the call site for why cachyos is
+    # disabled post-install rather than shipped disabled.
+    pacman_conf = os.path.join(target_root, "etc/pacman.conf")
+    header = f"[{repo}]"
+    out = []
+    in_section = False
+    changed = False
+    with open(pacman_conf) as f:
+        lines = f.readlines()
+    for line in lines:
+        stripped = line.strip()
+        if stripped == header:
+            in_section = True
+            out.append("#" + line)
+            changed = True
+            continue
+        if in_section:
+            if stripped == "" or stripped.startswith("["):
+                in_section = False
+            else:
+                out.append("#" + line)
+                changed = True
+                continue
+        out.append(line)
+    if changed:
+        with open(pacman_conf, "w") as f:
+            f.writelines(out)
+    return changed
+
+
 def run():
     """Execute final system configuration and cleanup."""
     libcalamares.utils.debug("##############################################")
@@ -275,9 +307,10 @@ def run():
     libcalamares.utils.debug("  5. Configure system environment (EDITOR=nano)")
     libcalamares.utils.debug("  6. Configure Bluetooth and PulseAudio")
     libcalamares.utils.debug("  7. Pin tuned ppd_base_profile = performance")
-    libcalamares.utils.debug("  8. Check bootloader configuration (remove GRUB if systemd-boot detected)")
-    libcalamares.utils.debug("  9. Detect virtualization and remove unnecessary VM packages")
-    libcalamares.utils.debug(" 10. Remove installer package (kiro-calamares-config)\n")
+    libcalamares.utils.debug("  8. Disable [cachyos] repo in pacman.conf (opt-in on installed system)")
+    libcalamares.utils.debug("  9. Check bootloader configuration (remove GRUB if systemd-boot detected)")
+    libcalamares.utils.debug(" 10. Detect virtualization and remove unnecessary VM packages")
+    libcalamares.utils.debug(" 11. Remove installer package (kiro-calamares-config)\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     results = {}
@@ -394,6 +427,27 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed to pin ppd_base_profile: {e}")
         results["Pin tuned ppd_base_profile"] = "FAILED"
+
+    # ========================
+    # Disable cachyos repo (opt-in on installed system)
+    # ========================
+
+    # cachyos must stay ENABLED during install so chwd can pull its driver
+    # packages, so it can't ship disabled in the airootfs — we disable it here,
+    # after chwd has run. Keeps `pacman -Syu` from silently swapping base
+    # packages for cachyos rebuilds; chaotic-aur stays enabled and carries
+    # linux-cachyos, so the default kernel still updates. Users re-enable cachyos
+    # by uncommenting it. If chaotic-aur is ever dropped, revisit this: cachyos
+    # would become the only source for linux-cachyos.
+    libcalamares.utils.debug("Disabling [cachyos] repo in target pacman.conf")
+    try:
+        if _disable_repo(target_root, "cachyos"):
+            results["Disable cachyos repo"] = "SUCCESS"
+        else:
+            results["Disable cachyos repo"] = "SUCCESS (already disabled)"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to disable cachyos repo: {e}")
+        results["Disable cachyos repo"] = "FAILED"
 
     # ========================
     # Bootloader Configuration

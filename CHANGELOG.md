@@ -4,6 +4,43 @@
 
 ---
 
+## 2026-05-29 — `[cachyos]` repo disabled by default on the installed system
+
+**What Changed**
+
+`kiro_final` now comments out the `[cachyos]` repo (header + its `Include` line) in the target `/etc/pacman.conf` at the end of the install. cachyos stays **enabled during** the install (chwd pulls its driver packages from it) and is only disabled afterward; keyring + mirrorlist remain installed, so a user re-enables it by uncommenting the two lines.
+
+Rationale: keeps `pacman -Syu` from silently swapping base packages for cachyos-optimized rebuilds. Safe for the default kernel because `chaotic-aur` stays enabled and carries `linux-cachyos`/`-headers`. (If `chaotic-aur` is ever dropped, revisit — cachyos would become the sole source for `linux-cachyos`.)
+
+**Technical Details**
+
+- [usr/lib/calamares/modules/kiro_final/main.py](usr/lib/calamares/modules/kiro_final/main.py) — new private `_disable_repo(target_root, repo)` helper (idempotent; comments header + body until a blank line or next `[section]`), called for `cachyos` after the tuned pin and before bootloader config — well after chwd in the exec sequence.
+- chwd skip-marker text updated to tell users to uncomment `[cachyos]` if a driver package can't be found.
+- Identical to the change mirrored into production [kiro-calamares-config](../kiro-calamares-config/CHANGELOG.md) the same date (kiro_final differs only in its own self-removal package name).
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_final/main.py`
+- `usr/lib/calamares/modules/chwd/main.py`
+
+## 2026-05-29 — chwd failure is now non-fatal (install no longer aborts)
+
+**What Changed**
+
+On a laptop install, `chwd --autoconfigure` selected a driver profile whose package set included a package that none of the configured target repos carried. pacman aborted the transaction, the chwd module returned a `(error_title, error_description)` tuple, and Calamares **aborted the whole installation** — leaving the user with no installed system over a missing driver package.
+
+The chwd module now treats a chwd failure as **non-fatal**. When `chwd --autoconfigure` exits non-zero, the module logs a `libcalamares.utils.warning`, writes a breadcrumb to `/var/log/kiro-chwd-skipped.log` on the target, and returns `None` so the install completes on the open driver (nouveau/mesa, already in the ISO). Safe because pacman transactions are atomic (a missing target installs nothing) and chwd's own `pre_remove` hook removes any mkinitcpio drop-ins it had written, so a failed run leaves no half-configured state.
+
+This change is identical to the one mirrored into production [kiro-calamares-config](../kiro-calamares-config/CHANGELOG.md) on the same date (the chwd `main.py` is byte-identical across both trees).
+
+**Technical Details**
+
+- [usr/lib/calamares/modules/chwd/main.py](usr/lib/calamares/modules/chwd/main.py) — `run()` no longer returns the error tuple from `run_in_host`; on failure it warns, calls the new private `_record_skip(root_mount_point, detail)` helper, sets progress to 1.0, and returns `None`.
+- `_record_skip` writes `/var/log/kiro-chwd-skipped.log` (reason + retry hint) into the chroot; an `OSError` while writing is itself non-fatal (warn only).
+- Surfaced post-install by `kiro-audit`'s new `check_chwd` ([edu-system-files](/home/erik/EDU/edu-system-files/CHANGELOG.md)).
+
+**Files Modified**
+- `usr/lib/calamares/modules/chwd/main.py`
+
 ## 2026-05-28 — Hardware-aware install via **chwd**: new Calamares module (paired with `kiro-iso-next`)
 
 First step of the install-time driver-selection experiment. The companion change in [kiro-iso-next](../kiro-iso-next/) added `chwd`, `b43-fwcutter`, `broadcom-wl-dkms`, and `hwdetect` to the live ISO. This repo provides the Calamares wiring that actually invokes chwd during install.
