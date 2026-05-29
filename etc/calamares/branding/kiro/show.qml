@@ -227,7 +227,7 @@ Presentation
         headline: "Detects your hardware. Sorts the rest."
         lines: [
             "The right CPU microcode, installed automatically.",
-            "NVIDIA drivers if you want them, gone if you don't.",
+            "NVIDIA drivers if you need them.",
             "Running in a VM? The guest tools sort themselves out."
         ]
     }
