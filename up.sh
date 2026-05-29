@@ -161,35 +161,6 @@ update_ucode() {
 # kiro-calamares-config-26.05-54 hit 97 MB, GitHub's 50 MB push warning fired).
 # rm -rf so directories are removed too. Stripping unconditionally also clears
 # any remnants left by earlier syncs.
-update_pkgbuild() {
-    local src_root="${HOME}/KIRO-PKG-BUILD"
-    local dst="${SCRIPT_DIR}/etc/calamares/pkgbuild"
-    local strip=(up.sh setup.sh .current-version .previous-version calamares pkg src)
-    local latest f
-
-    log_section "Syncing PKGBUILD from ${src_root}"
-
-    if [[ ! -d "${src_root}" ]]; then
-        log_warn "${src_root} not found — skipping PKGBUILD sync"
-        return 0
-    fi
-
-    latest="$(find "${src_root}" -maxdepth 1 -type d -name 'calamares-next-*' -printf '%f\n' 2>/dev/null | sort -V | tail -1)"
-    if [[ -z "${latest}" ]]; then
-        log_warn "No calamares-next-* folder found in ${src_root} — skipping PKGBUILD sync"
-        return 0
-    fi
-
-    log_info "Latest build folder: ${latest}"
-    mkdir -p "${dst}"
-    cp -af "${src_root}/${latest}/." "${dst}/"
-
-    for f in "${strip[@]}"; do
-        rm -rf "${dst}/${f}"
-    done
-
-    log_success "PKGBUILD synced from ${latest}"
-}
 
 ensure_git_remote_configured() {
     local remote_url
@@ -233,7 +204,6 @@ main() {
     git_pull
     clean_pycache
     update_ucode
-    update_pkgbuild
 
     if [[ -f "${SCRIPT_DIR}/chaotic.sh" ]]; then
         log_section "Running chaotic.sh"

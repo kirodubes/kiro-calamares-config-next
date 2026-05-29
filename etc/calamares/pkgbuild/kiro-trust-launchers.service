@@ -1,9 +1,0 @@
-[Unit]
-Description=Trust Kiro live desktop launchers (XFCE)
-
-[Service]
-Type=oneshot
-ExecStart=/bin/bash /usr/local/bin/kiro-trust-desktop-launchers
-
-[Install]
-WantedBy=default.target
