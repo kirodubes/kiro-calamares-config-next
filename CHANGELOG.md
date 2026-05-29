@@ -23,6 +23,15 @@ Gave the Calamares branding a "shining" pass so the installer chrome matches the
 - `etc/calamares/branding/kiro/show.qml`
 - `etc/calamares/branding/kiro/show-backup.qml`
 
+**Addendum — marketing pass: slide deck expanded 7 → 16, plain-language rewrite**
+
+Did a marketeer pass over the deck: positioning and app slides added, all copy verified against the repo (no invented features — encryption is *not* claimed; partition.conf has `enableLuksAutomatedPartitioning: false`).
+
+- New slides: "Arch Linux, with a teacher in the box" (open/teachable), "Use Kiro today, master Linux for life." (learn & grow), per-app slides for **ATT** (*"Your Arch, one click at a time."*), **alacritty-tweak-tool** (*"Point, click, done. Your terminal, dialled in."*), **Archlinux-logout** (*"Go out in style."*), **Hardware** (*"Detects your hardware. Sorts the rest."* — microcode/NVIDIA/VM-cleanup), **Design** (*"Eye candy, out of the box."*), **Rollback** (*"Break something? Roll back in minutes."* — Timeshift), and "Stuck? There's already a video for that."
+- **Performance** slide rewritten from kernel jargon (linux-cachyos, BBR, zram, ananicy-cpp) to plain benefits ("Faster boot, snappier apps, smoother under heavy load").
+- De-duplicated: moved Timeshift off the Security slide into its own Rollback slide; dropped the "themed/no ricing" line from Desktop now that Design owns it.
+- Removed the unreferenced `show-backup.qml` (branding.desc uses only `show.qml`).
+
 ---
 
 ## 2026-05-29 — `[cachyos]` repo disabled by default on the installed system
