@@ -368,6 +368,7 @@ def run():
             "etc/systemd/logind.conf.d/do-not-suspend.conf",  # Live-only: keeps the installer awake; must not disable suspend/lid handling on the installed system
             "etc/mkinitcpio.d/linux.preset",             # Archiso live-only artifact; the kernel package's own preset (e.g. linux-cachyos.preset) is the correct one
             "etc/ssh/sshd_config.d/10-archiso.conf",
+            "root/.config/Kvantum",                      # Live-only: the KiroDark theme that styles the Calamares installer (run as root); the installed system's root doesn't need it
         ]
         for rel_path in paths_to_remove:
             remove_path(os.path.join(target_root, rel_path))
