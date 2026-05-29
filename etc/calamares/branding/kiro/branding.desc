@@ -161,7 +161,7 @@ images:
     productLogo:            "squid.png"
     productIcon:            "welcome.png"
     # productWallpaper:    "wallpaper.png"
-    productWelcome:            "welcome.png"
+    productWelcome:         "welcome.png"
 
 # Colors for text and background components.
 #
