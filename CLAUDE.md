@@ -105,12 +105,16 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 | Module               | Position in exec     | Purpose                                                                                                          |
 |----------------------|----------------------|------------------------------------------------------------------------------------------------------------------|
 | `kiro_before`        | After networkcfg     | Pacman lock wait, keyring init, mkinitcpio preset rename (`kiro` → `linux.preset`), makepkg optimization     |
-| `kiro_remove_nvidia` | After kiro_before    | Reads `driver=` kernel param; **defaults to removing NVIDIA** unless `driver=nonfree`                            |
+| `kiro_remove_nvidia` | After kiro_before    | Reads `driver=` kernel param; removes NVIDIA on `free` + `nonfreechwd`, keeps the baked `nvidia-open-dkms` on `nonfree` |
+| `chwd`               | After kiro_remove_nvidia | Runs `chwd --autoconfigure` **only** on `driver=nonfreechwd`; picks the right driver for the detected GPU      |
 | `kiro_ucode`         | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/`              |
 | `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, self-removal |
 
-### kiro_remove_nvidia — default behaviour
-`kernel_cmdline("driver", default="free")` — the default is `"free"`, so NVIDIA packages are removed unless the ISO is booted with `driver=nonfree` on the kernel cmdline. Packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`.
+### NVIDIA driver modes (`driver=` kernel cmdline)
+`kernel_cmdline("driver", default="free")`. Three modes drive `kiro_remove_nvidia` + `chwd` (packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`):
+- **`free`** (default) — `kiro_remove_nvidia` removes the NVIDIA packages; chwd skipped → mesa / open stack.
+- **`nonfree`** — both modules skip; the baked `nvidia-open-dkms` is kept untouched (proven express lane for modern Turing+ GPUs).
+- **`nonfreechwd`** — `kiro_remove_nvidia` removes the baked NVIDIA packages first (clean slate), then `chwd --autoconfigure` installs exactly the profile it detects (any card) with nothing to conflict.
 
 ### VM Detection (kiro_final)
 Uses `systemd-detect-virt` and removes packages for VMs you are **not** running in. The set-based logic:

@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-05-31 — Three NVIDIA driver modes (free / nonfree / nonfreechwd) — mirrored from production
+
+**What Changed**
+- Mirrors kiro-calamares-config: `kiro_remove_nvidia` removes the baked NVIDIA packages on `free` **and** `nonfreechwd`; plain `nonfree` keeps `nvidia-open-dkms` untouched. `chwd` runs **only** on `nonfreechwd`.
+
+**Why**
+- `nonfree` = chwd-free express lane to the baked `nvidia-open-dkms` (modern Turing+); `nonfreechwd` wipes the baked driver first so chwd installs its detected profile with nothing to conflict (fixes the older-card `470xx`/`390xx` collision).
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
+- `usr/lib/calamares/modules/chwd/main.py`
+- `CLAUDE.md`
+
 ## 2026-05-29 — Dark installer: KiroDark Kvantum theme + dark branding
 
 **What Changed**
