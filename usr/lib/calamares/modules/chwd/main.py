@@ -6,11 +6,14 @@ Runs `chwd --autoconfigure` inside the chroot to install the optimal driver
 profile for the detected hardware (GPU, network adapter, microcode-aware
 laptop tweaks, hybrid graphics, etc.).
 
-Honours the GRUB-menu `driver=` kernel cmdline:
-  - driver=free    -> skip chwd entirely; kiro_remove_nvidia already cleaned
-                     up proprietary NVIDIA, leave nouveau in place.
-  - driver=nonfree -> run chwd; let it pick the right NVIDIA / AMD / Intel
-                     profile from the detected device IDs.
+Honours the boot-menu `driver=` kernel cmdline (three modes):
+  - driver=free        -> skip chwd; kiro_remove_nvidia removed the baked NVIDIA
+                          packages, system runs on mesa / the open stack.
+  - driver=nonfree     -> skip chwd; keep the baked nvidia-open-dkms untouched
+                          (the proven express lane for modern Turing+ GPUs).
+  - driver=nonfreechwd -> run chwd; kiro_remove_nvidia already wiped the baked
+                          nvidia-open-dkms first, so chwd installs exactly the
+                          profile it detects (any card) with nothing to conflict.
 
 If chwd cannot complete (e.g. a detected profile needs a package that is not
 in the configured repos), the failure is treated as non-fatal: pacman's
@@ -100,10 +103,11 @@ def run():
     selection = kernel_cmdline("driver", default="free")
     libcalamares.utils.debug(f"Kernel parameter 'driver' = {selection}")
 
-    if selection == "free":
+    if selection != "nonfreechwd":
         libcalamares.utils.debug(
-            "Skipping chwd because 'driver=free' was specified — "
-            "kiro_remove_nvidia already cleaned up proprietary drivers."
+            f"Skipping chwd because 'driver={selection}' — chwd runs only on "
+            "'driver=nonfreechwd'. (free → kiro_remove_nvidia cleaned up; "
+            "nonfree → keep the baked nvidia-open-dkms.)"
         )
         return None
 

@@ -81,7 +81,7 @@ def run():
     libcalamares.utils.debug("This module will perform the following operations:")
     libcalamares.utils.debug("  1. Read kernel cmdline 'driver' parameter")
     libcalamares.utils.debug("  2. Wait for pacman lock to be released")
-    libcalamares.utils.debug("  3. Remove NVIDIA packages if driver=free is set\n")
+    libcalamares.utils.debug("  3. Remove NVIDIA packages if driver=free or driver=nonfreechwd\n")
 
     results = {}
 
@@ -95,15 +95,18 @@ def run():
         return error
     results["Wait for pacman lock"] = "SUCCESS"
 
-    if selection == "free":
-        libcalamares.utils.debug("Removing NVIDIA packages because 'driver=free' was specified.")
+    # Remove on 'free' (end up on mesa) and on 'nonfreechwd' (clean slate so chwd
+    # installs exactly its detected pick with nothing to conflict). Plain 'nonfree'
+    # keeps the baked nvidia-open-dkms untouched.
+    if selection in ("free", "nonfreechwd"):
+        libcalamares.utils.debug(f"Removing NVIDIA packages because 'driver={selection}' was specified.")
         error = remove_nvidia_packages_from_target()
         if error:
             results["Remove NVIDIA packages"] = "FAILED"
             return error
         results["Remove NVIDIA packages"] = "SUCCESS"
     else:
-        libcalamares.utils.debug("Skipping NVIDIA removal because 'driver=free' not set.")
+        libcalamares.utils.debug(f"Keeping NVIDIA packages because 'driver={selection}' (baked nvidia-open-dkms).")
         results["Remove NVIDIA packages"] = "SKIPPED"
 
     libcalamares.utils.debug("##############################################")
