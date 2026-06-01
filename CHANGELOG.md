@@ -4,6 +4,21 @@
 
 ---
 
+## 2026-06-01 — packages: disable update_db so a failing `pacman -Sy` no longer aborts the install
+
+**What Changed**
+- `packages.conf`: `update_db: true` → `false`.
+
+**Why**
+- A user (kiro-discussions #10) hit *"Package Manager error — the command pacman returned error code 1 / could not prepare updates"* at ~99% on bare metal, on both NVIDIA boot entries. Traced to the Calamares `packages@choice` module's `update_db: true`: it runs a `pacman -Sy` on **every** install (driver-independent — the `nonfree` path downloads no driver), and with `skip_if_no_internet: false` a failed `-Sy` (no internet, or an unreachable mirror in the live `pacman.conf`) is **fatal**. VMs passed only because NAT gave them internet.
+- The module's real work is the `try_remove` of the live-only packages, and `pacman -R` needs no synced DB. DB freshness is already handled best-effort (and non-fatally) by `kiro_before.sync_pacman_databases()`. So disabling `update_db` removes the abort with no real loss.
+
+**Testing**
+- Needs a full offline install run (no network in the live session) to confirm the install completes and live packages are still removed. Test in -next, then mirror to production.
+
+**Files Modified**
+- `etc/calamares/modules/packages.conf`
+
 ## 2026-05-31 — Three NVIDIA driver modes (free / nonfree / nonfreechwd) — mirrored from production
 
 **What Changed**
