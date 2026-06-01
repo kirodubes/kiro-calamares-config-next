@@ -206,7 +206,7 @@ Presentation
 
     KiroSlide {
         kicker: "Alacritty-tweak-tool"
-        headline: "Point, click, done. Your terminal, dialled in."
+        headline: "Point, click, done. Your terminal, dialed in."
         lines: [
             "Fonts, colours, opacity and themes — set in a window, not a TOML file.",
             "Every Alacritty setting in one place, no config hunting."

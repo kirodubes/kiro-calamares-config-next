@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Changes here must be tested with a full install run before being mirrored to `kiro-calamares-config`.
 
-**Current experiment:** none — this repo is ready for the next experiment.
+**Current experiment:** `packages.conf` `update_db: false` — stop a failing `pacman -Sy` from aborting the install at ~99% (kiro-discussions #10). Needs a full offline install run before mirroring to production.
 
 ## Beta Build Workflow
 
