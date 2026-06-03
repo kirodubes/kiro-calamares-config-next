@@ -4,16 +4,6 @@
 
 ---
 
-## 2026-06-03 — kiro_plymouth: render the LUKS prompt through the splash (plymouth-encrypt)
-
-**What Changed**
-- `kiro_plymouth/main.py`: besides inserting the `plymouth` hook after `udev`, it now swaps the plain `encrypt` hook for **`plymouth-encrypt`** on encrypted installs (standalone-token regex, so `sd-encrypt` and an already-converted `plymouth-encrypt` are left untouched — idempotent).
-
-**Why**
-- An encrypted install booted to the Plymouth splash with **no visible password prompt** and stalled (sshd never came up). Cause: Plymouth starts early (after `udev`) and the plain `encrypt` hook prints its `cryptsetup` passphrase prompt to the console *underneath* the splash → invisible, boot waits forever. `plymouth-encrypt` (shipped by the plymouth package, no new dependency) renders the prompt *through* the splash as a themed password box. Found on a kiro-iso-next encrypted VM install (jfs + encryption). This is the necessary complement to the Calamares Tweak Tool's encryption toggle — without it, enabling encryption produces an unbootable-looking system.
-
----
-
 ## 2026-06-03 — qdd-kiro-repo: make adding the Kiro repo idempotent
 
 **What Changed**
