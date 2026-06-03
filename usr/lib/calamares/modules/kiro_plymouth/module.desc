@@ -1,7 +1,0 @@
-# Syntax is YAML 1.2
----
-type:       "job"
-name:       "kiro_plymouth"
-interface:  "python"
-script:     "main.py"   #assumed relative to the current directory
-noconfig:   true
