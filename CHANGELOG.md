@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-06-03 — systemd initramfs hooks, so the encrypted-boot LUKS prompt is visible
+
+**What Changed**
+- **New `etc/calamares/modules/initcpiocfg.conf`** with `useSystemdHook: true` (+ `source: /etc/mkinitcpio.conf`).
+- **`settings.conf`**: removed `kiro_plymouth` from the exec sequence (now redundant).
+
+**Why**
+- On an encrypted install the LUKS passphrase prompt was **invisible at boot** (user had to type it blind), on ext4/btrfs alike. The busybox `encrypt` hook prompts through the kiro-logo Plymouth theme's script `DisplayPasswordCallback`, which doesn't render reliably at boot. Switching to the **systemd hooks** (`systemd` + `sd-encrypt`) makes `sd-encrypt` ask via `systemd-ask-password`, which Plymouth's **built-in password agent** renders reliably as a themed prompt — exactly how CachyOS ships Plymouth + encryption (`useSystemdHook: true`).
+- The rest cascades automatically in Calamares (verified @ g841b478): `initcpiocfg` itself adds the `plymouth` hook via `detect_plymouth()` before encrypt (so `kiro_plymouth` is redundant), and `bootloader/main.py` detects the systemd HOOKS and writes `rd.luks.uuid=…` instead of `cryptdevice=…`, plus `splash`. One flag, whole chain.
+- Tradeoff: no busybox emergency recovery shell. **Switches ALL installs to the systemd initramfs** — test encrypted AND plain installs.
+- **Beta only** — this is `kiro-calamares-config-next`; production `kiro-calamares-config` is untouched (zero risk to the mainstream ISO) until a passing encrypted test-install. The dead `usr/lib/calamares/modules/kiro_plymouth/` dir is left in place for now (reversibility); delete later.
+
+---
+
 ## 2026-06-03 — qdd-kiro-repo: make adding the Kiro repo idempotent
 
 **What Changed**
