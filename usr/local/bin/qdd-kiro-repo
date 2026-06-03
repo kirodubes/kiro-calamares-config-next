@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
-echo '
-[kiro_repo]
-SigLevel = Never
-Server = https://kirodubes.github.io/$repo/$arch
-' | sudo tee --append /etc/pacman.conf
+set -euo pipefail
+# Add the Kiro pacman repo to /etc/pacman.conf — idempotently.
+# Why: a plain append created a second [kiro_repo] section whenever this ran on a
+# system that already had it (e.g. baked into the ISO), and pacman then fails with
+# "could not register 'kiro_repo' database (database already registered)". Guarding
+# on the section header makes a duplicate impossible no matter how often it runs.
+
+if grep -q '^\[kiro_repo\]' /etc/pacman.conf; then
+    echo "kiro_repo already present in /etc/pacman.conf — nothing to add"
+else
+    printf '\n[kiro_repo]\nSigLevel = Never\nServer = https://kirodubes.github.io/$repo/$arch\n' \
+        | sudo tee --append /etc/pacman.conf >/dev/null
+    echo "kiro_repo added to /etc/pacman.conf"
+fi
+
 sudo pacman -Syyu

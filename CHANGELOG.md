@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-06-03 — qdd-kiro-repo: make adding the Kiro repo idempotent
+
+**What Changed**
+- `usr/local/bin/qdd-kiro-repo`: guard the append with `grep -q '^\[kiro_repo\]'` — only add the `[kiro_repo]` section if it isn't already in `/etc/pacman.conf`.
+
+**Why**
+- The script did a blind `tee --append`, so running it on a system that already had the repo (it's baked into the ISO `pacman.conf`) wrote a **second** `[kiro_repo]` section. pacman then fails every transaction with *"could not register 'kiro_repo' database (database already registered)."* Seen live on a kiro-iso-next VM. The grep guard makes a duplicate impossible no matter how often it runs. (Personal dev utility — bare style like `dev`, not the full bash template; see TEMPLATE_EXCLUSIONS rationale.)
+
+---
+
 ## 2026-06-01 — packages: disable update_db so a failing `pacman -Sy` no longer aborts the install
 
 **What Changed**
