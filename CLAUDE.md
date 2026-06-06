@@ -20,19 +20,19 @@ Changes here must be tested with a full install run before being mirrored to `ki
 **After making changes here, always follow this order:**
 
 ```
-1. Push config source:  cd ~/KIRO/kiro-calamares-config-next && ./up.sh
-2. Build the package:    cd ~/KIRO-PKG-BUILD/kiro-calamares-config-next && bash build.sh
+1. Push config source:  cd ~/KIRO-ISO-CALAMARES/kiro-calamares-config-next && ./up.sh
+2. Build the package:    cd ~/KIRO-PKG-BUILD-CALAMARES/kiro-calamares-config-next && bash build.sh
                          (pulls the just-pushed config, builds via chroot, drops the
                           .pkg.tar.zst into ~/KIRO/kiro_repo/x86_64/)
 3. Publish the repo:     cd ~/KIRO/kiro_repo && ./repo.sh && ./up.sh
                          (repo.sh regenerates the pacman db, up.sh pushes to GitHub Pages)
 4. Wait 5–10 minutes for kiro_repo (GitHub Pages) to serve the new package
-5. Build the ISO:        cd ~/KIRO/kiro-iso-next/build-scripts && bash build-the-iso.sh
+5. Build the ISO:        cd ~/KIRO-ISO-CALAMARES/kiro-iso-next/build-scripts && bash build-the-iso.sh
 6. Full install run to validate
 ```
 
 **Steps 2–3 are mandatory** — `up.sh` here only pushes the config *source* to GitHub. The
-Calamares config is repackaged from that GitHub repo by `build.sh` in `KIRO-PKG-BUILD`, and the
+Calamares config is repackaged from that GitHub repo by `build.sh` in `KIRO-PKG-BUILD-CALAMARES`, and the
 resulting package only reaches the ISO after `kiro_repo` is regenerated and pushed to GitHub Pages.
 
 **Do not build the ISO immediately after step 3** — GitHub Pages needs a few minutes to rebuild.
@@ -68,7 +68,7 @@ cd etc/calamares/pkgbuild/modules/bootloader/tests && python -m pytest
 
 There is no linter configured for this repo. The Python modules in `usr/lib/calamares/modules/` run inside a Calamares chroot at install time — they cannot be run standalone.
 
-`up.sh` does: clean `__pycache__`, verify git remote is configured (runs `setup.sh` if not), `git pull`, then commit + push all changes. **Do not edit `etc/calamares/pkgbuild/PKGBUILD` here** — it must be edited in `~/KIRO/kiro-pkgbuild/` and copied manually.
+`up.sh` does: clean `__pycache__`, verify git remote is configured (runs `setup.sh` if not), `git pull`, then commit + push all changes. **Do not edit `etc/calamares/pkgbuild/PKGBUILD` here** — it must be edited in `~/KIRO-PKG-BUILD-CALAMARES/` and copied manually.
 
 ## Installer Pipeline Architecture
 
@@ -131,7 +131,7 @@ Uses `systemd-detect-virt` and removes packages for VMs you are **not** running 
 
 All in [etc/calamares/modules/](etc/calamares/modules/). Key non-obvious settings:
 
-- **partition.conf** — EFI min 2GB, swap as file (no partition), LUKS v1, auto-partitioning disabled
+- **partition.conf** — EFI min 2GB, swap as file (no partition), LUKS v2 (grub now unlocks LUKS2/Argon2id via GRUB 2.14), `defaultPartitionTableType` empty so Calamares auto-picks gpt on UEFI / msdos on BIOS, auto-partitioning disabled
 - **unpackfs1.conf / unpackfs2.conf** — two separate unpack steps (rootfs + kernel), with different weights (45 vs 5)
 - **packages.conf** — removes `calamares`, `mkinitcpio-archiso`, `memtest86+`, `memtest86+-efi` after install; `skip_if_no_internet: false`
 
@@ -157,4 +157,4 @@ When updating microcode: download the new package into `etc/calamares/packages/`
 - applies two patches in `prepare()`: enables config file installation (`"Install configuration files" OFF` → `ON`), increases fstab `desired_size` to 8589MiB (512×1024×1024×16)
 - bundles the custom modules from `pkgbuild/modules/` (bootloader + packages overrides copied into the Calamares source tree)
 
-**Do not edit the local PKGBUILD** — edit `~/KIRO/kiro-pkgbuild/` instead and copy manually.
+**Do not edit the local PKGBUILD** — edit `~/KIRO-PKG-BUILD-CALAMARES/` instead and copy manually.
