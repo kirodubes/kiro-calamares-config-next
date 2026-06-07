@@ -4,6 +4,21 @@
 
 ---
 
+## 2026-06-07 — chwd: trusted-CDN mirror refresh on the online install path
+
+**What Changed**
+- `chwd/main.py` now refreshes the package mirrors **before** running `chwd --autoconfigure`. New `_refresh_driver_mirrors()` (with helper `_ensure_cdn_first()`): for the chroot's `cachyos-mirrorlist` and `chaotic-mirrorlist`, it prepends a trusted geo-CDN `Server` line if not already present, then runs `arch-chroot … pacman -Sy` (180s timeout). Both steps are best-effort — any failure logs a warning and the install continues.
+
+**Why**
+- `driver=nonfreechwd` is the **only** install path that fetches packages online — the open (`free`) and baked-`nvidia-open-dkms` (`nonfree`) paths install entirely from the ISO. The driver chwd pulls comes mainly from `[cachyos]`, some from `[chaotic-aur]`.
+- A fresh chroot's pacman sync DBs predate the ISO build, and `chwd` runs `pacman -S` which does **not** refresh them. Without a `-Sy`, chwd could request a driver version the mirror no longer carries → fail → silent fallback to the open driver. The `-Sy` fixes that; leading both repos with the same geo-CDN servers `build-scripts/host-prep.sh` already trusts makes the fetch reliable. Mirrorlists are **prepended, not replaced**, so the installed system keeps its full chaotic-aur mirror pool for future updates.
+
+**Files Modified**
+- `usr/lib/calamares/modules/chwd/main.py`
+- `CLAUDE.md` (chwd row + `nonfreechwd` mode note)
+
+---
+
 ## 2026-06-07 — Fix `kiro_remove_nvidia` for 390xx/580xx ISOs (install-blocking)
 
 **What Changed**
