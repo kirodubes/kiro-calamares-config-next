@@ -8,6 +8,7 @@
 
 **What Changed**
 - `chwd/main.py` now refreshes the package mirrors **before** running `chwd --autoconfigure`. New `_refresh_driver_mirrors()` (with helper `_ensure_cdn_first()`): for the chroot's `cachyos-mirrorlist` and `chaotic-mirrorlist`, it prepends a trusted geo-CDN `Server` line if not already present, then runs `arch-chroot … pacman -Sy` (180s timeout). Both steps are best-effort — any failure logs a warning and the install continues.
+- **Greppable mirror-refresh log block.** `_refresh_driver_mirrors()` now wraps its work in a `chwd: ──────── mirror refresh ────────` … `chwd: ─────────────────────────────────` banner and logs each step: per mirrorlist `chwd: led <name> → <host>` (or `… unchanged (already CDN-led or absent)`) and the `pacman -Sy` result (`… OK` / non-fatal exit code). New helper `_mirror_host()`. Previously the CDN-lead was silent and the `-Sy` was a single terse debug line easily confused with `kiro_before`'s own step-5 `pacman -Sy` — the block makes chwd's refresh unmistakable in `Calamares.log`. Log-only, no behaviour change.
 
 **Why**
 - `driver=nonfreechwd` is the **only** install path that fetches packages online — the open (`free`) and baked-`nvidia-open-dkms` (`nonfree`) paths install entirely from the ISO. The driver chwd pulls comes mainly from `[cachyos]`, some from `[chaotic-aur]`.
