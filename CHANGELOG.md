@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-06-07 — Fix `kiro_remove_nvidia` for 390xx/580xx ISOs (install-blocking)
+
+**What Changed**
+- `kiro_remove_nvidia/main.py` now discovers the **actually-installed** NVIDIA driver stack and removes those real package names, instead of the hardcoded open-variant list `["nvidia-open-dkms","nvidia-utils","nvidia-settings"]`. New `installed_nvidia_stack()` (via `pacman -Qq`) + pure, testable `nvidia_stack_from_names()` matching `nvidia-*` packages ending in `dkms`/`utils`/`settings` — covers open, 390xx and 580xx.
+
+**Why**
+- A 390xx/580xx ISO ships `nvidia-390xx-{dkms,utils,settings}`. The old `pacman -Q nvidia-utils` check **resolved the provide** (`nvidia-390xx-utils`) so removal targeted `nvidia-utils`, which `pacman -Rns` can't resolve → `target not found` → `nvidia-remove-failed` → install aborted. Confirmed from a real Calamares log.
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
+
+---
+
 ## 2026-06-05 — LUKS2 default + firmware-correct partition table
 
 **What Changed**

@@ -8,7 +8,7 @@ import os
 import time
 import subprocess
 import libcalamares
-from libcalamares.utils import check_target_env_call
+from libcalamares.utils import check_target_env_call, check_target_env_output
 
 
 def kernel_cmdline(param_name, default=None):
@@ -41,30 +41,40 @@ def wait_for_pacman_lock(max_wait=30):
                 return ("pacman-lock-error", f"Could not remove lock file: {e}")
     return None
 
-def _is_installed_in_target(pkg: str) -> bool:
+def nvidia_stack_from_names(names):
+    """The NVIDIA driver packages among a list of real installed package names.
+
+    Variant-agnostic: matches nvidia-open-dkms, nvidia-utils, nvidia-settings AND
+    the nvidia-390xx-* / nvidia-580xx-* variants, by REAL installed name. This is
+    the fix for the old hardcoded ["nvidia-open-dkms","nvidia-utils","nvidia-settings"]
+    list: `pacman -Q nvidia-utils` resolves the provide (nvidia-390xx-utils), so the
+    old code thought it was installed, but `pacman -Rns nvidia-utils` does NOT resolve
+    provides → "target not found" → install aborted on 390xx/580xx ISOs.
     """
-    Returns True if pkg is installed in the target environment.
-    Uses: pacman -Q <pkg> (exit 0 if installed, non-zero if not).
-    """
+    return [n for n in names
+            if n.startswith("nvidia-") and n.rsplit("-", 1)[-1] in ("dkms", "utils", "settings")]
+
+def installed_nvidia_stack():
+    """The NVIDIA driver packages actually installed in the target (real names)."""
     try:
-        check_target_env_call(["pacman", "-Q", pkg])
-        return True
+        out = check_target_env_output(["pacman", "-Qq"])
     except subprocess.CalledProcessError:
-        return False
+        return []
+    return nvidia_stack_from_names(out.split())
 
 def remove_nvidia_packages_from_target():
-    """Remove NVIDIA-related packages from the target system (only if installed)."""
-    candidates = ["nvidia-open-dkms", "nvidia-utils", "nvidia-settings"]
+    """Remove the installed NVIDIA driver stack from the target (any variant)."""
+    pkgs = installed_nvidia_stack()
 
-    # Only remove packages that are actually installed in the target.
-    installed = [p for p in candidates if _is_installed_in_target(p)]
-
-    if not installed:
+    if not pkgs:
         libcalamares.utils.debug("No NVIDIA packages installed in target; skipping removal.")
         return None  # Continue Calamares normally.
 
+    libcalamares.utils.debug(f"Removing NVIDIA packages: {' '.join(pkgs)}")
     try:
-        check_target_env_call(["pacman", "-Rns", "--noconfirm"] + installed)
+        # Remove dkms + utils + settings together so there's no dependency-order
+        # failure (the dkms driver depends on its -utils).
+        check_target_env_call(["pacman", "-Rns", "--noconfirm"] + pkgs)
     except subprocess.CalledProcessError as e:
         # At this point something *real* failed (deps, locks, etc.)
         libcalamares.utils.warning(str(e))
