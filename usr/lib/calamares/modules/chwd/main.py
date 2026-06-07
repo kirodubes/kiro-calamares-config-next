@@ -131,30 +131,49 @@ def _ensure_cdn_first(mirrorlist_path, server_line):
     return True
 
 
+def _mirror_host(server_line):
+    """Host part of a 'Server = https://host/path' line, for concise logging."""
+    url = server_line.split("=", 1)[1].strip()
+    return url.split("//", 1)[-1].split("/", 1)[0]
+
+
 def _refresh_driver_mirrors(root_mount_point):
     """Best-effort: lead cachyos/chaotic with a trusted CDN, then sync DBs before chwd.
 
     chwd runs `pacman -S`, which does not refresh the sync databases; a fresh chroot's
     DBs can predate the ISO, so without this chwd may request a driver version the
     mirror no longer carries and fall back to the open driver. Never fatal.
+
+    Logs a single greppable `chwd: ── mirror refresh ──` block so this step is easy to
+    find in Calamares.log and is unmistakably distinct from kiro_before's own pacman -Sy.
     """
+    libcalamares.utils.debug("chwd: ──────── mirror refresh ────────")
     for name, server_line in _TRUSTED_MIRRORS.items():
         path = os.path.join(root_mount_point, "etc/pacman.d", name)
+        host = _mirror_host(server_line)
         try:
             if _ensure_cdn_first(path, server_line):
-                libcalamares.utils.debug(f"chwd: prepended trusted CDN to {name}")
+                libcalamares.utils.debug(f"chwd: led {name} → {host}")
+            else:
+                libcalamares.utils.debug(f"chwd: {name} unchanged (already CDN-led or absent)")
         except OSError as e:
             libcalamares.utils.warning(f"chwd: could not update {name}: {e}")
 
-    libcalamares.utils.debug("chwd: refreshing pacman sync databases before driver install")
     try:
-        subprocess.run(
+        result = subprocess.run(
             ["arch-chroot", root_mount_point, "pacman", "-Sy"],
             check=False,
             timeout=180,
         )
+        if result.returncode == 0:
+            libcalamares.utils.debug("chwd: pacman -Sy … OK")
+        else:
+            libcalamares.utils.warning(
+                f"chwd: pacman -Sy exited {result.returncode} (non-fatal, continuing)"
+            )
     except (subprocess.TimeoutExpired, OSError) as e:
         libcalamares.utils.warning(f"chwd: pacman -Sy refresh failed/timed out, continuing: {e}")
+    libcalamares.utils.debug("chwd: ─────────────────────────────────")
 
 
 def run():
