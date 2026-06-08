@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-06-08 — kiro_final: remove the GRUB boot-safety hooks alongside grub on systemd-boot
+
+**What Changed**
+- `kiro_final`'s bootloader-cleanup branch (the `systemd-boot detected → remove GRUB` path) now removes **`kiro-bootloader-grub-nemesis`** together with `grub`, in a single `pacman -R` transaction (hook package listed first).
+
+**Why**
+- `kiro-bootloader-grub-nemesis` (new, bundled in `kiro-iso-next`'s `packages.x86_64`) ships the pacman hooks that re-run `grub-install`/`grub-mkconfig` to keep GRUB systems bootable across upgrades. It must follow grub's exact lifecycle: present on every install, then stripped on systemd-boot installs so the UEFI/systemd-boot majority carry neither grub nor its hooks.
+- The package `depends=('grub')`, so it **cannot** be left behind when grub is removed — `pacman -R grub` would fail the dependency. Removing both in one transaction (with the dependent package first) handles this cleanly. The removal is wrapped in the existing `try/except` and uses `is_package_installed` guards, so it is a no-op if either package is already absent.
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_final/main.py` — bootloader branch removes `kiro-bootloader-grub-nemesis` + `grub` together.
+
+---
+
 ## 2026-06-07 — chwd: trusted-CDN mirror refresh on the online install path
 
 **What Changed**
