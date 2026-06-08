@@ -218,7 +218,10 @@ VM_CLEANUP_PROFILES = {
         "extra_paths": ("etc/xdg/autostart/vmware-user.desktop",),
     },
     "qemu": {
-        "packages": ("qemu-guest-agent",),
+        # spice-vdagent rides qemu-guest-agent's lifecycle (kept on kvm/qemu,
+        # stripped everywhere else) — it's a QEMU/SPICE clipboard agent, useless
+        # on VMware/VirtualBox/bare metal. Static units, so pacman -Rns is enough.
+        "packages": ("qemu-guest-agent", "spice-vdagent"),
         "disable_services": ("qemu-guest-agent.service",),
         "orphan_symlinks": (
             "etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service",
@@ -233,26 +236,16 @@ VM_CLEANUP_PROFILES = {
         ),
         "extra_paths": (),
     },
-    # SPICE clipboard agent — useful only on a QEMU/SPICE guest. Stripped on
-    # VirtualBox and bare metal; kept on kvm/qemu/vmware. Units are static
-    # (socket-activated), so there is no enable-symlink to clean — pacman -Rns
-    # removes the .service/.socket + the xdg autostart file.
-    "spice": {
-        "packages": ("spice-vdagent",),
-        "disable_services": (),
-        "orphan_symlinks": (),
-        "extra_paths": (),
-    },
 }
 
 # For each detected virt type, which profiles to clean up.
 # Anything not listed (e.g. "qemu", "unknown") gets no cleanup — safer default
 # than guessing and uninstalling the host's own guest tools.
 VM_CLEANUP_BY_TYPE = {
-    "none":   ("vmware", "qemu", "vbox", "spice"),  # bare metal — strip all (incl. SPICE agent)
-    "oracle": ("vmware", "qemu", "spice"),          # VirtualBox guest — keep vbox tools, drop SPICE
-    "kvm":    ("vmware", "vbox"),                    # KVM guest — keep qemu-guest-agent + spice-vdagent
-    "vmware": ("vmware", "qemu", "vbox"),            # preserved; SPICE agent kept
+    "none":   ("vmware", "qemu", "vbox"),  # bare metal — strip all (incl. qemu+spice agents)
+    "oracle": ("vmware", "qemu"),          # VirtualBox guest — keep vbox tools, drop qemu+spice
+    "kvm":    ("vmware", "vbox"),          # KVM guest — keep qemu-guest-agent + spice-vdagent
+    "vmware": ("vmware", "qemu", "vbox"),  # VMware guest — keep vmware tools, drop qemu+spice
 }
 
 
