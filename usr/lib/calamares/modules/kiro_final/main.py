@@ -233,16 +233,26 @@ VM_CLEANUP_PROFILES = {
         ),
         "extra_paths": (),
     },
+    # SPICE clipboard agent — useful only on a QEMU/SPICE guest. Stripped on
+    # VirtualBox and bare metal; kept on kvm/qemu/vmware. Units are static
+    # (socket-activated), so there is no enable-symlink to clean — pacman -Rns
+    # removes the .service/.socket + the xdg autostart file.
+    "spice": {
+        "packages": ("spice-vdagent",),
+        "disable_services": (),
+        "orphan_symlinks": (),
+        "extra_paths": (),
+    },
 }
 
 # For each detected virt type, which profiles to clean up.
 # Anything not listed (e.g. "qemu", "unknown") gets no cleanup — safer default
 # than guessing and uninstalling the host's own guest tools.
 VM_CLEANUP_BY_TYPE = {
-    "none":   ("vmware", "qemu", "vbox"),  # bare metal — strip all
-    "oracle": ("vmware", "qemu"),          # VirtualBox guest — keep vbox tools
-    "kvm":    ("vmware", "vbox"),          # KVM guest — keep qemu-guest-agent
-    "vmware": ("vmware", "qemu", "vbox"),  # preserved from prior behavior
+    "none":   ("vmware", "qemu", "vbox", "spice"),  # bare metal — strip all (incl. SPICE agent)
+    "oracle": ("vmware", "qemu", "spice"),          # VirtualBox guest — keep vbox tools, drop SPICE
+    "kvm":    ("vmware", "vbox"),                    # KVM guest — keep qemu-guest-agent + spice-vdagent
+    "vmware": ("vmware", "qemu", "vbox"),            # preserved; SPICE agent kept
 }
 
 

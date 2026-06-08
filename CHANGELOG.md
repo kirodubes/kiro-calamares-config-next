@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-06-08 — kiro_final: keep `spice-vdagent` only on QEMU/SPICE guests
+
+**What Changed**
+- New dedicated **`spice`** VM-cleanup profile (`packages: ("spice-vdagent",)`) and added to `VM_CLEANUP_BY_TYPE` for **`none`** (bare metal) and **`oracle`** (VirtualBox) only.
+
+**Why**
+- `spice-vdagent` (now shipped on the ISO, kiro-iso-next same date) is a QEMU/SPICE clipboard agent — useless on VirtualBox and bare metal. It rides its own profile rather than `qemu` so it's stripped **only** on VirtualBox + real metal, and **kept on kvm/qemu/vmware** (Erik's chosen scope). No `disable_services`/`orphan_symlinks` needed: `spice-vdagentd.service`/`.socket` are `static` (no enable-symlink ever created), so `pacman -Rns` removing the package cleans the units + `/etc/xdg/autostart/spice-vdagent.desktop`.
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_final/main.py` — `spice` profile + `none`/`oracle` strip lists.
+
 ## 2026-06-08 — kiro_final: remove the GRUB boot-safety hooks alongside grub on systemd-boot
 
 **What Changed**
