@@ -1,6 +1,28 @@
 # CHANGELOG — kiro-calamares-config
 
-> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_kernel`, `kiro_remove_nvidia`, `kiro_ucode`.
+> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_kernel`, `kiro_remove_nvidia`, `kiro_ucode`, `kiro_displaymanager`, `kiro_bootloader`, `kiro_packages`.
+
+---
+
+## 2026-06-09 — move displaymanager/bootloader/packages into config + make the display manager desktop-agnostic
+
+**What Changed**
+- The three upstream **Python** Calamares modules `displaymanager`, `bootloader`, `packages` now ship from this config repo as **`kiro_displaymanager` / `kiro_bootloader` / `kiro_packages`** (under `usr/lib/calamares/modules/`), alongside the existing `kiro_*` modules. `settings.conf`'s exec sequence calls the new names.
+- **Fixed the "Calamares Initialization Failed — modules could not be loaded" error**: each moved `module.desc` still carried its old upstream `name:` (`displaymanager`/`bootloader`/`packages`), but Calamares requires `name:` to equal the folder name (`ModuleManager.cpp:101-102`, `moduleName == currentDir.dirName()`). Set each `name:` to match its `kiro_*` folder.
+- Renamed the module configs to match the new module names so each is found at runtime: `displaymanager.conf`/`bootloader.conf`/`packages.conf` → `kiro_displaymanager.conf` / `kiro_bootloader.conf` / `kiro_packages.conf`.
+- **`kiro_displaymanager` is now desktop-agnostic.** Removed the hardcoded `defaultDesktopEnvironment: startxfce4 / xfce` from `kiro_displaymanager.conf`. With no hardcode the module auto-detects the installed session via the priority list in `main.py` (full DEs > xfce > window managers). This is what lets a **no-xfce build** (pure Cinnamon, or a WM-only build) set a valid default session and log in — the old hardcode made such an install fail because `startxfce4` wasn't present.
+- Added Kiro's own window managers to that priority list (`exec-chadwm`/`chadwm`, `exec-ohmychadwm`/`ohmychadwm`, `leftwm`/`leftwm`) so a WM-only build is detected (upstream Calamares doesn't know them). `awesome`/`bspwm`/`qtile`/`i3` were already in the list.
+- Reordered the window-manager block: **`ohmychadwm` first, then the rest alphabetical**. The DE tier and the `xfce` divider are unchanged, so full desktops still win over any WM. Effect: on a **WM-only build that includes ohmychadwm**, the auto-detected login default is **ohmychadwm**; the standard `xfce + ohmychadwm` build still defaults to xfce.
+- Lint: fixed two pre-existing ruff issues in the vendored `main.py` (bare `except` → `except Exception`; removed dead `loopcount` in the unused lightdm path).
+
+**Why**
+- Goal: move the install logic into the config repo so the `calamares` package trends toward "just the app," and — the immediate driver — own `displaymanager` so it stops forcing xfce and instead picks whatever desktop/WM the edition actually ships.
+- The `calamares-next` engine still ships its own dormant `displaymanager`/`bootloader`/`packages` (different dir names) — no file conflict, and the engine does **not** need rebuilding.
+
+**Files Modified**
+- `usr/lib/calamares/modules/kiro_displaymanager/{module.desc, main.py}`, `kiro_bootloader/module.desc`, `kiro_packages/module.desc`
+- `etc/calamares/modules/kiro_displaymanager.conf` (+ renamed `kiro_bootloader.conf`, `kiro_packages.conf`)
+- `etc/calamares/settings.conf` — exec sequence uses the `kiro_*` names
 
 ---
 
