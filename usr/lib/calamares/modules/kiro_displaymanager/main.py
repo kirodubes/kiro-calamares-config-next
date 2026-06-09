@@ -77,7 +77,7 @@ class DesktopEnvironment:
                     key, value = tryexec_line.split("=")
                     if key.strip() == "TryExec":
                         return self._search_executable(root_mount_point, value.strip())
-                except:
+                except Exception:
                     pass
         return None
 
@@ -191,6 +191,10 @@ desktop_environments = [
     DesktopEnvironment('/usr/bin/qtile', 'qtile'),
     DesktopEnvironment('/usr/bin/xmonad', 'xmonad'),
     DesktopEnvironment('/usr/bin/dwm', 'dwm'),
+    # Kiro window managers (not in upstream Calamares) — so a WM-only build is detected
+    DesktopEnvironment('/usr/bin/exec-chadwm', 'chadwm'),
+    DesktopEnvironment('/usr/bin/exec-ohmychadwm', 'ohmychadwm'),
+    DesktopEnvironment('/usr/bin/leftwm', 'leftwm'),
     DesktopEnvironment('/usr/bin/jwm', 'jwm'),
     DesktopEnvironment('/usr/bin/icewm-session', 'icewm-session'),
     DesktopEnvironment('/usr/bin/fvwm3', 'fvwm3'),
@@ -576,7 +580,6 @@ class DMlightdm(DisplayManager):
             )
         text = []
         addseat = False
-        loopcount = 0
 
         if os.path.exists(lightdm_conf_path):
             with open(lightdm_conf_path, 'r') as lightdm_conf:
