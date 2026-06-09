@@ -3,7 +3,7 @@
 ---
 type:       "job"
 interface:  "python"
-name:       "bootloader"
+name:       "kiro_bootloader"
 script:     "main.py"
 # The partition module sets up the EFI firmware type
 # global key, which is used to decide how to install.

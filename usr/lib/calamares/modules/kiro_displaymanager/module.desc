@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: CC0-1.0
 ---
 type:       "job"
-name:       "displaymanager"
+name:       "kiro_displaymanager"
 interface:  "python"
 script:     "main.py"
