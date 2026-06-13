@@ -192,7 +192,7 @@ def suppress_pacman_hooks():
 
 
 def initialize_pacman_keys():
-    """Initialize pacman keys and populate keyrings (archlinux, chaotic)."""
+    """Initialize pacman keys and populate keyrings (archlinux, chaotic, kiro)."""
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     keyring_path = os.path.join(target_root, "etc/pacman.d/gnupg/pubring.gpg")
 
@@ -206,6 +206,9 @@ def initialize_pacman_keys():
         check_target_env_call(["pacman-key", "--init"])
         check_target_env_call(["pacman-key", "--populate", "archlinux"])
         check_target_env_call(["pacman-key", "--populate", "chaotic"])
+        # Kiro signing key — without this the re-init drops it, leaving
+        # nemesis_repo/kiro_repo (SigLevel Required) unverifiable → broken syncs.
+        check_target_env_call(["pacman-key", "--populate", "kiro"])
     except Exception as e:
         libcalamares.utils.warning(str(e))
         return (

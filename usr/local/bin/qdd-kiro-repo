@@ -9,7 +9,7 @@ set -euo pipefail
 if grep -q '^\[kiro_repo\]' /etc/pacman.conf; then
     echo "kiro_repo already present in /etc/pacman.conf — nothing to add"
 else
-    printf '\n[kiro_repo]\nSigLevel = Never\nServer = https://kirodubes.github.io/$repo/$arch\n' \
+    printf '\n[kiro_repo]\nServer = https://kirodubes.github.io/$repo/$arch\n' \
         | sudo tee --append /etc/pacman.conf >/dev/null
     echo "kiro_repo added to /etc/pacman.conf"
 fi

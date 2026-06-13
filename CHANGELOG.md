@@ -4,6 +4,18 @@
 
 ---
 
+## 2026.06.13
+
+### What Changed
+- `qdd-kiro-repo` now appends `[kiro_repo]` with **`SigLevel = Required DatabaseOptional`** instead of `Never`, so a fresh **-next** install enforces signature verification on the Kiro installer repo out of the box — matching the `nemesis_repo` flip in `kiro-iso-next`. Part of the package-signing rollout (Phase A live, Phase B verified; see [signing study](file:///home/erik/.claude/plans/federated-petting-badger.md)).
+
+### Technical Details
+- kiro_repo's 6 packages (calamares + kiro-calamares-config + tweak-tool stack and their `-next`/`-nemesis` betas) are signed + published; the target trusts the Kiro key before `qdd-kiro-repo`'s `pacman -Syyu` runs (kiro-keyring is in the rootfs — pre-seeded at build via `prepopulate_keyring`, or installed via the `kiro-system-files` dependency), so enforcement is satisfiable at install time.
+- **-next only.** Production (`kiro-calamares-config`) keeps `Never` until the keyring has propagated across the installed fleet.
+
+### Files Modified
+- `usr/local/bin/qdd-kiro-repo` — appended `[kiro_repo]` SigLevel `Never → Required DatabaseOptional`
+
 ## 2026-06-09 — move displaymanager/bootloader/packages into config + make the display manager desktop-agnostic
 
 **What Changed**
