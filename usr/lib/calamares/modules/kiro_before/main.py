@@ -227,7 +227,7 @@ def run():
     libcalamares.utils.debug("  1. Wait for pacman lock to be released")
     libcalamares.utils.debug("  2. Snapshot cache trigger dir mtimes (perf — paired with kiro_final)")
     libcalamares.utils.debug("  3. Suppress heavyweight pacman hooks (perf — restored in kiro_final)")
-    libcalamares.utils.debug("  4. Initialize pacman keys and populate keyrings (archlinux, chaotic)")
+    libcalamares.utils.debug("  4. Initialize pacman keys and populate keyrings (archlinux, chaotic, kiro)")
     libcalamares.utils.debug("  5. Refresh pacman sync databases (pacman -Sy)")
     libcalamares.utils.debug("  6. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
 
