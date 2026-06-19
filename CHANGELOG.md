@@ -12,8 +12,9 @@
 - **Why:** on UEFI installs `kiro_bootloader` lays down systemd-boot, so GRUB and
   its theme are dead weight. `kiro-grub-theme` `depends=('grub')`, so it is
   removed in the same `pacman -R` transaction (dependents before `grub`). Guarded
-  by `is_package_installed` → no-op until the theme ships in the `kiro-iso-next`
-  package list (parity with production, where it already does).
+  by `is_package_installed`; `kiro-grub-theme` now ships in the `kiro-iso-next`
+  package list (parity with production), so the removal fires on UEFI/systemd-boot
+  installs.
 
 ## 2026.06.13
 
