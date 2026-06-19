@@ -6,6 +6,23 @@
 
 ## 2026.06.19
 
+### Restore the GRUB theme to /boot before grub-mkconfig
+- `kiro_before` now copies `/usr/share/grub/themes/kiro` →
+  `/boot/grub/themes/kiro` in the target (new `install_grub_theme()` step).
+- **Why:** the `kiro-grub-theme` package installs to both `/boot/grub/themes/kiro`
+  and `/usr/share/grub/themes/kiro`, but `mkarchiso` strips `airootfs/boot` at
+  ISO-build time — so the unpacked target only has the `/usr/share` copy. With
+  `GRUB_THEME="/boot/grub/themes/kiro/theme.txt"` in `/etc/default/grub`,
+  `kiro_bootloader`'s `grub-mkconfig` wrote the theme path into `grub.cfg` but the
+  files weren't there → unthemed boot menu. Restoring to `/boot` (not repointing
+  `GRUB_THEME` at `/usr/share`, which would break a LUKS root) fixes it.
+- Best-effort: guarded on the source dir existing; a missing theme only costs
+  branding, never a bootable system. No-op on UEFI/systemd-boot (theme later
+  removed by `kiro_final`).
+
+### Files Modified
+- `usr/lib/calamares/modules/kiro_before/main.py`
+
 ### Remove the GRUB theme on systemd-boot installs
 - `kiro_final`'s systemd-boot cleanup (step 9) now also removes
   **`kiro-grub-theme`**, alongside `kiro-bootloader-grub-nemesis` and `grub`.

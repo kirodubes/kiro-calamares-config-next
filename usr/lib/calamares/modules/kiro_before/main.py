@@ -6,6 +6,7 @@ Handles pacman lock management, key initialization, mkinitcpio preset migration,
 
 import os
 import time
+import shutil
 import subprocess
 import libcalamares
 from libcalamares.utils import check_target_env_call
@@ -217,6 +218,32 @@ def initialize_pacman_keys():
         )
     return None
 
+def install_grub_theme():
+    """Restore the GRUB theme into /boot so grub-mkconfig (kiro_bootloader) finds it.
+
+    archiso strips airootfs/boot at ISO-build time, so the kiro-grub-theme
+    package's /boot/grub/themes/kiro copy is missing from the unpacked target.
+    The /usr/share/grub/themes/kiro copy survives the squashfs — restore it to
+    /boot here, before kiro_bootloader runs grub-mkconfig. GRUB_THEME in
+    /etc/default/grub points at the /boot path (required for a LUKS root).
+    """
+    target_root = libcalamares.globalstorage.value("rootMountPoint")
+    src = os.path.join(target_root, "usr/share/grub/themes/kiro")
+    dst = os.path.join(target_root, "boot/grub/themes/kiro")
+
+    if not os.path.isdir(src):
+        libcalamares.utils.warning(f"GRUB theme source missing, skipping: {src}")
+        return None
+
+    try:
+        shutil.copytree(src, dst, dirs_exist_ok=True)
+        libcalamares.utils.debug(f"Installed GRUB theme to {dst}")
+    except Exception as e:
+        # Best-effort: a missing theme only costs branding, not a bootable system.
+        libcalamares.utils.warning(f"Could not install GRUB theme (continuing): {e}")
+    return None
+
+
 def run():
     """Execute pre-installation configuration steps in sequence."""
     libcalamares.utils.debug("##############################################")
@@ -229,7 +256,8 @@ def run():
     libcalamares.utils.debug("  3. Suppress heavyweight pacman hooks (perf — restored in kiro_final)")
     libcalamares.utils.debug("  4. Initialize pacman keys and populate keyrings (archlinux, chaotic, kiro)")
     libcalamares.utils.debug("  5. Refresh pacman sync databases (pacman -Sy)")
-    libcalamares.utils.debug("  6. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)\n")
+    libcalamares.utils.debug("  6. Optimize makepkg.conf (MAKEFLAGS, PKGEXT, OPTIONS)")
+    libcalamares.utils.debug("  7. Restore GRUB theme to /boot (archiso strips it; grub-mkconfig needs it)\n")
 
     functions = [
         ("Wait for pacman lock", wait_for_pacman_lock),
@@ -237,7 +265,8 @@ def run():
         ("Suppress pacman hooks", suppress_pacman_hooks),
         ("Initialize pacman keys", initialize_pacman_keys),
         ("Sync pacman databases", sync_pacman_databases),
-        ("Optimize makepkg.conf", optimize_makepkg_conf)
+        ("Optimize makepkg.conf", optimize_makepkg_conf),
+        ("Install GRUB theme", install_grub_theme)
     ]
 
     results = {}
