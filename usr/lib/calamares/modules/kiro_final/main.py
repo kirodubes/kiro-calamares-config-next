@@ -462,12 +462,13 @@ def run():
         loader_conf = os.path.join(target_root, "boot/efi/loader/loader.conf")
         if os.path.exists(loader_conf):
             # systemd-boot is in use, remove GRUB and everything that depends
-            # on it: the boot-safety hooks (kiro-bootloader-grub-nemesis) and
-            # the GRUB theme (kiro-grub-theme) both depend on grub, so they go
-            # in one transaction (dependents first) or `pacman -R grub` fails.
+            # on it: the boot-safety hooks (kiro-bootloader-grub-nemesis), the
+            # GRUB theme (kiro-grub-theme) and the update-grub helper all depend
+            # on grub, so they go in one transaction (dependents first) or
+            # `pacman -R grub` fails.
             libcalamares.utils.debug("systemd-boot detected. Removing GRUB")
             try:
-                pkgs = [p for p in ("kiro-grub-theme", "kiro-bootloader-grub-nemesis", "grub")
+                pkgs = [p for p in ("update-grub", "kiro-grub-theme", "kiro-bootloader-grub-nemesis", "grub")
                         if is_package_installed(p, target_root)]
                 if pkgs:
                     subprocess.run(
