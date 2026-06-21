@@ -4,6 +4,16 @@
 
 ---
 
+## 2026.06.21
+
+### Add the installed user to the `i2c` group
+- `users.conf` `defaultGroups` now includes `i2c` (mirrors production `kiro-calamares-config`).
+- **Why:** on Plasma, `powerdevil` probes external-monitor brightness over DDC/CI (i2c) at session
+  startup before `systemd-logind` applies its `uaccess` ACL — losing the race and flooding the journal
+  with `EACCES` on `/dev/i2c-*`. Group membership is present from login, so it removes the race and
+  enables external-monitor brightness immediately. Harmless on non-Plasma editions (group unused).
+- Live ISO intentionally unchanged (its session only runs for the ~15-minute install).
+
 ## 2026.06.19
 
 ### Restore the GRUB theme to /boot before grub-mkconfig
