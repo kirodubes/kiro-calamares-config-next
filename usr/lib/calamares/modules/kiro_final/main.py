@@ -5,6 +5,7 @@ Handles permissions, file cleanup, bootloader configuration, and VM package remo
 """
 
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -296,6 +297,41 @@ def _disable_repo(target_root, repo):
     return changed
 
 
+def configure_x11_keymap(target_root):
+    """Mirror the X11 keyboard layout from 00-keyboard.conf into /etc/vconsole.conf."""
+    kbd = os.path.join(target_root, "etc/X11/xorg.conf.d/00-keyboard.conf")
+    vconsole = os.path.join(target_root, "etc/vconsole.conf")
+    if not os.path.exists(kbd):
+        return "SKIPPED (no 00-keyboard.conf)"
+
+    with open(kbd) as f:
+        content = f.read()
+
+    def _opt(name):
+        match = re.search(r'Option\s+"' + name + r'"\s+"([^"]*)"', content)
+        return match.group(1) if match else ""
+
+    layout = _opt("XkbLayout")
+    if not layout:
+        return "SKIPPED (no XkbLayout)"
+
+    keep = []
+    if os.path.exists(vconsole):
+        with open(vconsole) as f:
+            keep = [ln for ln in f.read().splitlines()
+                    if not ln.startswith(("XKBLAYOUT=", "XKBMODEL=", "XKBVARIANT="))]
+    keep.append(f"XKBLAYOUT={layout}")
+    model = _opt("XkbModel")
+    if model:
+        keep.append(f"XKBMODEL={model}")
+    variant = _opt("XkbVariant")
+    if variant:
+        keep.append(f"XKBVARIANT={variant}")
+    with open(vconsole, "w") as f:
+        f.write("\n".join(keep) + "\n")
+    return "SUCCESS"
+
+
 def run():
     """Execute final system configuration and cleanup."""
     libcalamares.utils.debug("##############################################")
@@ -308,12 +344,13 @@ def run():
     libcalamares.utils.debug("  3. Set /root permissions to 0o700")
     libcalamares.utils.debug("  4. Remove installation-related files and folders")
     libcalamares.utils.debug("  5. Configure system environment (EDITOR=nano)")
-    libcalamares.utils.debug("  6. Configure Bluetooth and PulseAudio")
-    libcalamares.utils.debug("  7. Pin tuned ppd_base_profile = performance")
-    libcalamares.utils.debug("  8. Disable [cachyos] repo in pacman.conf (opt-in on installed system)")
-    libcalamares.utils.debug("  9. Check bootloader configuration (remove GRUB if systemd-boot detected)")
-    libcalamares.utils.debug(" 10. Detect virtualization and remove unnecessary VM packages")
-    libcalamares.utils.debug(" 11. Remove installer package (kiro-calamares-config)\n")
+    libcalamares.utils.debug("  6. Propagate X11 keyboard layout (XKBLAYOUT) to /etc/vconsole.conf")
+    libcalamares.utils.debug("  7. Configure Bluetooth and PulseAudio")
+    libcalamares.utils.debug("  8. Pin tuned ppd_base_profile = performance")
+    libcalamares.utils.debug("  9. Disable [cachyos] repo in pacman.conf (opt-in on installed system)")
+    libcalamares.utils.debug(" 10. Check bootloader configuration (remove GRUB if systemd-boot detected)")
+    libcalamares.utils.debug(" 11. Detect virtualization and remove unnecessary VM packages")
+    libcalamares.utils.debug(" 12. Remove installer package (kiro-calamares-config)\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     results = {}
@@ -394,6 +431,22 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed to write to /etc/profile: {e}")
         results["Configure system environment"] = "FAILED"
+
+    # ========================
+    # Keyboard Layout (Wayland)
+    # ========================
+
+    # systemd-localed sources its X11 layout from /etc/vconsole.conf's XKBLAYOUT=,
+    # which Calamares never writes there (it sets KEYMAP= + 00-keyboard.conf only).
+    # Without XKBLAYOUT the installed system's `localectl` reports X11 Layout unset,
+    # so Plasma Wayland (KWin FollowLocale1) falls back to us no matter what the user
+    # picked. Mirror it across so the chosen layout actually reaches the desktop.
+    libcalamares.utils.debug("Propagating X11 keyboard layout to /etc/vconsole.conf")
+    try:
+        results["Propagate X11 keyboard layout"] = configure_x11_keymap(target_root)
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to propagate X11 keyboard layout: {e}")
+        results["Propagate X11 keyboard layout"] = "FAILED"
 
     # Configure Bluetooth and PulseAudio
     libcalamares.utils.debug("Configuring Bluetooth and audio")
