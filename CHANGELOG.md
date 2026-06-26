@@ -4,6 +4,22 @@
 
 ---
 
+## 2026.06.26
+
+### Default shell for the installed user: bash → fish
+- **`etc/calamares/modules/users.conf`** line 33: `user.shell` changed from `/bin/bash` to
+  `/bin/fish`. Calamares' standard `users` module passes this to `useradd -s`, so the human
+  user created during install gets fish as their login shell.
+- **Why:** make fish Kiro's default interactive shell out of the box. `kiro-fish-config` ships
+  the matching `config.fish` into `/etc/skel/.config/fish/` and `depends=('fish')`, so config +
+  binary are guaranteed present — full parity with the bash/zsh setup, no regression.
+  `.bashrc`/`.zshrc` stay in skel so `tobash`/`tozsh` revert in one command. Root stays on bash.
+- The `kiro_final` route (`chsh` after install) was rejected as the wrong layer — `users.conf`
+  is the canonical knob. The `kiro_displaymanager` `useradd -s /bin/bash` (greeter system
+  account) is intentionally left as-is; it is not the human user.
+- **Paired with** the live-session half in **`kiro-iso-next`** (`airootfs/etc/passwd` liveuser →
+  `/bin/fish`). Decision record: `KIRO-PROJECTS/kiro-iso/bash-to-fish-conversion.md`.
+
 ## 2026.06.24
 
 ### Propagate the chosen keyboard layout to Plasma Wayland (AZERTY fix)
