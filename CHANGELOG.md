@@ -4,6 +4,26 @@
 
 ---
 
+## 2026.06.30
+
+### `kiro_ucode` — bound the detection subprocesses with timeouts (install-hang fix)
+- **`usr/lib/calamares/modules/kiro_ucode/main.py`** — added `timeout=` to the two
+  detection calls that previously had none: `_detect_target_virt()`'s
+  `chroot <target> systemd-detect-virt` (30s) and `detect_cpu_vendor()`'s
+  `hwinfo --cpu` probe (60s, switched from `subprocess.getoutput` to a bounded
+  `subprocess.run`). On timeout each falls back to its safe default — `"none"`
+  (treat as bare metal) and `None` (skip microcode) respectively.
+- **Why:** an install was observed wedged indefinitely at this module
+  ("Execute CPU microcode configuration", 91%) in a KVM guest — ~1% vCPU, **zero
+  disk I/O** for 12+ minutes. Zero disk writes means it never reached `pacman -U`,
+  so it was stuck in detection. Both detection calls had no timeout, so a single
+  wedged probe could freeze the entire installer with no recovery. The bounded
+  fallbacks degrade to "do a little harmless extra work" instead of hanging forever.
+- The `pacman -U`/`-R` paths (via `target_env_call`) are unchanged — they were not
+  the offender (no disk activity), and the libcalamares chroot helpers don't accept
+  a timeout. Bare-metal behaviour is unchanged in the normal (fast) case.
+- Kept in lockstep with the production `kiro-calamares-config` copy (identical file).
+
 ## 2026.06.26
 
 ### Default shell for the installed user: bash → fish

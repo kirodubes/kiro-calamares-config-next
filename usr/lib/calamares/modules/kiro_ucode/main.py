@@ -27,11 +27,21 @@ class ConfigController:
     def detect_cpu_vendor(self):
         """Detect CPU vendor (AuthenticAMD or GenuineIntel)."""
         try:
-            vendor = subprocess.getoutput(
-                "hwinfo --cpu | grep Vendor: -m1 | cut -d'\"' -f2"
-            ).strip()
+            # Bounded: a wedged hwinfo probe must never freeze the install.
+            result = subprocess.run(
+                "hwinfo --cpu | grep Vendor: -m1 | cut -d'\"' -f2",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=60,
+            )
+            vendor = result.stdout.strip()
             libcalamares.utils.debug(f"Detected CPU vendor: {vendor}")
             return vendor
+        except subprocess.TimeoutExpired:
+            libcalamares.utils.warning("hwinfo --cpu timed out after 60s; skipping microcode.")
+            return None
         except Exception as e:
             libcalamares.utils.warning(f"Failed to detect CPU vendor: {e}")
             return None
@@ -108,13 +118,18 @@ class ConfigController:
 def _detect_target_virt(target_root):
     """Return systemd-detect-virt's verdict for the target chroot, or 'none' on failure."""
     try:
+        # Bounded: a wedged chroot/detect call must never freeze the install.
         result = subprocess.run(
             ["chroot", target_root, "systemd-detect-virt"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            timeout=30,
         )
         return result.stdout.strip() or "none"
+    except subprocess.TimeoutExpired:
+        libcalamares.utils.warning("systemd-detect-virt timed out after 30s — assuming bare metal.")
+        return "none"
     except Exception as e:
         libcalamares.utils.warning(f"systemd-detect-virt failed (assuming bare metal): {e}")
         return "none"
