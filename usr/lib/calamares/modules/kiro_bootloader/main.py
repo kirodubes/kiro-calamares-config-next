@@ -265,13 +265,15 @@ def create_loader(loader_path, installation_root_path):
     try:
         loader_entries = libcalamares.job.configuration["loaderEntries"]
     except KeyError:
-        libcalamares.utils.debug("No aditional loader entries found in config")
+        libcalamares.utils.debug("No additional loader entries found in config")
         loader_entries = []
         pass
 
     lines = [f"default {machine_id}*"]
 
     lines.extend(loader_entries)
+
+    os.makedirs(os.path.dirname(loader_path), exist_ok=True)
 
     with open(loader_path, 'w') as loader_file:
         for line in lines:
@@ -551,9 +553,19 @@ def install_systemd_boot(efi_directory):
     loader_path = os.path.join(install_efi_directory,
                                "loader",
                                "loader.conf")
-    subprocess.call(["bootctl",
-                     "--path={!s}".format(install_efi_directory),
-                     "install"])
+    # bootctl creates the ESP layout (EFI/systemd, EFI/BOOT, loader/entries)
+    # that create_loader() and create_systemd_boot_conf() write into. Its exit
+    # code used to be discarded, so a failure here only surfaced later as an
+    # unrelated FileNotFoundError on loader.conf. check=True routes it into the
+    # CalledProcessError handler in run(), which reports cmd, code and output.
+    bootctl_result = subprocess.run(["bootctl",
+                                     "--path={!s}".format(install_efi_directory),
+                                     "install"],
+                                    check=True,
+                                    capture_output=True,
+                                    text=True)
+    libcalamares.utils.debug("bootctl install stdout: " + bootctl_result.stdout)
+    libcalamares.utils.debug("bootctl install stderr: " + bootctl_result.stderr)
 
     for (kernel, kernel_type, kernel_version) in get_kernels(installation_root_path):
         create_systemd_boot_conf(installation_root_path,

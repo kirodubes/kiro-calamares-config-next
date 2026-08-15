@@ -9,7 +9,7 @@ import libcalamares
 import subprocess
 import os
 import glob
-from libcalamares.utils import target_env_call, check_target_env_call
+from libcalamares.utils import target_env_call, check_target_env_call, check_target_env_output
 
 
 class ConfigController:
@@ -53,8 +53,39 @@ class ConfigController:
 
         files = glob.glob(pattern)
         if files:
-            return files[0]
+            # Microcode versions are date-stamped (20260812-1), so lexical order
+            # is version order. Taking the max keeps the pick deterministic if
+            # several versions ever sit in the directory together.
+            return max(files)
         return None
+
+    def installed_version_in_target(self, package_name):
+        """Return the version of package_name installed in the target, or None."""
+        try:
+            output = check_target_env_output(["pacman", "-Q", package_name])
+            return output.split()[1]
+        except (subprocess.CalledProcessError, IndexError):
+            return None
+
+    def target_has_newer_or_equal(self, package_name, package_file):
+        """Return True if the target already has package_name at >= the bundled version."""
+        installed = self.installed_version_in_target(package_name)
+        if installed is None:
+            return False
+
+        # intel-ucode-20260512-1-any.pkg.tar.zst -> 20260512-1
+        bundled = os.path.basename(package_file)[len(package_name) + 1:-len("-any.pkg.tar.zst")]
+        try:
+            comparison = int(check_target_env_output(["vercmp", installed, bundled]).strip())
+        except (subprocess.CalledProcessError, ValueError):
+            return False
+
+        if comparison >= 0:
+            libcalamares.utils.debug(
+                f"Target already has {package_name} {installed} (bundled: {bundled}) — not downgrading."
+            )
+            return True
+        return False
 
     def install_ucode_package(self, package_name):
         """Install microcode package from /etc/calamares/packages on live DVD."""
@@ -63,6 +94,11 @@ class ConfigController:
         if not package_file:
             libcalamares.utils.warning(f"Package file not found for {package_name}")
             return False
+
+        # The ISO airootfs already ships both microcode packages, so an ageing
+        # bundled copy would otherwise downgrade a freshly unpacked target.
+        if self.target_has_newer_or_equal(package_name, package_file):
+            return True
 
         libcalamares.utils.debug(f"Installing {package_name} from {package_file}")
         try:
@@ -144,7 +180,8 @@ def run():
     libcalamares.utils.debug("This module will perform the following operations:")
     libcalamares.utils.debug("  1. Skip cleanly on VM installs (hypervisor handles guest microcode)")
     libcalamares.utils.debug("  2. Detect CPU vendor (AuthenticAMD or GenuineIntel)")
-    libcalamares.utils.debug("  3. Install appropriate microcode package from /etc/calamares/packages\n")
+    libcalamares.utils.debug("  3. Install appropriate microcode package from /etc/calamares/packages")
+    libcalamares.utils.debug("     (skipped when the target already has an equal or newer version)\n")
 
     # Skip on VMs — guest microcode is the hypervisor's job; running pacman -U
     # for ucode and pacman -R for the wrong-vendor ucode is pure waste inside
