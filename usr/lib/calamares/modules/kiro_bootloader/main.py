@@ -540,6 +540,18 @@ def install_clr_boot_manager():
     check_target_env_call(["clr-boot-manager", "update"])
 
 
+def systemd_boot_is_installed(install_efi_directory):
+    """Check whether bootctl left a usable systemd-boot layout on the ESP."""
+    if not os.path.isdir(os.path.join(install_efi_directory, "loader")):
+        return False
+
+    efi_systemd_directory = os.path.join(vfat_correct_case(install_efi_directory, "EFI"), "systemd")
+    if not os.path.isdir(efi_systemd_directory):
+        return False
+
+    return any(name.lower().endswith(".efi") for name in os.listdir(efi_systemd_directory))
+
+
 def install_systemd_boot(efi_directory):
     """
     Installs systemd-boot as bootloader for EFI setups.
@@ -555,17 +567,30 @@ def install_systemd_boot(efi_directory):
                                "loader.conf")
     # bootctl creates the ESP layout (EFI/systemd, EFI/BOOT, loader/entries)
     # that create_loader() and create_systemd_boot_conf() write into. Its exit
-    # code used to be discarded, so a failure here only surfaced later as an
-    # unrelated FileNotFoundError on loader.conf. check=True routes it into the
-    # CalledProcessError handler in run(), which reports cmd, code and output.
-    bootctl_result = subprocess.run(["bootctl",
-                                     "--path={!s}".format(install_efi_directory),
-                                     "install"],
-                                    check=True,
-                                    capture_output=True,
-                                    text=True)
-    libcalamares.utils.debug("bootctl install stdout: " + bootctl_result.stdout)
-    libcalamares.utils.debug("bootctl install stderr: " + bootctl_result.stderr)
+    # code used to be discarded and its output went to Calamares' stdout rather
+    # than the log, so a failure here only surfaced later as an unrelated
+    # FileNotFoundError on loader.conf.
+    bootctl_command = ["bootctl",
+                       "--path={!s}".format(install_efi_directory),
+                       "install"]
+    bootctl_result = subprocess.run(bootctl_command, check=False, capture_output=True, text=True)
+
+    if bootctl_result.stdout:
+        libcalamares.utils.debug("bootctl install stdout: " + bootctl_result.stdout)
+
+    if bootctl_result.returncode != 0:
+        # A non-zero exit is not on its own fatal: bootctl can fail on the
+        # EFI-variable step having already written a perfectly bootable ESP
+        # layout (read-only efivarfs, quirky firmware, VMs). Aborting those
+        # installs would be a regression, so judge on what it left behind.
+        libcalamares.utils.warning(
+            f"bootctl install returned {bootctl_result.returncode}: {bootctl_result.stderr}")
+        if not systemd_boot_is_installed(install_efi_directory):
+            raise subprocess.CalledProcessError(bootctl_result.returncode,
+                                                bootctl_command,
+                                                output=bootctl_result.stdout,
+                                                stderr=bootctl_result.stderr)
+        libcalamares.utils.debug("ESP layout is present regardless; continuing.")
 
     for (kernel, kernel_type, kernel_version) in get_kernels(installation_root_path):
         create_systemd_boot_conf(installation_root_path,

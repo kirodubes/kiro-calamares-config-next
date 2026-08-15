@@ -8,10 +8,14 @@
 
 ### `kiro_bootloader` — surface `bootctl install` failures instead of crashing on `loader.conf`
 - **`usr/lib/calamares/modules/kiro_bootloader/main.py`** — `install_systemd_boot()`
-  now runs `bootctl install` through `subprocess.run(check=True, capture_output=True,
-  text=True)` instead of `subprocess.call()`, and logs its stdout/stderr.
-  `create_loader()` additionally creates the `loader/` directory with
-  `os.makedirs(..., exist_ok=True)` before writing `loader.conf`.
+  now runs `bootctl install` through `subprocess.run(capture_output=True, text=True)`
+  instead of `subprocess.call()`, warns with the exit code and stderr when it fails,
+  and logs its stdout. A non-zero exit is deliberately **not** fatal on its own:
+  new `systemd_boot_is_installed()` checks the ESP for `loader/` and an `.efi` under
+  `EFI/systemd/`, and only when that postcondition fails is a
+  `subprocess.CalledProcessError` raised. `create_loader()` additionally creates the
+  `loader/` directory with `os.makedirs(..., exist_ok=True)` before writing
+  `loader.conf`.
 - **Why:** a real-hardware install (Intel, NVMe, systemd-boot, ESP on
   `/dev/nvme0n1p5` mounted at `/boot/efi`) failed at job 38/41 with
   `FileNotFoundError: '<root>/boot/efi/loader/loader.conf'`. `bootctl install`
@@ -19,9 +23,15 @@
   discarded and its output went to Calamares' stdout rather than the log, so the
   real cause appeared nowhere in the 3766-line install log. The installer then
   ran on for two more `kernel-install` invocations before dying on an unrelated
-  traceback. With `check=True` the failure is raised at the point it happens and
-  lands in the existing `subprocess.CalledProcessError` handler in `run()`, which
-  reports the command, the exit code and the captured output to the user.
+  traceback. The failure is now reported at the point it happens and lands in the
+  existing `subprocess.CalledProcessError` handler in `run()`, which shows the
+  command, the exit code and the captured output to the user.
+- **Why gate on the postcondition rather than the exit code:** `bootctl install`
+  writes the ESP layout and *then* updates EFI variables, and can fail the second
+  having completed the first (read-only efivarfs, quirky firmware, VMs). Those
+  installs are bootable and used to succeed; failing them on exit code alone would
+  have been a regression. Checking what bootctl actually left on the ESP keeps the
+  new diagnostics without changing which installs pass.
 - **Note:** this converts a misleading traceback into a named cause — it does not
   by itself repair the underlying `bootctl` failure, which is still unidentified.
 - Fixed the pre-existing `aditional` → `additional` typo in a debug string

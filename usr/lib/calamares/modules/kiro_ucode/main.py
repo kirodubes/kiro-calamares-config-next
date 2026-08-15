@@ -74,7 +74,9 @@ class ConfigController:
             return False
 
         # intel-ucode-20260512-1-any.pkg.tar.zst -> 20260512-1
-        bundled = os.path.basename(package_file)[len(package_name) + 1:-len("-any.pkg.tar.zst")]
+        # Trailing field is the arch, which is "any" today but need not stay so.
+        stem = os.path.basename(package_file)[:-len(".pkg.tar.zst")]
+        bundled = stem[len(package_name) + 1:].rsplit("-", 1)[0]
         try:
             comparison = int(check_target_env_output(["vercmp", installed, bundled]).strip())
         except (subprocess.CalledProcessError, ValueError):
