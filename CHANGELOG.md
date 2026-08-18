@@ -4,6 +4,20 @@
 
 ---
 
+## 2026.08.18
+
+### Slideshow — correct the desktop count (13 → 30)
+- **`etc/calamares/branding/kiro/show.qml`** — the ATT slide now reads
+  "Swap between 30 desktops on demand." and the Desktop slide reads
+  "30 desktops — 6 full DEs, 9 tilers, 15 Wayland sessions — on demand from ATT."
+- **Why:** the old "13 desktops — 7 tilers, 6 full DEs" line predated both the
+  two extra X11 tilers and ATT's whole Wayland tab. ATT ships two independent
+  lists: `desktopr.py` (15 = 9 tilers + 6 full DEs) and `wayland.py`
+  (15 sessions, all `ready`, served from `nemesis_repo`), so the real figure a
+  stock Kiro install can reach is 30.
+
+---
+
 ## 2026.08.15
 
 ### `kiro_bootloader` — surface `bootctl install` failures instead of crashing on `loader.conf`

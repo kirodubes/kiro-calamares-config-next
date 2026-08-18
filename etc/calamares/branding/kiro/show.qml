@@ -200,7 +200,7 @@ Presentation
         lines: [
             "The GUI for the tweaks you'd otherwise hunt down in the wiki.",
             "Kernels, services, fixes and settings — point and click.",
-            "Swap between 13 desktops on demand."
+            "Swap between 30 desktops on demand."
         ]
     }
 
@@ -247,7 +247,7 @@ Presentation
         headline: "Your desktop, your way"
         lines: [
             "Xfce and Ohmychadwm ready at first login.",
-            "13 desktops — 7 tilers, 6 full DEs — on demand from ATT."
+            "30 desktops — 6 full DEs, 9 tilers, 15 Wayland sessions — on demand from ATT."
         ]
     }
 
