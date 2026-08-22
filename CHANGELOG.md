@@ -4,6 +4,39 @@
 
 ---
 
+## 2026.08.22
+
+### Hostname template reverted to the Calamares default
+
+**What Changed**
+
+The `hostname.template` key added earlier today is removed again, so Calamares falls back to its
+built-in default `${first}-${product}` — the behaviour that shipped in every previous ISO.
+
+The key was first set to `kiro-${cpu}`, which reads as if it names the processor but does not:
+Calamares expands `${cpu}` to `QSysInfo::currentCpuArchitecture()` — the *architecture* — cleaned
+to `x8664`, so every x86_64 machine on earth would have been offered the identical hostname
+`kiro-x8664`. Switching to `${product}` was no better in practice: `guessProductName()` reads
+`/sys/devices/virtual/dmi/id/product_name`, and most desktop boards ship the placeholder string
+`System Product Name`, which cleans up to `kiro-systemproductname`.
+
+Neither variant beat the stock default, so the key is gone rather than replaced. Removing it is
+also the smaller surface: one less setting that has to stay correct against upstream.
+
+**Technical Details**
+
+- `etc/calamares/modules/users.conf` — the `template:` line under `hostname:` is deleted. The
+  other two changes from this morning stay: `forbidden_names` is still the expanded
+  `[ localhost, localhost.localdomain, local ]`, and the system-account `forbidden_names` list
+  under `user:` is untouched.
+- `${product2}` was considered and rejected — it is `QSysInfo::prettyProductName()`, the OS name,
+  not the hardware.
+
+**Files Modified**
+- `etc/calamares/modules/users.conf`
+
+---
+
 ## 2026.08.18
 
 ### Slideshow — correct the desktop count (13 → 30)
