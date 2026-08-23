@@ -4,6 +4,46 @@
 
 ---
 
+## 2026.08.23
+
+### Sidebar current-step colours restored (pre-3.4 branding keys renamed)
+
+**What Changed**
+
+The two branding keys that colour the *selected* step in the installer sidebar were still using
+the names Calamares used before 3.4, so Calamares 3.4.2 did not recognise them and silently
+dropped both colours. Every install logged:
+
+```
+WARNING: Unknown branding *style* entry "SidebarSelect"
+WARNING:     ..  Unknown branding *style* entry "SidebarTextHighlight"
+```
+
+and the current step in the sidebar fell back to the application palette instead of the intended
+cyan-on-white treatment. Renaming the keys makes the branding take effect again.
+
+Found by `/kiro-check` against a real-metal install (Calamares.log lines 17-18), not by reading
+source — the keys were syntactically fine and only the runtime warning exposed them.
+
+**Technical Details**
+
+- `SidebarTextHighlight` → `SidebarBackgroundCurrent` (keeps `#0EA5E9`) and `SidebarSelect` →
+  `SidebarTextCurrent` (keeps `#FFFFFF`). Values are unchanged; only the key names move.
+- The mapping is not guesswork: `Branding.h` declares exactly four `StyleEntry` values
+  (`SidebarBackground`, `SidebarText`, `SidebarTextCurrent`, `SidebarBackgroundCurrent`), and
+  `ProgressTreeDelegate.cpp` uses `SidebarTextCurrent` as the pen and `SidebarBackgroundCurrent`
+  as the fill — so the cyan belongs on the background key and the white on the text key.
+- `sidebar: widget` is in use, which is the code path `ProgressTreeDelegate` drives, so the fix
+  applies to the shipped layout rather than only to a QML sidebar.
+- The explanatory comment block above the `style:` section was rewritten to use the real key
+  names (it had documented the dead ones) and now records that 3.4 renamed them.
+
+**Files Modified**
+
+- `etc/calamares/branding/kiro/branding.desc`
+
+---
+
 ## 2026.08.22
 
 ### Hostname template reverted to the Calamares default
