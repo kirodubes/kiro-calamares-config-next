@@ -6,6 +6,39 @@
 
 ## 2026.09.12
 
+### The installed system now boots the kernel the user actually booted live
+
+Mirrored from `kiro-calamares-config` (commit `ea1e693`); the two module trees are identical.
+
+Which kernel an installed Kiro defaulted to was incidental. `IMAGE_ID=kiro` in `/etc/os-release`
+makes Arch's `90-loaderentry.install` give **every** kernel the same `sort-key`, `create_loader()`
+writes a `default <machine-id>*` glob matching all of them, and nothing carried the ISO's kernel
+choice into the target — `kiro_kernel` stored `names[0]` from `sorted(glob(...))`, alphabetical
+order, which no module read. The tie therefore fell to the version string.
+
+- **`kiro_kernel`** resolves the kernel the live session actually booted via
+  `/usr/lib/modules/<uname -r>/pkgbase`, writes it to `/etc/kiro/primary-kernel` in the target, and
+  stores it in globalstorage as `kiroKernel` — replacing the alphabetical `names[0]`, which named
+  the wrong kernel for a `linux-zen linux-lts` pairing. Booting the *fallback* live entry therefore
+  installs a system that defaults to that kernel, rather than back to the one that would not boot.
+- **`kiro_bootloader`** gains `set_grub_top_level()`, writing
+  `GRUB_TOP_LEVEL="/boot/vmlinuz-<primary>"` into `/etc/default/grub` before either `grub-mkconfig`
+  call site. `10_linux` moves that kernel to the front of its list, making it menu entry 0.
+- `create_loader()` is deliberately unchanged. The systemd-boot half is handled by
+  `95-kiro-sort-key.install` in **`kiro-system-files`**, which differentiates the per-kernel
+  sort-keys; the `default` glob then resolves to the first entry in sort order.
+
+Verified on the stable line across seven install runs on 2026-09-12 — see
+`kiro-iso/DISTRO_TESTING.md`. Not separately re-tested on the beta line; the modules are
+byte-identical to the proven ones.
+
+### Files Modified
+
+- `usr/lib/calamares/modules/kiro_kernel/main.py`
+- `usr/lib/calamares/modules/kiro_bootloader/main.py`
+
+## 2026.09.12
+
 ### `kiro_final` no longer deletes the installed kernel's mkinitcpio preset
 
 `kiro-audit` on a fresh **v26.09.12** install reported `FAIL linux.preset missing` (130 / 0 / 1).
