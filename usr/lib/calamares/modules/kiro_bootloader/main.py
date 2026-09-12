@@ -634,6 +634,30 @@ def get_grub_efi_parameters():
     return None
 
 
+def set_grub_top_level(installation_root_path):
+    """Make the primary kernel GRUB's first menu entry."""
+    primary = libcalamares.globalstorage.value("kiroKernel")
+    if not primary:
+        libcalamares.utils.debug("No kiroKernel in global storage - leaving GRUB_TOP_LEVEL unset")
+        return
+
+    # grub-mkconfig's 10_linux moves this kernel to the front of the list.
+    # Kiro ships GRUB_DEFAULT=saved, which falls back to entry 0 until the user
+    # picks something, so being first is what makes it the default.
+    value = f'GRUB_TOP_LEVEL="/boot/vmlinuz-{primary}"'
+    path = os.path.join(installation_root_path, "etc/default/grub")
+
+    lines = []
+    if os.path.exists(path):
+        with open(path) as f:
+            lines = [line for line in f.read().splitlines() if not line.startswith("GRUB_TOP_LEVEL=")]
+    lines.append(value)
+
+    libcalamares.utils.debug(f"Setting {value} in {path}")
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 def run_grub_mkconfig(partitions, output_file):
     """
     Runs grub-mkconfig in the target environment
@@ -996,6 +1020,8 @@ def run():
         if not esp_found:
             libcalamares.utils.warning("EFI system, but nothing mounted on {!s}".format(efi_system_partition))
             return None
+
+    set_grub_top_level(libcalamares.globalstorage.value("rootMountPoint"))
 
     try:
         prepare_bootloader(fw_type, install_hybrid_grub)

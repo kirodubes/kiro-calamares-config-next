@@ -25,6 +25,16 @@ BOOTMNT_KERNEL_GLOB = "/run/archiso/bootmnt/arch/boot/x86_64/vmlinuz-*"
 # is the archiso live preset.
 LIVE_PRESET_ARTIFACTS = ("kiro", "linux.preset")
 
+# Arch records the package a kernel's module tree belongs to in this file.
+# It is the only reliable version -> package mapping: the plain 'linux'
+# package builds '<ver>-arch1-N', which carries no package name of its own.
+PKGBASE_PATH = "/usr/lib/modules/{release}/pkgbase"
+
+# Where the primary kernel is recorded for the target, so that
+# 95-kiro-sort-key.install can keep sorting its boot entry first on every
+# later kernel-install run.
+PRIMARY_KERNEL_PATH = "etc/kiro/primary-kernel"
+
 
 def detect_kernels():
     """Return [(image_path, kernel_name), ...] for every kernel on the live medium."""
@@ -57,6 +67,24 @@ def write_preset(kernel, target_root):
     libcalamares.utils.debug(f"Writing mkinitcpio preset {preset_path}")
     with open(preset_path, "w") as f:
         f.write(content)
+
+
+def booted_kernel_package():
+    """Return the package name of the kernel this live session booted, or None."""
+    try:
+        with open(PKGBASE_PATH.format(release=os.uname().release)) as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+def write_primary_kernel(package, target_root):
+    """Record the primary kernel package in the target."""
+    path = os.path.join(target_root, PRIMARY_KERNEL_PATH)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    libcalamares.utils.debug(f"Recording primary kernel {package} in {path}")
+    with open(path, "w") as f:
+        f.write(package + "\n")
 
 
 def remove_live_presets(target_root):
@@ -98,8 +126,19 @@ def run():
         libcalamares.utils.warning(str(e))
         return ("kiro_kernel: error", f"Failed to install kernel(s) {names}: <pre>{e}</pre>")
 
-    # Expose for downstream modules: primary (first) for back-compat, plus the full list.
-    libcalamares.globalstorage.insert("kiroKernel", names[0])
+    # The primary kernel is the one the user actually booted, not the
+    # alphabetically first: someone who picked the fallback entry because the
+    # primary will not boot on their hardware must not be installed a system
+    # that defaults back to it.
+    primary = booted_kernel_package()
+    if primary not in names:
+        libcalamares.utils.warning(
+            f"Booted kernel package {primary!r} is not among {names} - falling back to {names[0]}")
+        primary = names[0]
+    write_primary_kernel(primary, target_root)
+
+    # Expose for downstream modules: the primary, plus the full list.
+    libcalamares.globalstorage.insert("kiroKernel", primary)
     libcalamares.globalstorage.insert("kiroKernels", names)
 
     libcalamares.utils.debug("##############################################")
