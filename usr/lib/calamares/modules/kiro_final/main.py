@@ -406,7 +406,12 @@ def run():
             "root/.zlogin",
             "etc/systemd/system/getty@tty1.service.d",  # Autologin cleanup
             "etc/systemd/logind.conf.d/do-not-suspend.conf",  # Live-only: keeps the installer awake; must not disable suspend/lid handling on the installed system
-            "etc/mkinitcpio.d/linux.preset",             # Archiso live-only artifact; the kernel package's own preset (e.g. linux-cachyos.preset) is the correct one
+            # NOTE: etc/mkinitcpio.d/linux.preset is deliberately NOT removed here.
+            # kiro_kernel owns live-preset removal and runs long before this module:
+            # it deletes the archiso artifact first, then writes a real preset for
+            # every installed kernel. By now the only linux.preset on the target is
+            # that real one, and removing it left the primary kernel's initramfs
+            # un-regenerable by `mkinitcpio -P` until the next linux package upgrade.
             "etc/ssh/sshd_config.d/10-archiso.conf",
             "root/.config/Kvantum",                      # Live-only: the KiroDark theme that styles the Calamares installer (run as root); the installed system's root doesn't need it
         ]
