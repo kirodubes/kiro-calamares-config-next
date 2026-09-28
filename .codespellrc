@@ -1,3 +1,3 @@
 [codespell]
-# CHANGELOG quotes a fixed typo ("aditional") and uses "accreting" correctly
-ignore-words-list = aditional,accreting
+# CHANGELOG quotes a fixed typo ("aditional") and uses "accreting" correctly; siduction is a distro name
+ignore-words-list = aditional,accreting,siduction

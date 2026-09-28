@@ -34,25 +34,25 @@ for n in range(10):
 try:
     g = main.get_efi_suffix_generator("derp")
     raise TypeError("Shouldn't get generator (no indicator)")
-except ValueError as e:
+except ValueError:
     pass
 
 try:
     g = main.get_efi_suffix_generator("derp${HEX}")
     raise TypeError("Shouldn't get generator (unknown indicator)")
-except ValueError as e:
+except ValueError:
     pass
 
 try:
     g = main.get_efi_suffix_generator("derp${SERIAL}x")
     raise TypeError("Shouldn't get generator (trailing garbage)")
-except ValueError as e:
+except ValueError:
     pass
 
 try:
     g = main.get_efi_suffix_generator("derp${SERIAL}${RANDOM}")
     raise TypeError("Shouldn't get generator (multiple indicators)")
-except ValueError as e:
+except ValueError:
     pass
 
 

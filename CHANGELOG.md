@@ -11,13 +11,22 @@
   dropped from Kiro — `mir` broke on the boost 1.92 soname bump and can no longer be rebuilt (its
   `wlcs` build dependency is gone), so `kiro-miracle`, `miracle-wm-git` and `mir` left nemesis_repo
   and ATT's Wayland page.
+- Added `ruff.toml` pinning ruff to the classic rule set (ruff 0.16 widened its defaults and the
+  pre-commit hook began failing on untouched code), and fixed the 8 classic findings it still reported.
 
 ### Technical Details
 - The count is ATT's two lists, counted from source: `desktopr.py` `desktops` (15) + `wayland.py`
   `WAYLAND_WMS` (now 14) = 29.
+- Lint fixes are behavior-neutral dead code inherited from upstream Calamares: an unused `progress_match`
+  regex and its `import re` in `kiro_packages`, a stray semicolon in `run_xbps`, unused `as e` bindings in
+  two test scripts, and a `noqa: F401` on the test's `toml` availability import.
 
 ### Files Modified
 - `etc/calamares/branding/kiro/show.qml`
+- `ruff.toml` (new)
+- `usr/lib/calamares/modules/kiro_packages/main.py`
+- `usr/lib/calamares/modules/kiro_bootloader/tests/test-bootloader-efiname.py`
+- `usr/lib/calamares/modules/kiro_displaymanager/tests/test-dm-greetd.py`
 
 ## 2026.09.12
 

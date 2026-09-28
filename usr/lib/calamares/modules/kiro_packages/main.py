@@ -392,7 +392,7 @@ class PMLuet(PackageManager):
         check_target_env_call(["luet", "uninstall", "-y"] + pkgs)
 
     def update_db(self):
-          # Luet checks for DB update everytime its ran.
+          # Luet checks for DB update every time it runs.
         pass
 
     def update_system(self):
@@ -421,9 +421,6 @@ class PMPacman(PackageManager):
     backend = "pacman"
 
     def __init__(self):
-        import re
-        progress_match = re.compile("^\\((\\d+)/(\\d+)\\)")
-
         def line_cb(line):
             if line.startswith(":: "):
                 self.in_package_changes = "package" in line or "hooks" in line
@@ -596,7 +593,7 @@ class PMXbps(PackageManager):
         libcalamares.utils.debug(line)
 
     def run_xbps(self, command):
-        libcalamares.utils.target_env_process_output(command, self.line_cb);
+        libcalamares.utils.target_env_process_output(command, self.line_cb)
 
     def install(self, pkgs, from_local=False):
         self.run_xbps(["xbps-install", "-Sy"] + pkgs)

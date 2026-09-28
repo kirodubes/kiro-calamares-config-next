@@ -14,11 +14,11 @@ import os
 os.makedirs("/tmp/etc/greetd/", exist_ok=True)
 try:
     os.remove("/tmp/etc/greetd/config.toml")
-except FileNotFoundError as e:
+except FileNotFoundError:
     pass
 
 try:
-    import toml
+    import toml  # noqa: F401 -- availability check
 except ImportError:
     # This is a failure of the test-environment.
     import sys
