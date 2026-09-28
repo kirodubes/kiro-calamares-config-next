@@ -1,0 +1,3 @@
+[codespell]
+# CHANGELOG quotes a fixed typo ("aditional") and uses "accreting" correctly
+ignore-words-list = aditional,accreting

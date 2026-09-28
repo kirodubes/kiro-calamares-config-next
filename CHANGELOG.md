@@ -4,6 +4,21 @@
 
 ---
 
+## 2026.09.28
+
+### What Changed
+- Installer slideshow: desktop count **30 → 29**, Wayland sessions **15 → 14**. Miracle has been
+  dropped from Kiro — `mir` broke on the boost 1.92 soname bump and can no longer be rebuilt (its
+  `wlcs` build dependency is gone), so `kiro-miracle`, `miracle-wm-git` and `mir` left nemesis_repo
+  and ATT's Wayland page.
+
+### Technical Details
+- The count is ATT's two lists, counted from source: `desktopr.py` `desktops` (15) + `wayland.py`
+  `WAYLAND_WMS` (now 14) = 29.
+
+### Files Modified
+- `etc/calamares/branding/kiro/show.qml`
+
 ## 2026.09.12
 
 ### The installed system now boots the kernel the user actually booted live
