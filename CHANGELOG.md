@@ -37,6 +37,9 @@
 - Checked: ruff clean; the detection returns Intel+AMD on the Yoga 510 (nothing removed) and Intel-only on the
   build host (`vulkan-radeon` removed). **Needs a -next install run** (`vulkaninfo --summary` lists the GPU;
   the GPU cleanup line in the kiro_final results) before mirroring.
+- **Verified (keep-both case):** Yoga 510 install from the 18:07 kiro-iso-next (config 26.10-03): log shows
+  "GPU driver cleanup: SKIPPED (all drivers match the hardware)", all three drivers kept, `vulkaninfo` lists
+  Intel ANV + AMD RADV. **Still open:** the removal case on an Intel-only install (picard or mmc).
 
 ### Files Modified
 - `usr/lib/calamares/modules/kiro_final/main.py`
