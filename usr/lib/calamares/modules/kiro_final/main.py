@@ -265,22 +265,19 @@ def cleanup_vm_profile(target_root, profile_name):
         remove_path(os.path.join(target_root, rel_path))
 
 
-def has_broadcom_wifi():
-    """True if the machine has a Broadcom (0x14e4) PCI network controller (class 0x0280)."""
-    # broadcom-wl-dkms's only modalias is `pci:v*d*sv*sd*bc02sc80i*` (any vendor's
-    # class-0280 device), so udev loads `wl` on Intel/Realtek/MediaTek Wi-Fi too —
-    # tainting the kernel and tripping "Unpatched return thunk in use". Read the
-    # live host's sysfs: it is the hardware the installed system will run on.
+def has_pci_device(vendor, class_prefix):
+    """True if the live host has a PCI device from `vendor` whose class starts with `class_prefix`."""
+    # Reads the live host's sysfs: it is the hardware the installed system will run on.
     base = "/sys/bus/pci/devices"
     for dev in os.listdir(base):
         try:
             with open(os.path.join(base, dev, "vendor")) as f:
-                vendor = f.read().strip()
+                dev_vendor = f.read().strip()
             with open(os.path.join(base, dev, "class")) as f:
                 pci_class = f.read().strip()
         except OSError:
             continue
-        if vendor == "0x14e4" and pci_class.startswith("0x0280"):
+        if dev_vendor == vendor and pci_class.startswith(class_prefix):
             return True
     return False
 
@@ -602,9 +599,12 @@ def run():
     # The live ISO keeps broadcom-wl-dkms so Broadcom Wi-Fi works during the
     # install; the installed system keeps it only on Broadcom hardware. Plain -R
     # (no -s): dkms stays for NVIDIA / VirtualBox modules.
+    # broadcom-wl-dkms's only modalias is `pci:v*d*sv*sd*bc02sc80i*` (any vendor's
+    # class-0280 device), so udev loads `wl` on Intel/Realtek/MediaTek Wi-Fi too —
+    # tainting the kernel and tripping "Unpatched return thunk in use".
     libcalamares.utils.debug("Checking for Broadcom Wi-Fi hardware")
     try:
-        if has_broadcom_wifi():
+        if has_pci_device("0x14e4", "0x0280"):
             results["Broadcom wl cleanup"] = "SKIPPED (Broadcom Wi-Fi present)"
         elif is_package_installed("broadcom-wl-dkms", target_root):
             subprocess.run(
@@ -617,6 +617,34 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed to remove broadcom-wl-dkms: {e}")
         results["Broadcom wl cleanup"] = "FAILED"
+
+    # ========================
+    # GPU userspace driver cleanup
+    # ========================
+
+    # The ISO ships Intel and AMD userspace drivers so either GPU works live; the
+    # installed system keeps only the vendor it has. Class 0x03 covers VGA (0300),
+    # 3D (0302) and display (0380) controllers — hybrid laptops report their dGPU as
+    # 0380. Plain -R: mesa and the Vulkan loader stay.
+    libcalamares.utils.debug("Checking GPU vendors for driver cleanup")
+    try:
+        unneeded = []
+        if not has_pci_device("0x8086", "0x03"):
+            unneeded += ["vulkan-intel", "intel-media-driver"]
+        if not has_pci_device("0x1002", "0x03"):
+            unneeded.append("vulkan-radeon")
+        installed = [p for p in unneeded if is_package_installed(p, target_root)]
+        if installed:
+            subprocess.run(
+                ["chroot", target_root, "pacman", "-R", "--noconfirm"] + installed,
+                check=True
+            )
+            results["GPU driver cleanup"] = f"SUCCESS (removed {' '.join(installed)})"
+        else:
+            results["GPU driver cleanup"] = "SKIPPED (all drivers match the hardware)"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed GPU driver cleanup: {e}")
+        results["GPU driver cleanup"] = "FAILED"
 
     # ========================
     # Final Cleanup
