@@ -265,6 +265,26 @@ def cleanup_vm_profile(target_root, profile_name):
         remove_path(os.path.join(target_root, rel_path))
 
 
+def has_broadcom_wifi():
+    """True if the machine has a Broadcom (0x14e4) PCI network controller (class 0x0280)."""
+    # broadcom-wl-dkms's only modalias is `pci:v*d*sv*sd*bc02sc80i*` (any vendor's
+    # class-0280 device), so udev loads `wl` on Intel/Realtek/MediaTek Wi-Fi too —
+    # tainting the kernel and tripping "Unpatched return thunk in use". Read the
+    # live host's sysfs: it is the hardware the installed system will run on.
+    base = "/sys/bus/pci/devices"
+    for dev in os.listdir(base):
+        try:
+            with open(os.path.join(base, dev, "vendor")) as f:
+                vendor = f.read().strip()
+            with open(os.path.join(base, dev, "class")) as f:
+                pci_class = f.read().strip()
+        except OSError:
+            continue
+        if vendor == "0x14e4" and pci_class.startswith("0x0280"):
+            return True
+    return False
+
+
 def _disable_repo(target_root, repo):
     # Comment out a repo section (the [repo] header and its body lines) in the
     # target pacman.conf. Idempotent. See the call site for why cachyos is
@@ -350,7 +370,8 @@ def run():
     libcalamares.utils.debug("  9. Disable [cachyos] repo in pacman.conf (opt-in on installed system)")
     libcalamares.utils.debug(" 10. Check bootloader configuration (remove GRUB if systemd-boot detected)")
     libcalamares.utils.debug(" 11. Detect virtualization and remove unnecessary VM packages")
-    libcalamares.utils.debug(" 12. Remove installer package (kiro-calamares-config)\n")
+    libcalamares.utils.debug(" 12. Remove broadcom-wl-dkms unless Broadcom Wi-Fi hardware is present")
+    libcalamares.utils.debug(" 13. Remove installer package (kiro-calamares-config)\n")
 
     target_root = libcalamares.globalstorage.value("rootMountPoint")
     results = {}
@@ -573,6 +594,29 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed during VM cleanup: {e}")
         results["Virtual machine cleanup"] = "FAILED"
+
+    # ========================
+    # Broadcom wl driver cleanup
+    # ========================
+
+    # The live ISO keeps broadcom-wl-dkms so Broadcom Wi-Fi works during the
+    # install; the installed system keeps it only on Broadcom hardware. Plain -R
+    # (no -s): dkms stays for NVIDIA / VirtualBox modules.
+    libcalamares.utils.debug("Checking for Broadcom Wi-Fi hardware")
+    try:
+        if has_broadcom_wifi():
+            results["Broadcom wl cleanup"] = "SKIPPED (Broadcom Wi-Fi present)"
+        elif is_package_installed("broadcom-wl-dkms", target_root):
+            subprocess.run(
+                ["chroot", target_root, "pacman", "-R", "--noconfirm", "broadcom-wl-dkms"],
+                check=True
+            )
+            results["Broadcom wl cleanup"] = "SUCCESS (removed broadcom-wl-dkms)"
+        else:
+            results["Broadcom wl cleanup"] = "SUCCESS (not installed)"
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to remove broadcom-wl-dkms: {e}")
+        results["Broadcom wl cleanup"] = "FAILED"
 
     # ========================
     # Final Cleanup

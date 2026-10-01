@@ -108,7 +108,7 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 | `kiro_remove_nvidia` | After kiro_before    | Reads `driver=` kernel param; removes NVIDIA on `free` + `nonfreechwd`, keeps the baked `nvidia-open-dkms` on `nonfree` |
 | `chwd`               | After kiro_remove_nvidia | Runs `chwd --autoconfigure` **only** on `driver=nonfreechwd`; first leads cachyos/chaotic with a trusted geo-CDN mirror + `pacman -Sy` (best-effort), then picks the right driver for the detected GPU |
 | `kiro_ucode`         | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/`              |
-| `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, self-removal |
+| `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, `broadcom-wl-dkms` removal unless Broadcom Wi-Fi (PCI 14e4, class 0280) is present, self-removal |
 
 ### NVIDIA driver modes (`driver=` kernel cmdline)
 `kernel_cmdline("driver", default="free")`. Three modes drive `kiro_remove_nvidia` + `chwd` (packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`):
