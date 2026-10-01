@@ -39,7 +39,10 @@
   the GPU cleanup line in the kiro_final results) before mirroring.
 - **Verified (keep-both case):** Yoga 510 install from the 18:07 kiro-iso-next (config 26.10-03): log shows
   "GPU driver cleanup: SKIPPED (all drivers match the hardware)", all three drivers kept, `vulkaninfo` lists
-  Intel ANV + AMD RADV. **Still open:** the removal case on an Intel-only install (picard or mmc).
+  Intel ANV + AMD RADV.
+- **Verified (removal case):** picard install (Intel HD 630 only), same ISO: "GPU driver cleanup: SUCCESS (removed
+  vulkan-radeon)", pacman.log confirms, `vulkan-intel` + `intel-media-driver` kept, `vulkaninfo` lists the HD 630
+  (ANV), taint 0, no failed units. Ready to mirror to kiro-calamares-config.
 
 ### Files Modified
 - `usr/lib/calamares/modules/kiro_final/main.py`
