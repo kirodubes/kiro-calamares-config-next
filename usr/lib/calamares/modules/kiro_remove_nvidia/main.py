@@ -50,9 +50,12 @@ def nvidia_stack_from_names(names):
     list: `pacman -Q nvidia-utils` resolves the provide (nvidia-390xx-utils), so the
     old code thought it was installed, but `pacman -Rns nvidia-utils` does NOT resolve
     provides → "target not found" → install aborted on 390xx/580xx ISOs.
+    libva-nvidia-driver (VA-API on open/580xx ISOs) goes with it: it doesn't depend on
+    nvidia-utils, so -Rns would otherwise leave it behind.
     """
     return [n for n in names
-            if n.startswith("nvidia-") and n.rsplit("-", 1)[-1] in ("dkms", "utils", "settings")]
+            if (n.startswith("nvidia-") and n.rsplit("-", 1)[-1] in ("dkms", "utils", "settings"))
+            or n == "libva-nvidia-driver"]
 
 def installed_nvidia_stack():
     """The NVIDIA driver packages actually installed in the target (real names)."""

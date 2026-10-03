@@ -7,17 +7,23 @@
 ## 2026.10.03
 
 ### What Changed
+- `kiro_remove_nvidia` now also removes **`libva-nvidia-driver`** (VA-API for NVIDIA, newly baked into open/580xx
+  ISOs) on `driver=free` and `nonfreechwd` installs. It doesn't depend on `nvidia-utils`, so `pacman -Rns` of the
+  driver stack left it behind. On `nonfreechwd`, chwd installs it again with its NVIDIA profile.
 - `kiro_final` now removes `/etc/udev/rules.d/99-kiro-free-nouveau.rules` from the installed system. kiro-iso-next
   ships that rule so the default `driver=free` boot entry loads `nouveau` on NVIDIA GPUs (the baked `nvidia-utils`
   blacklists it); it only matters in the live session.
 
 ### Technical Details
+- `nvidia_stack_from_names` matches `libva-nvidia-driver` by exact name next to the `nvidia-*-{dkms,utils,settings}`
+  pattern, so it's removed in the same single `pacman -Rns` transaction.
 - Added to the existing live-only `paths_to_remove` list next to `10-archiso.conf`. Installed systems have no
   `driver=` on the kernel cmdline, so a leftover rule would never fire. It's removed anyway so live-session
   plumbing doesn't end up on installs.
 
 ### Files Modified
 - `usr/lib/calamares/modules/kiro_final/main.py`
+- `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
 
 ## 2026.10.01
 
