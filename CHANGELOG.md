@@ -13,6 +13,10 @@
 - `kiro_final` now removes `/etc/udev/rules.d/99-kiro-free-nouveau.rules` from the installed system. kiro-iso-next
   ships that rule so the default `driver=free` boot entry loads `nouveau` on NVIDIA GPUs (the baked `nvidia-utils`
   blacklists it); it only matters in the live session.
+- `chwd` module: the `driver=nonfreechwd` (auto-detect) entry now really installs legacy NVIDIA drivers. Tested on
+  an MSI GP73 (GTX 1050 Ti, Pascal): chwd picked `nvidia-dkms-580xx.prime`, but pacman stopped on
+  `libxnvctrl-580xx and libxnvctrl-615 are in conflict. Remove libxnvctrl? [y/N]`, the non-interactive run answered
+  no, and the install silently finished on nouveau. The module now removes the baked `libxnvctrl` before chwd runs.
 
 ### Technical Details
 - `nvidia_stack_from_names` matches `libva-nvidia-driver` by exact name next to the `nvidia-*-{dkms,utils,settings}`
@@ -20,8 +24,14 @@
 - Added to the existing live-only `paths_to_remove` list next to `10-archiso.conf`. Installed systems have no
   `driver=` on the kernel cmdline, so a leftover rule would never fire. It's removed anyway so live-session
   plumbing doesn't end up on installs.
+- `libxnvctrl` survives `kiro_remove_nvidia`'s `pacman -Rns` because `xfce4-sensors-plugin` depends on it.
+  `_drop_baked_libxnvctrl` removes it with `pacman -Rdd` inside the chroot, only on `nonfreechwd` and only when
+  installed. That's safe because `libxnvctrl-580xx` provides `libxnvctrl`, and current profiles pull it back in
+  through `nvidia-settings`. If chwd still fails, the module reinstalls `libxnvctrl` so `xfce4-sensors-plugin` isn't
+  left with a missing dependency on the nouveau fallback.
 
 ### Files Modified
+- `usr/lib/calamares/modules/chwd/main.py`
 - `usr/lib/calamares/modules/kiro_final/main.py`
 - `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
 

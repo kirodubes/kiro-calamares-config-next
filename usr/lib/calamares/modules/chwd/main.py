@@ -12,7 +12,8 @@ Honours the boot-menu `driver=` kernel cmdline (three modes):
   - driver=nonfree     -> skip chwd; keep the baked nvidia-open-dkms untouched
                           (the proven express lane for modern Turing+ GPUs).
   - driver=nonfreechwd -> run chwd; kiro_remove_nvidia already wiped the baked
-                          nvidia-open-dkms first, so chwd installs exactly the
+                          nvidia-open-dkms first and this module drops the
+                          leftover libxnvctrl, so chwd installs exactly the
                           profile it detects (any card) with nothing to conflict.
 
 driver=nonfreechwd is the only install path that fetches packages online (the
@@ -176,6 +177,34 @@ def _refresh_driver_mirrors(root_mount_point):
     libcalamares.utils.debug("chwd: ─────────────────────────────────")
 
 
+def _chroot_pacman(root_mount_point, args):
+    try:
+        return subprocess.run(
+            ["arch-chroot", root_mount_point, "pacman", *args],
+            check=False,
+            timeout=180,
+        ).returncode
+    except (subprocess.TimeoutExpired, OSError) as e:
+        libcalamares.utils.warning(f"chwd: pacman {' '.join(args)} failed/timed out: {e}")
+        return 1
+
+
+def _drop_baked_libxnvctrl(root_mount_point):
+    """Remove the ISO's libxnvctrl so a legacy chwd profile can install libxnvctrl-<branch>; True if removed."""
+    # kiro_remove_nvidia's `pacman -Rns` leaves libxnvctrl behind because xfce4-sensors-plugin
+    # depends on it. Legacy profiles (nvidia-dkms-580xx for Pascal) pull libxnvctrl-580xx, which
+    # conflicts with it, and chwd's non-interactive pacman answers the removal prompt with "no",
+    # so the whole driver install fails. -Rdd is safe: libxnvctrl-580xx provides libxnvctrl, and
+    # current profiles pull libxnvctrl back in through nvidia-settings.
+    if _chroot_pacman(root_mount_point, ["-Q", "libxnvctrl"]) != 0:
+        return False
+    if _chroot_pacman(root_mount_point, ["-Rdd", "--noconfirm", "libxnvctrl"]) != 0:
+        libcalamares.utils.warning("chwd: could not remove libxnvctrl; a legacy profile may conflict")
+        return False
+    libcalamares.utils.debug("chwd: removed libxnvctrl (chwd installs the matching libxnvctrl-<branch>)")
+    return True
+
+
 def run():
     libcalamares.utils.debug("##############################################")
     libcalamares.utils.debug("Start chwd")
@@ -205,6 +234,7 @@ def run():
         )
 
     _refresh_driver_mirrors(root_mount_point)
+    dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
 
     chwd_command = ["arch-chroot", root_mount_point, "chwd", "--autoconfigure"]
     libcalamares.utils.debug(f"Running: {' '.join(chwd_command)}")
@@ -217,6 +247,8 @@ def run():
             "driver (nouveau/mesa). The system is usable; proprietary "
             "drivers can be installed later with 'chwd --autoconfigure'."
         )
+        if dropped_libxnvctrl and _chroot_pacman(root_mount_point, ["-S", "--noconfirm", "libxnvctrl"]) != 0:
+            libcalamares.utils.warning("chwd: could not reinstall libxnvctrl; xfce4-sensors-plugin lacks it")
         _record_skip(root_mount_point, detail)
         libcalamares.job.setprogress(1.0)
         return None
