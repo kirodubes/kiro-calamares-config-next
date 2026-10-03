@@ -4,6 +4,21 @@
 
 ---
 
+## 2026.10.03
+
+### What Changed
+- `kiro_final` now removes `/etc/udev/rules.d/99-kiro-free-nouveau.rules` from the installed system. kiro-iso-next
+  ships that rule so the default `driver=free` boot entry loads `nouveau` on NVIDIA GPUs (the baked `nvidia-utils`
+  blacklists it); it only matters in the live session.
+
+### Technical Details
+- Added to the existing live-only `paths_to_remove` list next to `10-archiso.conf`. Installed systems have no
+  `driver=` on the kernel cmdline, so a leftover rule would never fire. It's removed anyway so live-session
+  plumbing doesn't end up on installs.
+
+### Files Modified
+- `usr/lib/calamares/modules/kiro_final/main.py`
+
 ## 2026.10.01
 
 ### What Changed

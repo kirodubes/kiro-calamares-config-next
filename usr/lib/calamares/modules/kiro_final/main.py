@@ -431,6 +431,7 @@ def run():
             # that real one, and removing it left the primary kernel's initramfs
             # un-regenerable by `mkinitcpio -P` until the next linux package upgrade.
             "etc/ssh/sshd_config.d/10-archiso.conf",
+            "etc/udev/rules.d/99-kiro-free-nouveau.rules",  # Live-only: loads nouveau on the driver=free boot entry; installs have no driver= on the cmdline
             "root/.config/Kvantum",                      # Live-only: the KiroDark theme that styles the Calamares installer (run as root); the installed system's root doesn't need it
         ]
         for rel_path in paths_to_remove:
