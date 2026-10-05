@@ -19,8 +19,10 @@ Honours the boot-menu `driver=` kernel cmdline (three modes):
 driver=nonfreechwd is the only install path that fetches packages online (the
 driver comes mainly from [cachyos], some from [chaotic-aur]). Before running chwd
 we therefore make that fetch reliable: lead both repos with a trusted geo-CDN
-mirror (the same ones build-scripts/host-prep.sh uses) and `pacman -Sy` to refresh
-the chroot's stale sync databases. Both steps are best-effort and never abort.
+mirror (the same ones build-scripts/host-prep.sh uses) and run a full `pacman -Syu`.
+A bare `-Sy` (which chwd itself also runs) pulls linux-headers newer than the ISO's
+kernel, so DKMS builds no driver; upgrading the kernel first keeps the pair in step.
+If the upgrade fails, chwd is skipped rather than risk that partial upgrade.
 
 If chwd cannot complete (e.g. a detected profile needs a package that is not
 in the configured repos), the failure is treated as non-fatal: pacman's
@@ -104,6 +106,7 @@ def _record_skip(root_mount_point, detail):
                 "chwd was skipped during installation because it could not complete.\n"
                 f"Reason: {detail}\n"
                 "The system booted on the open driver (nouveau/mesa). To retry:\n"
+                "  sudo pacman -Syu   (first, so the kernel matches the headers chwd installs)\n"
                 "  chwd --autoconfigure\n"
                 "Some driver packages come only from the [cachyos] repo, which Kiro ships\n"
                 "disabled by default. If the retry still cannot find a package, uncomment\n"
@@ -138,12 +141,27 @@ def _mirror_host(server_line):
     return url.split("//", 1)[-1].split("/", 1)[0]
 
 
-def _refresh_driver_mirrors(root_mount_point):
-    """Best-effort: lead cachyos/chaotic with a trusted CDN, then sync DBs before chwd.
+def _stream_in_chroot(root_mount_point, args):
+    """Run pacman in the chroot, piping its output into the debug log; return the exit code."""
+    proc = subprocess.Popen(
+        ["arch-chroot", root_mount_point, "pacman", *args],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+        bufsize=1,
+    )
+    for line in proc.stdout:
+        if line.strip():
+            line_cb(line)
+    return proc.wait()
 
-    chwd runs `pacman -S`, which does not refresh the sync databases; a fresh chroot's
-    DBs can predate the ISO, so without this chwd may request a driver version the
-    mirror no longer carries and fall back to the open driver. Never fatal.
+
+def _refresh_driver_mirrors(root_mount_point):
+    """Lead cachyos/chaotic with a trusted CDN, then fully upgrade the chroot; True if the upgrade succeeded.
+
+    chwd runs `pacman -Sy ... linux-headers`. On an ISO older than the repos that installs
+    headers newer than the kernel, DKMS finds no matching modules tree and builds no driver
+    (seen on a test box 2026-10-05). A full -Syu first moves the kernel along with the headers.
 
     Logs a single greppable `chwd: ── mirror refresh ──` block so this step is easy to
     find in Calamares.log and is unmistakably distinct from kiro_before's own pacman -Sy.
@@ -160,21 +178,23 @@ def _refresh_driver_mirrors(root_mount_point):
         except OSError as e:
             libcalamares.utils.warning(f"chwd: could not update {name}: {e}")
 
+    upgraded = False
     try:
-        result = subprocess.run(
-            ["arch-chroot", root_mount_point, "pacman", "-Sy"],
-            check=False,
-            timeout=180,
-        )
-        if result.returncode == 0:
-            libcalamares.utils.debug("chwd: pacman -Sy … OK")
+        # A stale keyring is the usual reason -Syu fails on an older ISO.
+        # If this sync fails, -Su would "succeed" against stale DBs and chwd's own -Sy would
+        # bring the partial upgrade back, so its failure counts too.
+        code = _stream_in_chroot(root_mount_point, ["-Sy", "--needed", "--noconfirm", "archlinux-keyring"])
+        if code == 0:
+            code = _stream_in_chroot(root_mount_point, ["-Su", "--noconfirm"])
+        if code == 0:
+            libcalamares.utils.debug("chwd: pacman -Syu … OK")
+            upgraded = True
         else:
-            libcalamares.utils.warning(
-                f"chwd: pacman -Sy exited {result.returncode} (non-fatal, continuing)"
-            )
-    except (subprocess.TimeoutExpired, OSError) as e:
-        libcalamares.utils.warning(f"chwd: pacman -Sy refresh failed/timed out, continuing: {e}")
+            libcalamares.utils.warning(f"chwd: pacman -Syu exited {code}")
+    except OSError as e:
+        libcalamares.utils.warning(f"chwd: pacman -Syu failed: {e}")
     libcalamares.utils.debug("chwd: ─────────────────────────────────")
+    return upgraded
 
 
 def _chroot_pacman(root_mount_point, args):
@@ -233,7 +253,14 @@ def run():
             f"'{root_mount_point}' does not exist.",
         )
 
-    _refresh_driver_mirrors(root_mount_point)
+    if not _refresh_driver_mirrors(root_mount_point):
+        libcalamares.utils.warning(
+            "chwd: skipped because the system upgrade failed; running it now could leave "
+            "linux-headers newer than the kernel. Continuing on the open driver (nouveau/mesa)."
+        )
+        _record_skip(root_mount_point, "pacman -Syu failed before chwd")
+        libcalamares.job.setprogress(1.0)
+        return None
     dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
 
     chwd_command = ["arch-chroot", root_mount_point, "chwd", "--autoconfigure"]

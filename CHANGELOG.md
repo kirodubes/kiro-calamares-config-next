@@ -4,6 +4,28 @@
 
 ---
 
+## 2026.10.05
+
+### What Changed
+- chwd module (`driver=nonfreechwd`): the pre-chwd `pacman -Sy` is now a full `pacman -Syu`. chwd installs
+  `linux-headers` with its driver. On an ISO older than the repos those headers were newer than the installed
+  kernel, so DKMS found no matching modules tree and built no NVIDIA driver. Upgrading first keeps kernel and
+  headers in step. If the upgrade fails, chwd is skipped (with a `/var/log/kiro-chwd-skipped.log` breadcrumb)
+  instead of risking that partial upgrade.
+
+### Technical Details
+- `_refresh_driver_mirrors()` now runs `-Sy --needed --noconfirm archlinux-keyring` then `-Su --noconfirm` and
+  returns True only if both succeed. A failed sync counts as a failure too: `-Su` would otherwise "succeed"
+  against stale DBs and chwd's own `-Sy` would bring the partial upgrade back.
+- New `_stream_in_chroot()` pipes pacman output through `line_cb`, so Calamares shows progress during a long
+  upgrade (kernel + mkinitcpio + DKMS). The old 180 s timeout is gone; killing pacman partway through a
+  transaction is worse than waiting.
+- The skip breadcrumb now tells the user to run `sudo pacman -Syu` before retrying `chwd --autoconfigure`.
+
+### Files Modified
+- `usr/lib/calamares/modules/chwd/main.py`
+- `CLAUDE.md`
+
 ## 2026.10.03
 
 ### What Changed

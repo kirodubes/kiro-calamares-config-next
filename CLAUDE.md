@@ -106,7 +106,7 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 |----------------------|----------------------|------------------------------------------------------------------------------------------------------------------|
 | `kiro_before`        | After networkcfg     | Pacman lock wait, keyring init, mkinitcpio preset rename (`kiro` → `linux.preset`), makepkg optimization     |
 | `kiro_remove_nvidia` | After kiro_before    | Reads `driver=` kernel param; removes NVIDIA on `free` + `nonfreechwd`, keeps the baked `nvidia-open-dkms` on `nonfree` |
-| `chwd`               | After kiro_remove_nvidia | Runs `chwd --autoconfigure` **only** on `driver=nonfreechwd`; first leads cachyos/chaotic with a trusted geo-CDN mirror + `pacman -Sy` (best-effort), then picks the right driver for the detected GPU |
+| `chwd`               | After kiro_remove_nvidia | Runs `chwd --autoconfigure` **only** on `driver=nonfreechwd`; first leads cachyos/chaotic with a trusted geo-CDN mirror + a full `pacman -Syu` (chwd is skipped if that fails, to avoid headers newer than the kernel), then picks the right driver for the detected GPU |
 | `kiro_ucode`         | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/`              |
 | `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, `broadcom-wl-dkms` removal unless Broadcom Wi-Fi (PCI 14e4, class 0280) is present, self-removal |
 
@@ -114,7 +114,7 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 `kernel_cmdline("driver", default="free")`. Three modes drive `kiro_remove_nvidia` + `chwd` (packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`):
 - **`free`** (default) — `kiro_remove_nvidia` removes the NVIDIA packages; chwd skipped → mesa / open stack.
 - **`nonfree`** — both modules skip; the baked `nvidia-open-dkms` is kept untouched (proven express lane for modern Turing+ GPUs).
-- **`nonfreechwd`** — `kiro_remove_nvidia` removes the baked NVIDIA packages first (clean slate), then `chwd --autoconfigure` installs exactly the profile it detects (any card) with nothing to conflict. This is the **only online install path** (driver comes mainly from `[cachyos]`, some from `[chaotic-aur]`), so the chwd module first leads both mirrorlists with a trusted geo-CDN server (the same ones `build-scripts/host-prep.sh` uses) and runs `pacman -Sy` to refresh the chroot's stale sync DBs — both best-effort, never fatal.
+- **`nonfreechwd`** — `kiro_remove_nvidia` removes the baked NVIDIA packages first (clean slate), then `chwd --autoconfigure` installs exactly the profile it detects (any card) with nothing to conflict. This is the **only online install path** (driver comes mainly from `[cachyos]`, some from `[chaotic-aur]`), so the chwd module first leads both mirrorlists with a trusted geo-CDN server (the same ones `build-scripts/host-prep.sh` uses) and runs a full `pacman -Syu` (keyring first). A bare `-Sy` would let chwd pull `linux-headers` newer than the ISO's kernel, so DKMS builds no driver; if the upgrade fails, chwd is skipped and the install continues on the open driver.
 
 ### VM Detection (kiro_final)
 Uses `systemd-detect-virt` and removes packages for VMs you are **not** running in. The set-based logic:
