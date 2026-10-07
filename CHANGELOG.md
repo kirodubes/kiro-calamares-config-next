@@ -4,6 +4,22 @@
 
 ---
 
+## 2026.10.07
+
+### What Changed
+- **New KiroTux slide in the installer slideshow**, shown just before the closing "Enjoy Kiro"
+  slide. It promotes KiroTux, Kiro on Wayland: a lean Hyprland + DankMaterialShell ISO with
+  Kirotux Hyprland Premium. It points to `ko-fi.com/erikdubois/shop`.
+
+### Technical Details
+- One `KiroSlide` (kicker / headline / three lines), the same component as the other slides.
+  The URL is plain text because slideshow slides can't open links.
+- Mirrored across `kiro-calamares-config` and `kiro-calamares-config-next`.
+
+### Files Modified
+- `etc/calamares/branding/kiro/show.qml`
+- `CHANGELOG.md`
+
 ## 2026.10.05
 
 ### What Changed

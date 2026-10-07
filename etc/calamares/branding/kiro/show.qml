@@ -291,6 +291,16 @@ Presentation
         ]
     }
 
+    KiroSlide {
+        kicker: "KiroTux"
+        headline: "Kiro, on Wayland."
+        lines: [
+            "A lean Wayland ISO with Hyprland + DankMaterialShell.",
+            "Comes with Kirotux Hyprland Premium, the tweak tool for your desktop.",
+            "Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop"
+        ]
+    }
+
     KiroTitleSlide {
         wordmark: "Enjoy Kiro"
         tagline: "Sit back — your new system is being installed."
