@@ -10,6 +10,8 @@
 - **New KiroTux slide in the installer slideshow**, shown just before the closing "Enjoy Kiro"
   slide. It promotes KiroTux, Kiro on Wayland: a lean Hyprland + DankMaterialShell ISO with
   Kirotux Hyprland Premium. It points to `ko-fi.com/erikdubois/shop`.
+- **The "Open & teachable" slide now separates the two.** "Free and open, always" became
+  "Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda."
 
 ### Technical Details
 - One `KiroSlide` (kicker / headline / three lines), the same component as the other slides.
