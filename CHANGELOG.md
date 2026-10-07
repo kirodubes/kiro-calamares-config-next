@@ -12,6 +12,8 @@
   Kirotux Hyprland Premium. It points to `ko-fi.com/erikdubois/shop`.
 - **The "Open & teachable" slide now separates the two.** "Free and open, always" became
   "Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda."
+- **Two more tool slides: Fish-tweak-tool and Fastfetch-tweak-tool**, after the
+  Alacritty-tweak-tool slide. Both tools ship on the ISO but had no slide.
 
 ### Technical Details
 - One `KiroSlide` (kicker / headline / three lines), the same component as the other slides.

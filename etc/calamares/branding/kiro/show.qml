@@ -214,6 +214,24 @@ Presentation
     }
 
     KiroSlide {
+        kicker: "Fish-tweak-tool"
+        headline: "A smarter shell, set up for you."
+        lines: [
+            "Install a modern prompt: Tide, Starship, Hydro or Pure.",
+            "Toggle plugins, pick a colour theme, manage your abbreviations."
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Fastfetch-tweak-tool"
+        headline: "Your system info, your way."
+        lines: [
+            "Pick modules, reorder them, choose from 500+ logos.",
+            "See the result live as you tweak."
+        ]
+    }
+
+    KiroSlide {
         kicker: "Archlinux-logout"
         headline: "Go out in style."
         lines: [
