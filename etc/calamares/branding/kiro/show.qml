@@ -161,7 +161,7 @@ Presentation
         lines: [
             "The distro you can watch being made — every step, on YouTube.",
             "Fork it, rebuild it, ship your own ISO.",
-            "Free and open, always. No telemetry, no agenda."
+            "Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda."
         ]
     }
 
