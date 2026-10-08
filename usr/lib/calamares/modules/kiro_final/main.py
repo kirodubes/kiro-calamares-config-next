@@ -432,7 +432,9 @@ def run():
             # un-regenerable by `mkinitcpio -P` until the next linux package upgrade.
             "etc/ssh/sshd_config.d/10-archiso.conf",
             "etc/udev/rules.d/99-kiro-free-nouveau.rules",  # Live-only: loads nouveau on the driver=free boot entry; installs have no driver= on the cmdline
-            "root/.config/Kvantum",                      # Live-only: the KiroDark theme that styles the Calamares installer (run as root); the installed system's root doesn't need it
+            # Live-only: the KiroDark theme that styles the Calamares installer (run as root). Only the theme folder:
+            # the skel copy above already replaced kvantum.kvconfig with the user default (ArcDark), which root keeps.
+            "root/.config/Kvantum/KiroDark",
         ]
         for rel_path in paths_to_remove:
             remove_path(os.path.join(target_root, rel_path))

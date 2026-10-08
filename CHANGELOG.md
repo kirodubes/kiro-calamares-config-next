@@ -4,6 +4,25 @@
 
 ---
 
+## 2026.10.08
+
+### Installed root keeps the ArcDark Kvantum theme
+
+**What Changed.** On an installed system, root had no Kvantum setting, so Qt apps run as root (Btrfs Assistant,
+qt6ct) fell back to Kvantum's built-in theme instead of the ArcDark the user gets, until ATT had been started once.
+`kiro_final` now removes only the live installer's KiroDark theme folder, and root keeps the ArcDark setting.
+
+**Technical Details.** `kiro_final` copies `/etc/skel` to `/root` (which overwrites `kvantum.kvconfig` with skel's
+`theme=ArcDark` from kiro-kvantum), then removes live-only paths. That list held `root/.config/Kvantum`, deleting the
+whole folder including the fresh ArcDark config; it is now `root/.config/Kvantum/KiroDark`. Found by checking an
+install from the v26.10.08 ISO (08:53 build) as user and root: GTK, qt5ct, qt6ct and dconf `prefer-dark` matched,
+only root's Kvantum config was missing.
+
+**Files Modified.**
+- `usr/lib/calamares/modules/kiro_final/main.py`
+
+---
+
 ## 2026.10.07
 
 ### What Changed
