@@ -4,6 +4,26 @@
 
 ---
 
+## 2026.10.11
+
+### f2fs removed from the installer's filesystem choices
+
+**What Changed.** The partition page no longer offers f2fs (ext4, btrfs, xfs remain; ext4 stays the default). On a
+QEMU install with f2fs + "swap to file", SDDM took 1 min 32 s to appear: `swapon
+/swapfile` hung, systemd killed it after 90 s, and everything up to `sysinit.target` waited on `swap.target`.
+kiro-audit flagged the failed `swapfile.swap`. Few users pick f2fs, so it goes rather than being patched.
+
+**Technical Details.** f2fs only takes a swapfile that was pinned (`f2fs_io pinfile set`) before its blocks were
+allocated; otherwise the kernel migrates the whole file on every swapon. Calamares' `fstab` `create_swapfile`
+handles btrfs (`chattr +C +m`, own subvolume) but nothing for f2fs, and our build sizes the file to RAM (8 GiB
+here), so the migration never finishes. Not reported upstream (Codeberg/GitHub searched). `availableFileSystemTypes`
+in `partition.conf` now lists ext4/btrfs/xfs. The f2fs line in `mount.conf` stays: it still mounts an existing
+f2fs partition kept in manual mode.
+
+**Files Modified.**
+- `etc/calamares/modules/partition.conf`
+- `CHANGELOG.md`
+
 ## 2026.10.08
 
 ### Installed root keeps the ArcDark Kvantum theme
