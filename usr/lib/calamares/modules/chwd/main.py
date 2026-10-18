@@ -9,10 +9,10 @@ laptop tweaks, hybrid graphics, etc.).
 Honours the boot-menu `driver=` kernel cmdline (three modes):
   - driver=free        -> skip chwd; kiro_remove_nvidia removed the baked NVIDIA
                           packages, system runs on mesa / the open stack.
-  - driver=nonfree     -> skip chwd; keep the baked nvidia-open-dkms untouched
+  - driver=nonfree     -> skip chwd; keep the baked NVIDIA driver untouched
                           (the proven express lane for modern Turing+ GPUs).
   - driver=nonfreechwd -> run chwd; kiro_remove_nvidia already wiped the baked
-                          nvidia-open-dkms first and this module drops the
+                          NVIDIA driver first and this module drops the
                           leftover libxnvctrl, so chwd installs exactly the
                           profile it detects (any card) with nothing to conflict.
 
@@ -216,12 +216,24 @@ def _drop_baked_libxnvctrl(root_mount_point):
     # conflicts with it, and chwd's non-interactive pacman answers the removal prompt with "no",
     # so the whole driver install fails. -Rdd is safe: libxnvctrl-580xx provides libxnvctrl, and
     # current profiles pull libxnvctrl back in through nvidia-settings.
-    if _chroot_pacman(root_mount_point, ["-Q", "libxnvctrl"]) != 0:
+    # On a 470xx/390xx/580xx ISO the baked one is libxnvctrl-<branch>, which provides libxnvctrl:
+    # `pacman -Q libxnvctrl` resolves that provide but `-Rdd libxnvctrl` does not, so remove it by
+    # the real name -Qq prints.
+    try:
+        out = subprocess.run(
+            ["arch-chroot", root_mount_point, "pacman", "-Qq", "libxnvctrl"],
+            check=False, capture_output=True, text=True, timeout=60,
+        )
+    except (subprocess.TimeoutExpired, OSError) as e:
+        libcalamares.utils.warning(f"chwd: pacman -Qq libxnvctrl failed/timed out: {e}")
         return False
-    if _chroot_pacman(root_mount_point, ["-Rdd", "--noconfirm", "libxnvctrl"]) != 0:
-        libcalamares.utils.warning("chwd: could not remove libxnvctrl; a legacy profile may conflict")
+    if out.returncode != 0 or not out.stdout.split():
         return False
-    libcalamares.utils.debug("chwd: removed libxnvctrl (chwd installs the matching libxnvctrl-<branch>)")
+    pkg = out.stdout.split()[0]
+    if _chroot_pacman(root_mount_point, ["-Rdd", "--noconfirm", pkg]) != 0:
+        libcalamares.utils.warning(f"chwd: could not remove {pkg}; a legacy profile may conflict")
+        return False
+    libcalamares.utils.debug(f"chwd: removed {pkg} (chwd installs the matching libxnvctrl-<branch>)")
     return True
 
 
@@ -237,7 +249,7 @@ def run():
         libcalamares.utils.debug(
             f"Skipping chwd because 'driver={selection}' — chwd runs only on "
             "'driver=nonfreechwd'. (free → kiro_remove_nvidia cleaned up; "
-            "nonfree → keep the baked nvidia-open-dkms.)"
+            "nonfree → keep the baked NVIDIA driver.)"
         )
         return None
 

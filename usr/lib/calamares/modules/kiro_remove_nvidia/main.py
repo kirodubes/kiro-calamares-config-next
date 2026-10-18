@@ -45,7 +45,7 @@ def nvidia_stack_from_names(names):
     """The NVIDIA driver packages among a list of real installed package names.
 
     Variant-agnostic: matches nvidia-open-dkms, nvidia-utils, nvidia-settings AND
-    the nvidia-390xx-* / nvidia-580xx-* variants, by REAL installed name. This is
+    the nvidia-390xx-* / nvidia-470xx-* / nvidia-580xx-* variants, by REAL installed name. This is
     the fix for the old hardcoded ["nvidia-open-dkms","nvidia-utils","nvidia-settings"]
     list: `pacman -Q nvidia-utils` resolves the provide (nvidia-390xx-utils), so the
     old code thought it was installed, but `pacman -Rns nvidia-utils` does NOT resolve
@@ -110,7 +110,7 @@ def run():
 
     # Remove on 'free' (end up on mesa) and on 'nonfreechwd' (clean slate so chwd
     # installs exactly its detected pick with nothing to conflict). Plain 'nonfree'
-    # keeps the baked nvidia-open-dkms untouched.
+    # keeps the baked NVIDIA driver untouched.
     if selection in ("free", "nonfreechwd"):
         libcalamares.utils.debug(f"Removing NVIDIA packages because 'driver={selection}' was specified.")
         error = remove_nvidia_packages_from_target()
@@ -119,7 +119,7 @@ def run():
             return error
         results["Remove NVIDIA packages"] = "SUCCESS"
     else:
-        libcalamares.utils.debug(f"Keeping NVIDIA packages because 'driver={selection}' (baked nvidia-open-dkms).")
+        libcalamares.utils.debug(f"Keeping NVIDIA packages because 'driver={selection}' (baked NVIDIA driver).")
         results["Remove NVIDIA packages"] = "SKIPPED"
 
     libcalamares.utils.debug("##############################################")

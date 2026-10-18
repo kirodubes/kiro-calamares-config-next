@@ -6,6 +6,14 @@
 
 ## 2026.10.18
 
+### chwd removes the baked libxnvctrl by its real name
+
+**What Changed.** A line-3 install (`driver=nonfreechwd`) from a 470xx ISO left `libxnvctrl-470xx` behind, with the warning "could not remove libxnvctrl; a legacy profile may conflict". On a card from another driver branch (for example Pascal on a 470xx or 390xx ISO), chwd's profile would then pull a conflicting `libxnvctrl-<branch>` and the driver install would fail, leaving nouveau. The open ISO was not affected: there the package really is called `libxnvctrl`. The log lines that said "keep the baked nvidia-open-dkms" now say "the baked NVIDIA driver", since the ISO may ship 580xx, 470xx or 390xx instead.
+
+**Technical Details.** A pacman quirk, the same one behind the 390xx `kiro_remove_nvidia` abort: `pacman -Q libxnvctrl` resolves the provide (`libxnvctrl-470xx` provides `libxnvctrl`), but `pacman -Rdd libxnvctrl` does not. `_drop_baked_libxnvctrl` now asks `pacman -Qq libxnvctrl` for the real name and removes that. Found while VM-testing the new 470xx ISO option: line 2 kept the 470xx stack, and line 3 removed it and routed chwd to the virtualbox profile. The fix itself can't be tested without a real NVIDIA card from a different driver branch, so it goes into both config packages at once.
+
+**Files Modified.** `usr/lib/calamares/modules/chwd/main.py`, `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
+
 ### Installed SDDM preselects the ISO's default session
 
 **What Changed.** In a YouTube review, an ISO built with the Kiro ISO Builder (XFCE + Awesome + Qtile, default
