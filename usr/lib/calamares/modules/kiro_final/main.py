@@ -348,6 +348,53 @@ def configure_x11_keymap(target_root):
         f.write("\n".join(keep) + "\n")
     return "SUCCESS"
 
+def preselect_sddm_session(target_root):
+    """Make the installed SDDM greeter preselect the ISO's default session."""
+    import configparser
+
+    # build-the-iso.sh writes the chosen default session into the live system's SDDM config.
+    live = configparser.ConfigParser(strict=False)
+    live.optionxform = str
+    live.read("/etc/sddm.conf.d/kde_settings.conf")
+    session = live.get("Autologin", "Session", fallback="").strip()
+    if not session:
+        return "SKIPPED (no live default session)"
+
+    desktop = None
+    for kind in ("xsessions", "wayland-sessions"):
+        candidate = f"/usr/share/{kind}/{session}.desktop"
+        if os.path.exists(os.path.join(target_root, candidate.lstrip("/"))):
+            desktop = candidate
+            break
+    if desktop is None:
+        return f"SKIPPED (no {session}.desktop on target)"
+
+    # Without a last session SDDM preselects the first entry of its list, and Wayland
+    # sessions sort first, so a Qtile build booted qtile-wayland instead of the default.
+    state_path = os.path.join(target_root, "var/lib/sddm/state.conf")
+    os.makedirs(os.path.dirname(state_path), exist_ok=True)
+    state = configparser.ConfigParser(strict=False)
+    state.optionxform = str
+    state.read(state_path)
+    if "Last" not in state:
+        state.add_section("Last")
+    state.set("Last", "Session", desktop)
+    with open(state_path, "w") as f:
+        state.write(f, space_around_delimiters=False)
+    subprocess.run(["chroot", target_root, "chown", "-R", "sddm:sddm", "/var/lib/sddm"], check=False)
+
+    # The displaymanager module set the autologin session by its own DE priority; keep it in step.
+    dm_path = os.path.join(target_root, "etc/sddm.conf.d/kde_settings.conf")
+    if os.path.exists(dm_path):
+        dm = configparser.ConfigParser(strict=False)
+        dm.optionxform = str
+        dm.read(dm_path)
+        if "Autologin" in dm:
+            dm.set("Autologin", "Session", session)
+            with open(dm_path, "w") as f:
+                dm.write(f, space_around_delimiters=False)
+    return "SUCCESS"
+
 
 def run():
     """Execute final system configuration and cleanup."""
@@ -362,6 +409,7 @@ def run():
     libcalamares.utils.debug("  4. Remove installation-related files and folders")
     libcalamares.utils.debug("  5. Configure system environment (EDITOR=nano)")
     libcalamares.utils.debug("  6. Propagate X11 keyboard layout (XKBLAYOUT) to /etc/vconsole.conf")
+    libcalamares.utils.debug("  6b. Preselect the ISO's default session in SDDM (state.conf [Last])")
     libcalamares.utils.debug("  7. Configure Bluetooth and PulseAudio")
     libcalamares.utils.debug("  8. Pin tuned ppd_base_profile = performance")
     libcalamares.utils.debug("  9. Disable [cachyos] repo in pacman.conf (opt-in on installed system)")
@@ -473,6 +521,13 @@ def run():
     except Exception as e:
         libcalamares.utils.warning(f"Failed to propagate X11 keyboard layout: {e}")
         results["Propagate X11 keyboard layout"] = "FAILED"
+
+    libcalamares.utils.debug("Preselecting the default session in SDDM")
+    try:
+        results["Preselect default SDDM session"] = preselect_sddm_session(target_root)
+    except Exception as e:
+        libcalamares.utils.warning(f"Failed to preselect the SDDM session: {e}")
+        results["Preselect default SDDM session"] = "FAILED"
 
     # Configure Bluetooth and PulseAudio
     libcalamares.utils.debug("Configuring Bluetooth and audio")
