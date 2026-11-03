@@ -16,7 +16,7 @@
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, met een leraar in de doos</translation>
+        <translation>Arch Linux, met een ingebouwde leermeester.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../show.qml" line="172"/>
         <source>Real Arch underneath — what you learn here, you keep.</source>
-        <translation>Echte Arch eronder — wat je hier leert, hou je.</translation>
+        <translation>Echte Arch eronder — wat je hier leert, neem je mee.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="173"/>
@@ -66,12 +66,12 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Arch eronder, verzorgd erbovenop</translation>
+        <translation>Arch als basis, zorgvuldig samengesteld.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>Volledige pacman, rolling release, volledige toegang tot de AUR.</translation>
+        <translation>Volledige pacman-functionaliteit, rolling release en volledige toegang tot de AUR.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../show.qml" line="193"/>
         <source>Erik&apos;s nemesis_repo enabled out of the box.</source>
-        <translation>Erik&apos;s nemesis_repo is meteen ingeschakeld.</translation>
+        <translation>Eriks nemesis_repo is meteen ingeschakeld.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="199"/>
@@ -171,17 +171,17 @@
     <message>
         <location filename="../show.qml" line="236"/>
         <source>Go out in style.</source>
-        <translation>Ga met stijl weg.</translation>
+        <translation>Vertrek in stijl.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Afmelden, vergrendelen, herstarten, slaapstand of uitschakelen — één overzichtelijk scherm.</translation>
+        <translation>Afmelden, vergrendelen, herstarten, de slaapstand activeren of uitschakelen — alles op één overzichtelijk scherm.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Elke manier om weg te gaan, één toetsaanslag verder.</translation>
+        <translation>Alle manieren om af te sluiten, binnen handbereik met één toetsaanslag.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../show.qml" line="249"/>
         <source>Running in a VM? The guest tools sort themselves out.</source>
-        <translation>Draai je in een VM? De gasttools regelen zichzelf.</translation>
+        <translation>Draai je in een VM? De gasttools worden automatisch geregeld.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="254"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../show.qml" line="258"/>
         <source>The speed tuning is done before you ever log in.</source>
-        <translation>De snelheidsafstelling is klaar voordat je ooit inlogt.</translation>
+        <translation>De snelheidsoptimalisaties zijn al uitgevoerd voordat je voor het eerst inlogt.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="259"/>
@@ -266,7 +266,7 @@
     <message>
         <location filename="../show.qml" line="276"/>
         <source>Curated themes, icons and wallpapers — already set up for you.</source>
-        <translation>Samengestelde thema&apos;s, pictogrammen en achtergronden — al voor je ingesteld.</translation>
+        <translation>Zorgvuldig geselecteerde thema's, pictogrammen en achtergronden — al voor je ingesteld.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="277"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../show.qml" line="294"/>
         <source>Break something? Roll back in minutes.</source>
-        <translation>Iets stukgemaakt? Zet het in minuten terug.</translation>
+        <translation>Iets stukgemaakt? Herstel het in enkele minuten.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="296"/>
@@ -326,7 +326,7 @@
     <message>
         <location filename="../show.qml" line="298"/>
         <source>Experiment freely. You can always go back.</source>
-        <translation>Experimenteer vrij. Je kunt altijd terug.</translation>
+        <translation>Experimenteer gerust. Je kunt altijd terug.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="303"/>
@@ -380,7 +380,7 @@
     <message>
         <location filename="../show.qml" line="325"/>
         <source>Rounded corners, blur and smooth animations, ready from the first login.</source>
-        <translation>Afgeronde hoeken, blur en vloeiende animaties, klaar vanaf de eerste login.</translation>
+        <translation>Afgeronde hoeken, vervagingseffecten en vloeiende animaties, klaar zodra je voor het eerst inlogt.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="326"/>
@@ -396,7 +396,7 @@
     <message>
         <location filename="../show.qml" line="335"/>
         <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
-        <translation>Vensters openen naast elkaar op een eindeloze strook; een nieuw venster drukt de andere nooit samen.</translation>
+        <translation>Vensters openen naast elkaar op een eindeloze strook; een nieuw venster drukt de andere vensters nooit samen.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="336"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Zuinig met middelen, met waybar en mako.</translation>
+        <translation>Weinig belastend voor je systeem, met waybar en mako.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>

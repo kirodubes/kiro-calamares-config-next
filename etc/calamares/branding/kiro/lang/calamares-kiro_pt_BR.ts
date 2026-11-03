@@ -6,7 +6,7 @@
     <message>
         <location filename="../show.qml" line="155"/>
         <source>An Arch-based Linux distribution — without the setup.</source>
-        <translation>Uma distribuição Linux baseada no Arch — sem a configuração.</translation>
+        <translation>Uma distribuição Linux baseada no Arch — sem complicações de configuração.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="159"/>
@@ -16,7 +16,7 @@
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, com um professor na caixa</translation>
+        <translation>Arch Linux, com orientação passo a passo incluída.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../show.qml" line="164"/>
         <source>Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda.</source>
-        <translation>Kiro: livre e aberto, sempre. KiroTux: possível graças a doações. Sem telemetria, sem segredos.</translation>
+        <translation>Kiro: livre e aberto, sempre. KiroTux: possível graças a doações. Sem telemetria, sem segundas intenções.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="169"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Arch por baixo, curadoria por cima</translation>
+        <translation>Arch como base, com uma seleção cuidadosa de recursos.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
@@ -181,7 +181,7 @@
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Todas as formas de sair, a um atalho de distância.</translation>
+        <translation>Todas as formas de sair, a uma tecla de distância.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../show.qml" line="255"/>
         <source>Tuned for speed</source>
-        <translation>Ajustado para velocidade</translation>
+        <translation>Otimizado para velocidade.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="257"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 desktops — 6 DEs completos, 9 tilers, 14 sessões Wayland — sob demanda pelo ATT.</translation>
+        <translation>29 desktops — 6 ambientes completos, 9 gerenciadores de janelas em mosaico, 14 sessões Wayland — sob demanda pelo ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -331,12 +331,12 @@
     <message>
         <location filename="../show.qml" line="303"/>
         <source>Learn as you go</source>
-        <translation>Aprenda no caminho</translation>
+        <translation>Aprenda enquanto usa.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="304"/>
         <source>Stuck? There&apos;s already a video for that.</source>
-        <translation>Travou? Já existe um vídeo para isso.</translation>
+        <translation>Ficou com dúvidas? Já existe um vídeo para isso.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="306"/>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../show.qml" line="323"/>
         <source>Tiling with style.</source>
-        <translation>Tiling com estilo.</translation>
+        <translation>Gerenciamento em mosaico com estilo.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="325"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Leve nos recursos, com waybar e mako.</translation>
+        <translation>Leve no uso de recursos, com waybar e mako.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>

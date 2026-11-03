@@ -26,7 +26,7 @@
     <message>
         <location filename="../show.qml" line="163"/>
         <source>Fork it, rebuild it, ship your own ISO.</source>
-        <translation>Fork 它，重新构建，发布你自己的 ISO。</translation>
+        <translation>派生它，重新构建，并发布你自己的 ISO。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="164"/>
@@ -71,7 +71,7 @@
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>完整的 pacman、滚动发布、完整的 AUR 支持。</translation>
+        <translation>完整的 pacman、滚动更新，以及完整的 AUR 访问权限。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="../show.qml" line="212"/>
         <source>Every Alacritty setting in one place, no config hunting.</source>
-        <translation>所有 Alacritty 设置集中一处，无需到处找配置。</translation>
+        <translation>所有 Alacritty 设置都集中在一处，无需到处寻找配置。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="218"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 个桌面——6 个完整桌面环境、9 个平铺式、14 个 Wayland 会话——可通过 ATT 按需安装。</translation>
+        <translation>29 个桌面——6 个完整桌面环境、9 个平铺式窗口管理器、14 个 Wayland 会话——可通过 ATT 按需安装。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -316,7 +316,7 @@
     <message>
         <location filename="../show.qml" line="296"/>
         <source>Timeshift snapshots, ready from day one.</source>
-        <translation>Timeshift 快照从第一天起就绪。</translation>
+        <translation>从安装第一天起即可使用 Timeshift 快照。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="297"/>

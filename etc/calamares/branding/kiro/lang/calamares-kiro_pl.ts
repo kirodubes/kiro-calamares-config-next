@@ -11,12 +11,12 @@
     <message>
         <location filename="../show.qml" line="159"/>
         <source>Open &amp; teachable</source>
-        <translation>Otwarte i uczące</translation>
+        <translation>Otwarte i stworzone do nauki</translation>
     </message>
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux z nauczycielem w środku</translation>
+        <translation>Arch Linux z nauczycielem w zestawie</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -26,7 +26,7 @@
     <message>
         <location filename="../show.qml" line="163"/>
         <source>Fork it, rebuild it, ship your own ISO.</source>
-        <translation>Zrób fork, zbuduj od nowa, wydaj własny ISO.</translation>
+        <translation>Stwórz fork, przebuduj system i wydaj własny obraz ISO.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="164"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../show.qml" line="169"/>
         <source>Learn &amp; grow</source>
-        <translation>Ucz się i rośnij</translation>
+        <translation>Ucz się i rozwijaj</translation>
     </message>
     <message>
         <location filename="../show.qml" line="170"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Pod spodem Arch, na wierzchu porządek</translation>
+        <translation>Arch u podstaw, starannie dobrana warstwa na wierzchu</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../show.qml" line="191"/>
         <source>Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.</source>
-        <translation>Chaotic-aur włączone domyślnie: tysiące pakietów AUR jako gotowe binaria.</translation>
+        <translation>Chaotic-aur włączone domyślnie: tysiące pakietów AUR w postaci gotowych pakietów binarnych.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="192"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../show.qml" line="221"/>
         <source>Toggle plugins, pick a colour theme, manage your abbreviations.</source>
-        <translation>Włączaj wtyczki, wybierz motyw kolorów, zarządzaj skrótami.</translation>
+        <translation>Włącz wtyczki, wybierz motyw kolorystyczny i zarządzaj skrótami.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="227"/>
@@ -176,12 +176,12 @@
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Wyloguj, zablokuj, uruchom ponownie, uśpij lub wyłącz: jeden przejrzysty ekran.</translation>
+        <translation>Wyloguj się, zablokuj ekran, uruchom ponownie komputer, uśpij go lub wyłącz — wszystko na jednym przejrzystym ekranie.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Każdy sposób wyjścia o jedno naciśnięcie dalej.</translation>
+        <translation>Wszystkie opcje wyjścia masz na wyciągnięcie klawisza.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../show.qml" line="255"/>
         <source>Tuned for speed</source>
-        <translation>Dostrojony pod szybkość</translation>
+        <translation>Dostrojony pod kątem szybkości</translation>
     </message>
     <message>
         <location filename="../show.qml" line="257"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../show.qml" line="258"/>
         <source>The speed tuning is done before you ever log in.</source>
-        <translation>Dostrajanie szybkości zrobiono, zanim się zalogujesz.</translation>
+        <translation>System jest optymalizowany pod kątem szybkości, zanim się zalogujesz.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="259"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 pulpitów: 6 pełnych DE, 9 menedżerów kafelkowych, 14 sesji Wayland. Na żądanie z ATT.</translation>
+        <translation>29 pulpitów — 6 pełnych środowisk graficznych, 9 menedżerów kafelkowych i 14 sesji Wayland — dostępnych na żądanie w ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -266,12 +266,12 @@
     <message>
         <location filename="../show.qml" line="276"/>
         <source>Curated themes, icons and wallpapers — already set up for you.</source>
-        <translation>Dobrane motywy, ikony i tapety, już ustawione za ciebie.</translation>
+        <translation>Dobrane motywy, ikony i tapety — już skonfigurowane.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="277"/>
         <source>Consistent and polished from the very first login.</source>
-        <translation>Spójnie i dopracowanie od pierwszego logowania.</translation>
+        <translation>Spójny i dopracowany wygląd od pierwszego logowania.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="278"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../show.qml" line="294"/>
         <source>Break something? Roll back in minutes.</source>
-        <translation>Coś się zepsuło? Wróć w kilka minut.</translation>
+        <translation>Coś się zepsuło? Przywróć poprzedni stan w kilka minut.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="296"/>
@@ -396,7 +396,7 @@
     <message>
         <location filename="../show.qml" line="335"/>
         <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
-        <translation>Okna otwierają się obok siebie na nieskończonym pasku; nowe okno nigdy nie ściska pozostałych.</translation>
+        <translation>Okna otwierają się obok siebie na niekończącym się pasku; nowe okno nigdy nie zmniejsza pozostałych.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="336"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Oszczędny dla zasobów, z paskiem waybar i powiadomieniami mako.</translation>
+        <translation>Lekki dla zasobów, z waybar i mako.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>

@@ -11,12 +11,12 @@
     <message>
         <location filename="../show.qml" line="159"/>
         <source>Open &amp; teachable</source>
-        <translation>Nyitott és tanító</translation>
+        <translation>Nyílt és tanulható</translation>
     </message>
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, tanárral a dobozban</translation>
+        <translation>Arch Linux, beépített oktatóval</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -56,7 +56,7 @@
     <message>
         <location filename="../show.qml" line="174"/>
         <source>From your first install to building your own ISO.</source>
-        <translation>Az első telepítéstől a saját ISO felépítéséig.</translation>
+        <translation>Az első telepítéstől a saját ISO-d elkészítéséig.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="179"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../show.qml" line="191"/>
         <source>Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.</source>
-        <translation>A Chaotic-aur alapból engedélyezve: AUR-csomagok ezrei előre lefordított bináris fájlként.</translation>
+        <translation>A Chaotic-aur alapból engedélyezve van, így AUR-csomagok ezrei érhetők el előre lefordított bináris csomagként.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="192"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../show.qml" line="199"/>
         <source>Your Arch, one click at a time.</source>
-        <translation>A te Archod, egy kattintással egyszerre.</translation>
+        <translation>A saját Archod, kattintásról kattintásra.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="201"/>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../show.qml" line="209"/>
         <source>Point, click, done. Your terminal, dialed in.</source>
-        <translation>Mutass, kattints, kész. A terminálod hangolva.</translation>
+        <translation>Mutass rá, kattints, kész. A terminálod tökéletesen behangolva.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="211"/>
@@ -241,7 +241,7 @@
     <message>
         <location filename="../show.qml" line="265"/>
         <source>Your desktop, your way</source>
-        <translation>Az asztalod, a te módodra</translation>
+        <translation>Az asztalod, a te ízlésed szerint</translation>
     </message>
     <message>
         <location filename="../show.qml" line="267"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 asztal: 6 teljes DE, 9 csempéző, 14 Wayland-munkamenet. Igény szerint az ATT-ből.</translation>
+        <translation>29 asztali lehetőség: 6 teljes asztali környezet, 9 csempés ablakkezelő és 14 Wayland-munkamenet, igény szerint az ATT-ből.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -261,7 +261,7 @@
     <message>
         <location filename="../show.qml" line="274"/>
         <source>Eye candy, out of the box.</source>
-        <translation>Látvány, azonnal a dobozból.</translation>
+        <translation>Látványos megjelenés, már alapból.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="276"/>
@@ -296,7 +296,7 @@
     <message>
         <location filename="../show.qml" line="287"/>
         <source>A sysctl hardening layer, already applied.</source>
-        <translation>A sysctl keményítési réteg már alkalmazva van.</translation>
+        <translation>A sysctl-alapú biztonságerősítés már alkalmazva van.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="288"/>
@@ -370,7 +370,7 @@
         <location filename="../show.qml" line="348"/>
         <location filename="../show.qml" line="358"/>
         <source>Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop</source>
-        <translation>A KiroTux ISO-kat a Ko-fin találod: ko-fi.com/erikdubois/shop</translation>
+        <translation>A KiroTux ISO-kat a Ko-fi-n találod: ko-fi.com/erikdubois/shop</translation>
     </message>
     <message>
         <location filename="../show.qml" line="323"/>
@@ -380,7 +380,7 @@
     <message>
         <location filename="../show.qml" line="325"/>
         <source>Rounded corners, blur and smooth animations, ready from the first login.</source>
-        <translation>Lekerekített sarkok, elmosás és sima animációk, már az első bejelentkezéstől.</translation>
+        <translation>Lekerekített sarkok, elmosás és gördülékeny animációk, már az első bejelentkezéstől.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="326"/>
@@ -401,7 +401,7 @@
     <message>
         <location filename="../show.qml" line="336"/>
         <source>One key shows an overview of all your workspaces.</source>
-        <translation>Egyetlen billentyű megmutatja az összes munkaterület áttekintését.</translation>
+        <translation>Egyetlen billentyűvel áttekintheted az összes munkaterületedet.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="344"/>
@@ -411,7 +411,7 @@
     <message>
         <location filename="../show.qml" line="346"/>
         <source>A 3D cube, wobbly windows and blur, all built in.</source>
-        <translation>3D kocka, rugalmasan mozgó ablakok és elmosás, mind beépítve.</translation>
+        <translation>3D kocka, imbolygó ablakok és elmosás, mind beépítve.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="347"/>

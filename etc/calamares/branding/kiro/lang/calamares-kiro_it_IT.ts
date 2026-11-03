@@ -16,7 +16,7 @@
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, con un insegnante nella scatola</translation>
+        <translation>Arch Linux, con un insegnante incluso</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Arch sotto, curato sopra</translation>
+        <translation>Arch alla base, con un ambiente curato</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
@@ -166,7 +166,7 @@
     <message>
         <location filename="../show.qml" line="230"/>
         <source>See the result live as you tweak.</source>
-        <translation>Guarda il risultato dal vivo mentre modifichi.</translation>
+        <translation>Guarda il risultato in tempo reale mentre apporti modifiche.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="236"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 desktop — 6 DE completi, 9 tiler, 14 sessioni Wayland — a richiesta da ATT.</translation>
+        <translation>29 ambienti desktop — 6 DE completi, 9 gestori di finestre tiling, 14 sessioni Wayland — disponibili su richiesta tramite ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -321,7 +321,7 @@
     <message>
         <location filename="../show.qml" line="297"/>
         <source>A bad update or a wrong move — just undo it.</source>
-        <translation>Un aggiornamento sbagliato o una mossa falsa — basta annullare.</translation>
+        <translation>Un aggiornamento problematico o un errore: basta annullare.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="298"/>
@@ -346,7 +346,7 @@
     <message>
         <location filename="../show.qml" line="307"/>
         <source>Install, customize, troubleshoot — all on screen.</source>
-        <translation>Installare, personalizzare, risolvere problemi — tutto a schermo.</translation>
+        <translation>Installazione, personalizzazione e risoluzione dei problemi: tutto mostrato sullo schermo.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="308"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Leggero sulle risorse, con waybar e mako.</translation>
+        <translation>Leggero in termini di risorse, con waybar e mako.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>

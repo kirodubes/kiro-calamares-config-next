@@ -16,7 +16,7 @@
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, avec un professeur dans la boîte</translation>
+        <translation>Arch Linux, avec un guide intégré.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../show.qml" line="203"/>
         <source>Swap between 29 desktops on demand.</source>
-        <translation>Passez de l&apos;un à l&apos;autre parmi 29 bureaux à la demande.</translation>
+        <translation>Changez de bureau à la demande parmi 29 options.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="209"/>
@@ -176,12 +176,12 @@
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Se déconnecter, verrouiller, redémarrer, mettre en veille ou éteindre — un seul écran net.</translation>
+        <translation>Se déconnecter, verrouiller, redémarrer, mettre en veille ou éteindre — tout sur un seul écran épuré.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Toutes les façons de partir, à une touche près.</translation>
+        <translation>Toutes les options de sortie, à portée de touche.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../show.qml" line="249"/>
         <source>Running in a VM? The guest tools sort themselves out.</source>
-        <translation>Dans une VM ? Les outils invité se configurent tout seuls.</translation>
+        <translation>Dans une VM ? Les outils invités se configurent tout seuls.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="254"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../show.qml" line="257"/>
         <source>Faster boot, snappier apps, smoother under heavy load.</source>
-        <translation>Démarrage plus rapide, applications plus réactives, plus fluide sous forte charge.</translation>
+        <translation>Démarrage plus rapide, applications plus réactives et fonctionnement plus fluide, même sous forte charge.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="258"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 bureaux — 6 environnements complets, 9 tilers, 14 sessions Wayland — à la demande depuis ATT.</translation>
+        <translation>29 bureaux — 6 environnements complets, 9 gestionnaires de fenêtres en mosaïque, 14 sessions Wayland — à la demande depuis ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -286,7 +286,7 @@
     <message>
         <location filename="../show.qml" line="284"/>
         <source>Secure and resilient</source>
-        <translation>Sûr et résilient</translation>
+        <translation>Sécurisé et résilient.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="286"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../show.qml" line="294"/>
         <source>Break something? Roll back in minutes.</source>
-        <translation>Un problème ? Revenez en arrière en quelques minutes.</translation>
+        <translation>Un problème ? Restaurez votre système en quelques minutes.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="296"/>
@@ -321,7 +321,7 @@
     <message>
         <location filename="../show.qml" line="297"/>
         <source>A bad update or a wrong move — just undo it.</source>
-        <translation>Une mauvaise mise à jour ou un faux pas — annulez simplement.</translation>
+        <translation>Une mauvaise mise à jour ou une mauvaise manipulation ? Restaurez simplement un instantané précédent.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="298"/>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../show.qml" line="323"/>
         <source>Tiling with style.</source>
-        <translation>Le tiling avec style.</translation>
+        <translation>Gestion en mosaïque avec style.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="325"/>
@@ -396,7 +396,7 @@
     <message>
         <location filename="../show.qml" line="335"/>
         <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
-        <translation>Les fenêtres s&apos;ouvrent côte à côte sur un ruban sans fin&#xa0;; une nouvelle ne comprime jamais les autres.</translation>
+        <translation>Les fenêtres s’ouvrent côte à côte sur un ruban sans fin ; une nouvelle fenêtre ne réduit jamais l’espace des autres.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="336"/>

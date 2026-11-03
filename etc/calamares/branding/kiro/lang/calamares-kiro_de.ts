@@ -6,22 +6,22 @@
     <message>
         <location filename="../show.qml" line="155"/>
         <source>An Arch-based Linux distribution — without the setup.</source>
-        <translation>Eine Linux-Distribution auf Arch-Basis — ohne die Einrichtung.</translation>
+        <translation>Eine Linux-Distribution auf Arch-Basis — ohne den Einrichtungsaufwand.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="159"/>
         <source>Open &amp; teachable</source>
-        <translation>Offen &amp; lehrreich</translation>
+        <translation>Offen &amp; lernfreundlich</translation>
     </message>
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, mit einem Lehrer in der Box</translation>
+        <translation>Arch Linux, mit integriertem Lernbegleiter</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
         <source>The distro you can watch being made — every step, on YouTube.</source>
-        <translation>Die Distro, bei deren Entstehung Sie zusehen können — jeder Schritt, auf YouTube.</translation>
+        <translation>Die Distro, deren Entstehung Sie Schritt für Schritt auf YouTube verfolgen können.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="163"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../show.qml" line="191"/>
         <source>Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.</source>
-        <translation>Chaotic-aur standardmäßig aktiviert — Tausende AUR-Pakete als vorgebaute Binärdateien.</translation>
+        <translation>Chaotic-aur standardmäßig aktiviert — Tausende AUR-Pakete als vorkompilierte Binärpakete.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="192"/>
@@ -171,17 +171,17 @@
     <message>
         <location filename="../show.qml" line="236"/>
         <source>Go out in style.</source>
-        <translation>Gehen Sie mit Stil.</translation>
+        <translation>Beenden Sie Ihre Sitzung mit Stil.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Abmelden, sperren, neu starten, Ruhezustand oder herunterfahren — ein aufgeräumter Bildschirm.</translation>
+        <translation>Abmelden, sperren, neu starten, in den Ruhezustand wechseln oder herunterfahren — alles auf einem aufgeräumten Bildschirm.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Jeder Weg hinaus, nur einen Tastendruck entfernt.</translation>
+        <translation>Alle Optionen zum Verlassen des Systems sind nur einen Tastendruck entfernt.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../show.qml" line="257"/>
         <source>Faster boot, snappier apps, smoother under heavy load.</source>
-        <translation>Schnellerer Start, flottere Apps, reibungsloser unter hoher Last.</translation>
+        <translation>Schnellerer Start, flottere Apps, flüssiger Betrieb auch unter hoher Last.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="258"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 Desktops — 6 vollständige DEs, 9 Tiler, 14 Wayland-Sitzungen — bei Bedarf über ATT.</translation>
+        <translation>29 Desktops — 6 vollständige DEs, 9 Kachel-Desktops, 14 Wayland-Sitzungen — bei Bedarf über ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -296,7 +296,7 @@
     <message>
         <location filename="../show.qml" line="287"/>
         <source>A sysctl hardening layer, already applied.</source>
-        <translation>Eine sysctl-Härtungsschicht, bereits angewendet.</translation>
+        <translation>Eine sysctl-Härtungsschicht ist bereits angewendet.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="288"/>
@@ -336,7 +336,7 @@
     <message>
         <location filename="../show.qml" line="304"/>
         <source>Stuck? There&apos;s already a video for that.</source>
-        <translation>Hängen geblieben? Dafür gibt es schon ein Video.</translation>
+        <translation>Kommen Sie nicht weiter? Dafür gibt es schon ein Video.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="306"/>

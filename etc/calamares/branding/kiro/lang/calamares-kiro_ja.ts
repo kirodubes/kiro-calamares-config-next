@@ -26,12 +26,12 @@
     <message>
         <location filename="../show.qml" line="163"/>
         <source>Fork it, rebuild it, ship your own ISO.</source>
-        <translation>フォークして、再ビルドして、自分の ISO を公開しよう。</translation>
+        <translation>フォークして、再ビルドして、自分の ISO を公開できます。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="164"/>
         <source>Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda.</source>
-        <translation>Kiro は常に無料でオープン。KiroTux は寄付で成り立っています。テレメトリーも隠れた意図もありません。</translation>
+        <translation>Kiro は常に無料でオープン。KiroTux は寄付で成り立っています。テレメトリーも、特定の主義主張の押し付けもありません。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="169"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../show.qml" line="172"/>
         <source>Real Arch underneath — what you learn here, you keep.</source>
-        <translation>中身は本物の Arch。ここで学んだことは一生の財産です。</translation>
+        <translation>中身は本物の Arch。ここで学んだことは、これからも役立ちます。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="173"/>
@@ -71,7 +71,7 @@
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>完全な pacman、ローリングリリース、AUR にフルアクセス。</translation>
+        <translation>pacman をフル活用でき、ローリングリリースに対応。AUR にも完全アクセス。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
@@ -116,7 +116,7 @@
     <message>
         <location filename="../show.qml" line="202"/>
         <source>Kernels, services, fixes and settings — point and click.</source>
-        <translation>カーネル、サービス、修正、設定をポイントしてクリックするだけ。</translation>
+        <translation>カーネル、サービス、修正、設定を選んでクリックするだけ。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="203"/>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../show.qml" line="209"/>
         <source>Point, click, done. Your terminal, dialed in.</source>
-        <translation>ポイント、クリック、完了。ターミナルを自分好みに。</translation>
+        <translation>選んでクリックするだけ。ターミナルを自分好みに。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="211"/>
@@ -171,12 +171,12 @@
     <message>
         <location filename="../show.qml" line="236"/>
         <source>Go out in style.</source>
-        <translation>終わり方も、スタイリッシュに。</translation>
+        <translation>スタイリッシュに終了。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>ログアウト、ロック、再起動、サスペンド、シャットダウンをひとつの画面で。</translation>
+        <translation>ログアウト、ロック、再起動、サスペンド、シャットダウンを、すっきりした画面ひとつで。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../show.qml" line="294"/>
         <source>Break something? Roll back in minutes.</source>
-        <translation>何か壊した？数分で元通り。</translation>
+        <translation>何か壊してしまっても、数分で元に戻せます。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="296"/>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../show.qml" line="323"/>
         <source>Tiling with style.</source>
-        <translation>スタイルあるタイリング。</translation>
+        <translation>スタイリッシュなタイリング。</translation>
     </message>
     <message>
         <location filename="../show.qml" line="325"/>

@@ -11,7 +11,7 @@
     <message>
         <location filename="../show.qml" line="159"/>
         <source>Open &amp; teachable</source>
-        <translation>Открыто и обучающе</translation>
+        <translation>Открытая система, в которой можно учиться.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="160"/>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../show.qml" line="162"/>
         <source>The distro you can watch being made — every step, on YouTube.</source>
-        <translation>Дистрибутив, который можно увидеть в работе: каждый шаг на YouTube.</translation>
+        <translation>Дистрибутив, за созданием которого можно наблюдать: каждый шаг на YouTube.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="163"/>
@@ -31,12 +31,12 @@
     <message>
         <location filename="../show.qml" line="164"/>
         <source>Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda.</source>
-        <translation>Kiro: свободный и открытый всегда. KiroTux: существует благодаря пожертвованиям. Без телеметрии и скрытых планов.</translation>
+        <translation>Kiro: всегда свободный и открытый. KiroTux: существует благодаря пожертвованиям. Без телеметрии и скрытых планов.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="169"/>
         <source>Learn &amp; grow</source>
-        <translation>Учитесь и растите</translation>
+        <translation>Учитесь и развивайтесь.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="170"/>
@@ -71,7 +71,7 @@
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>Полноценный pacman, плавающие релизы, полный доступ к AUR.</translation>
+        <translation>Полноценный pacman, модель непрерывных обновлений и полный доступ к AUR.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../show.qml" line="191"/>
         <source>Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.</source>
-        <translation>Chaotic-aur включён по умолчанию: тысячи пакетов AUR в виде готовых бинарных файлов.</translation>
+        <translation>Chaotic-aur включён по умолчанию: тысячи пакетов AUR в виде готовых бинарных пакетов.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="192"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../show.qml" line="193"/>
         <source>Erik&apos;s nemesis_repo enabled out of the box.</source>
-        <translation>nemesis_repo Erik включён сразу из коробки.</translation>
+        <translation>Репозиторий nemesis_repo от Erik включён сразу из коробки.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="199"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="../show.qml" line="201"/>
         <source>The GUI for the tweaks you&apos;d otherwise hunt down in the wiki.</source>
-        <translation>GUI для настроек, которые иначе пришлось бы искать в вики.</translation>
+        <translation>Графический интерфейс для настроек, которые иначе пришлось бы искать в вики.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="202"/>
@@ -121,12 +121,12 @@
     <message>
         <location filename="../show.qml" line="203"/>
         <source>Swap between 29 desktops on demand.</source>
-        <translation>Переключайтесь между 29 рабочими столами по требованию.</translation>
+        <translation>Переключайтесь по запросу между 29 средами рабочего стола.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="209"/>
         <source>Point, click, done. Your terminal, dialed in.</source>
-        <translation>Указали, нажали, готово. Ваш терминал настроен.</translation>
+        <translation>Укажите, нажмите — готово. Ваш терминал настроен.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="211"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../show.qml" line="221"/>
         <source>Toggle plugins, pick a colour theme, manage your abbreviations.</source>
-        <translation>Включайте плагины, выбирайте цветовую тему, управляйте сокращениями.</translation>
+        <translation>Включайте и отключайте плагины, выбирайте цветовую тему, управляйте сокращениями.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="227"/>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Выход, блокировка, перезагрузка, ожидание или выключение на одном аккуратном экране.</translation>
+        <translation>Выход, блокировка, перезагрузка, сон или выключение — на одном аккуратном экране.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../show.qml" line="249"/>
         <source>Running in a VM? The guest tools sort themselves out.</source>
-        <translation>Работаете в VM? Гостевые инструменты настроятся сами.</translation>
+        <translation>Работаете в виртуальной машине? Гостевые инструменты настроятся сами.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="254"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../show.qml" line="258"/>
         <source>The speed tuning is done before you ever log in.</source>
-        <translation>Настройка скорости выполнена ещё до вашего первого входа.</translation>
+        <translation>Оптимизация производительности выполнена ещё до вашего первого входа.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="259"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 рабочих столов: 6 полноценных DE, 9 тайлеров, 14 сессий Wayland. По требованию из ATT.</translation>
+        <translation>29 вариантов рабочего стола: 6 полноценных окружений, 9 тайлинговых оконных менеджеров и 14 сессий Wayland — по запросу через ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -351,7 +351,7 @@
     <message>
         <location filename="../show.qml" line="308"/>
         <source>The manual is a playlist.</source>
-        <translation>Руководство здесь плейлист.</translation>
+        <translation>Руководство — это плейлист.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="314"/>
@@ -391,7 +391,7 @@
     <message>
         <location filename="../show.qml" line="333"/>
         <source>Scroll through your windows.</source>
-        <translation>Прокручивайте свои окна.</translation>
+        <translation>Перемещайтесь между окнами прокруткой.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="335"/>
@@ -401,7 +401,7 @@
     <message>
         <location filename="../show.qml" line="336"/>
         <source>One key shows an overview of all your workspaces.</source>
-        <translation>Одна клавиша показывает обзор всех рабочих столов.</translation>
+        <translation>Одна клавиша показывает обзор всех рабочих пространств.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="344"/>

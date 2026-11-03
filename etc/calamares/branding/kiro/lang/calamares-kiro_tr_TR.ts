@@ -11,12 +11,12 @@
     <message>
         <location filename="../show.qml" line="159"/>
         <source>Open &amp; teachable</source>
-        <translation>Açık ve öğretici</translation>
+        <translation>Açık kaynaklı ve öğrenmeye elverişli</translation>
     </message>
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, yanında bir öğretmenle</translation>
+        <translation>Arch Linux ve size eşlik eden bir rehber</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../show.qml" line="172"/>
         <source>Real Arch underneath — what you learn here, you keep.</source>
-        <translation>Altta gerçek Arch var — burada öğrendikleriniz sizinle kalır.</translation>
+        <translation>Temelinde gerçek Arch var — burada öğrendikleriniz sizinle kalır.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="173"/>
@@ -66,17 +66,17 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Altta Arch, üstte özenle seçilmiş</translation>
+        <translation>Temelinde Arch, üzerinde özenle seçilmiş bileşenler</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>Tam pacman, sürekli güncellenen sürüm, eksiksiz AUR erişimi.</translation>
+        <translation>pacman'ın tüm özellikleri, sürekli güncellenen sürüm ve eksiksiz AUR erişimi.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
         <source>No fork, no surprises — just Arch, made approachable.</source>
-        <translation>Çatal yok, sürpriz yok — sadece Arch, herkes için ulaşılabilir.</translation>
+        <translation>Türetilmiş dağıtım yok, sürpriz yok — sadece Arch, herkes için ulaşılabilir.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="188"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../show.qml" line="191"/>
         <source>Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.</source>
-        <translation>Chaotic-aur varsayılan olarak açık — binlerce AUR paketi derlenmiş ikili olarak.</translation>
+        <translation>Chaotic-aur varsayılan olarak etkin — binlerce AUR paketi önceden derlenmiş ikili paketler olarak sunulur.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="192"/>
@@ -101,12 +101,12 @@
     <message>
         <location filename="../show.qml" line="193"/>
         <source>Erik&apos;s nemesis_repo enabled out of the box.</source>
-        <translation>Erik&apos;in nemesis_repo deposu kutudan çıktığı gibi etkin.</translation>
+        <translation>Erik'in nemesis_repo deposu varsayılan olarak etkinleştirilmiş.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="199"/>
         <source>Your Arch, one click at a time.</source>
-        <translation>Arch&apos;ınız, tek tıkla.</translation>
+        <translation>Arch sisteminiz, her seferinde tek tıkla.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="201"/>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../show.qml" line="209"/>
         <source>Point, click, done. Your terminal, dialed in.</source>
-        <translation>İşaretle, tıkla, bitti. Terminaliniz tam ayarında.</translation>
+        <translation>İşaretleyin, tıklayın, tamam. Terminaliniz tam istediğiniz gibi.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="211"/>
@@ -171,17 +171,17 @@
     <message>
         <location filename="../show.qml" line="236"/>
         <source>Go out in style.</source>
-        <translation>Havalı bir çıkış yapın.</translation>
+        <translation>Şık bir şekilde oturumu kapatın.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Oturumu kapatın, kilitleyin, yeniden başlatın, askıya alın veya kapatın — tek temiz ekran.</translation>
+        <translation>Oturumu kapatın, kilitleyin, yeniden başlatın, askıya alın veya sistemi kapatın — hepsi tek bir sade ekranda.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
         <source>Every way to leave, a keystroke away.</source>
-        <translation>Çıkışın her yolu, bir tuş uzağınızda.</translation>
+        <translation>Çıkış için gereken her seçenek bir tuş uzağınızda.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="244"/>
@@ -196,7 +196,7 @@
     <message>
         <location filename="../show.qml" line="247"/>
         <source>The right CPU microcode, installed automatically.</source>
-        <translation>Doğru CPU mikro kodu otomatik olarak kurulur.</translation>
+        <translation>Doğru işlemci mikrokodu otomatik olarak kurulur.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="248"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../show.qml" line="257"/>
         <source>Faster boot, snappier apps, smoother under heavy load.</source>
-        <translation>Daha hızlı açılış, daha hızlı uygulamalar, ağır yükte daha akıcı.</translation>
+        <translation>Daha hızlı açılış, daha seri yanıt veren uygulamalar, ağır yükte daha akıcı performans.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="258"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 masaüstü — 6 tam masaüstü ortamı, 9 döşemeli, 14 Wayland oturumu — ATT&apos;den isteğe bağlı.</translation>
+        <translation>29 masaüstü — 6 tam masaüstü ortamı, 9 döşeme tabanlı masaüstü, 14 Wayland oturumu — ATT'den isteğe bağlı.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -341,7 +341,7 @@
     <message>
         <location filename="../show.qml" line="306"/>
         <source>Step-by-step video tutorials for nearly every task.</source>
-        <translation>Hemen her iş için adım adım video eğitimler.</translation>
+        <translation>Hemen her iş için adım adım video eğitimleri.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="307"/>
@@ -411,12 +411,12 @@
     <message>
         <location filename="../show.qml" line="346"/>
         <source>A 3D cube, wobbly windows and blur, all built in.</source>
-        <translation>3D küp, esnek pencereler ve bulanıklık, hepsi yerleşik.</translation>
+        <translation>3D küp, sallanan pencereler ve bulanıklık; hepsi yerleşik.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Kaynaklara hafif; waybar ve mako dahil.</translation>
+        <translation>Kaynak tüketimi düşük; waybar ve mako dahil.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>

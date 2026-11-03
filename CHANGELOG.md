@@ -7,6 +7,7 @@
 ## 2026.11.03
 
 ### What Changed
+- Better slideshow wording in all 13 languages after a second review by Copilot (gpt-6-luna): unnatural phrases, wrong terms and literal translations fixed (e.g. Dutch "een leraar in de doos", German "Lehrer in der Box", Russian and Polish word choice). German keeps the formal address Calamares itself uses.
 - The install slideshow now speaks the user's language. Its slides were hard-coded English, so a German or
   Russian user read English during the whole install while the rest of Calamares (sidebar, buttons, progress) was
   already in their language. All 13 installer languages now cover it. Spotted on a German VirtualBox test install.
@@ -28,6 +29,7 @@
   now happens in the NVIDIA step itself, right after kiro-hwd is installed.
 
 ### Technical Details
+- Slideshow review: per language one Copilot call over the 102 `show`/bootloader strings; a fix was taken only when it kept every tag, entity and `%1`, then `lrelease`. Fixes are shared by source text across kirotux-calamares-config and the Kiro pair, applied only where the old translation was identical.
 - `branding/kiro/show.qml`: 76 strings wrapped in `qsTr`; the `Kiro` wordmark, the `KiroTux` kicker and the app-name
   kickers stay plain. "Kirotux Hyprland Premium" on the KiroTux slide is now spelled "KiroTux". New
   `lang/calamares-kiro_<locale>.{ts,qm}` for 13 locales (76/76 finished each). Calamares already loads
@@ -74,6 +76,7 @@
   7 s instead of 4 min 6 s, and the installed system runs nvidia-open 615.78.08 built for both kernels.
 
 ### Files Modified
+- `etc/calamares/branding/kiro/lang/calamares-kiro_*.ts` + `.qm` (13 languages)
 - `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
 - `etc/calamares/branding/kiro/show.qml`
 - `etc/calamares/branding/kiro/lang/calamares-kiro_{nl,de,es,fr,pt_BR,ru,hu,it_IT,tr_TR,pl,ja,zh_CN,ro}.{ts,qm}`

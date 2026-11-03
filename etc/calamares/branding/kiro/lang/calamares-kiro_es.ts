@@ -6,7 +6,7 @@
     <message>
         <location filename="../show.qml" line="155"/>
         <source>An Arch-based Linux distribution — without the setup.</source>
-        <translation>Una distribución Linux basada en Arch — sin la configuración.</translation>
+        <translation>Una distribución Linux basada en Arch, sin complicaciones de configuración.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="159"/>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../show.qml" line="162"/>
         <source>The distro you can watch being made — every step, on YouTube.</source>
-        <translation>La distro que puedes ver crearse — cada paso, en YouTube.</translation>
+        <translation>La distro cuyo proceso de creación puedes seguir paso a paso en YouTube.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="163"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../show.qml" line="172"/>
         <source>Real Arch underneath — what you learn here, you keep.</source>
-        <translation>Arch de verdad por debajo — lo que aprendes aquí, te lo quedas.</translation>
+        <translation>Arch auténtico en la base: lo que aprendas aquí te servirá siempre.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="173"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Arch por debajo, seleccionado por encima</translation>
+        <translation>La base es Arch; encima, una selección cuidada.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../show.qml" line="183"/>
         <source>No fork, no surprises — just Arch, made approachable.</source>
-        <translation>Sin forks, sin sorpresas — solo Arch, hecho accesible.</translation>
+        <translation>Sin bifurcaciones ni sorpresas: solo Arch, más accesible.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="188"/>
@@ -131,7 +131,7 @@
     <message>
         <location filename="../show.qml" line="211"/>
         <source>Fonts, colours, opacity and themes — set in a window, not a TOML file.</source>
-        <translation>Fuentes, colores, opacidad y temas — se ajustan en una ventana, no en un archivo TOML.</translation>
+        <translation>Fuentes, colores, opacidad y temas, todo configurable en una ventana y no en un archivo TOML.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="212"/>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Cerrar sesión, bloquear, reiniciar, suspender o apagar — en una pantalla limpia.</translation>
+        <translation>Cerrar sesión, bloquear, reiniciar, suspender o apagar, todo desde una interfaz despejada.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../show.qml" line="249"/>
         <source>Running in a VM? The guest tools sort themselves out.</source>
-        <translation>¿Funcionando en una VM? Las herramientas de invitado se configuran solas.</translation>
+        <translation>¿Usas una VM? Las herramientas de invitado se configuran solas.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="254"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 escritorios — 6 DE completos, 9 tilers, 14 sesiones Wayland — bajo demanda desde ATT.</translation>
+        <translation>29 escritorios: 6 entornos de escritorio completos, 9 gestores de ventanas en mosaico y 14 sesiones Wayland, disponibles bajo demanda desde ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -296,7 +296,7 @@
     <message>
         <location filename="../show.qml" line="287"/>
         <source>A sysctl hardening layer, already applied.</source>
-        <translation>Una capa de refuerzo con sysctl, ya aplicada.</translation>
+        <translation>Una capa de endurecimiento mediante sysctl, ya aplicada.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="288"/>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../show.qml" line="323"/>
         <source>Tiling with style.</source>
-        <translation>Tiling con estilo.</translation>
+        <translation>Disposición en mosaico con estilo.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="325"/>
@@ -396,7 +396,7 @@
     <message>
         <location filename="../show.qml" line="335"/>
         <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
-        <translation>Las ventanas se abren una junto a otra en una tira infinita; una nueva nunca aprieta a las demás.</translation>
+        <translation>Las ventanas se abren una junto a otra en una tira infinita; una nueva nunca hace que las demás se encojan.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="336"/>
@@ -411,7 +411,7 @@
     <message>
         <location filename="../show.qml" line="346"/>
         <source>A 3D cube, wobbly windows and blur, all built in.</source>
-        <translation>Un cubo 3D, ventanas gelatinosas y desenfoque, todo integrado.</translation>
+        <translation>Un cubo 3D, ventanas tambaleantes y desenfoque, todo integrado.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="347"/>

@@ -6,7 +6,7 @@
     <message>
         <location filename="../show.qml" line="155"/>
         <source>An Arch-based Linux distribution — without the setup.</source>
-        <translation>O distribuție Linux bazată pe Arch — fără configurare.</translation>
+        <translation>O distribuție Linux bazată pe Arch, fără bătaia de cap a configurării.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="159"/>
@@ -16,17 +16,17 @@
     <message>
         <location filename="../show.qml" line="160"/>
         <source>Arch Linux, with a teacher in the box</source>
-        <translation>Arch Linux, cu un profesor în cutie</translation>
+        <translation>Arch Linux, cu un profesor inclus</translation>
     </message>
     <message>
         <location filename="../show.qml" line="162"/>
         <source>The distro you can watch being made — every step, on YouTube.</source>
-        <translation>Distribuția pe care o poți vedea cum se face — fiecare pas, pe YouTube.</translation>
+        <translation>Distribuția a cărei creare o poți urmări pas cu pas, pe YouTube.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="163"/>
         <source>Fork it, rebuild it, ship your own ISO.</source>
-        <translation>Fă un fork, recompilează, publică-ți propriul ISO.</translation>
+        <translation>Fă un fork, reconstruiește-l și publică-ți propriul ISO.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="164"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../show.qml" line="169"/>
         <source>Learn &amp; grow</source>
-        <translation>Învață și crește</translation>
+        <translation>Învață și evoluează</translation>
     </message>
     <message>
         <location filename="../show.qml" line="170"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../show.qml" line="172"/>
         <source>Real Arch underneath — what you learn here, you keep.</source>
-        <translation>Arch adevărat dedesubt — ce înveți aici, rămâne al tău.</translation>
+        <translation>Arch autentic la bază — ce înveți aici rămâne cu tine.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="173"/>
@@ -66,12 +66,12 @@
     <message>
         <location filename="../show.qml" line="180"/>
         <source>Arch underneath, curated above</source>
-        <translation>Arch dedesubt, selecție deasupra</translation>
+        <translation>Arch la bază, cu o selecție atentă deasupra</translation>
     </message>
     <message>
         <location filename="../show.qml" line="182"/>
         <source>Full pacman, rolling release, complete AUR access.</source>
-        <translation>pacman complet, rolling release, acces total la AUR.</translation>
+        <translation>pacman fără restricții, actualizări continue și acces complet la AUR.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="183"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../show.qml" line="199"/>
         <source>Your Arch, one click at a time.</source>
-        <translation>Arch-ul tău, un clic câte un clic.</translation>
+        <translation>Arch-ul tău, câte un clic pe rând.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="201"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../show.qml" line="221"/>
         <source>Toggle plugins, pick a colour theme, manage your abbreviations.</source>
-        <translation>Activează pluginuri, alege o temă de culori, gestionează-ți abrevierile.</translation>
+        <translation>Activează și dezactivează pluginuri, alege o temă de culori, gestionează-ți abrevierile.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="227"/>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../show.qml" line="238"/>
         <source>Log out, lock, reboot, suspend or shut down — one clean screen.</source>
-        <translation>Deconectare, blocare, repornire, suspendare sau oprire — pe un singur ecran curat.</translation>
+        <translation>Deconectare, blocare, repornire, suspendare sau oprire — toate într-o interfață simplă și clară.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="239"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../show.qml" line="249"/>
         <source>Running in a VM? The guest tools sort themselves out.</source>
-        <translation>Rulezi într-un VM? Uneltele pentru oaspete se rezolvă singure.</translation>
+        <translation>Rulezi într-o mașină virtuală? Instrumentele pentru sistemul invitat se configurează automat.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="254"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../show.qml" line="257"/>
         <source>Faster boot, snappier apps, smoother under heavy load.</source>
-        <translation>Pornire mai rapidă, aplicații mai vioaie, mai fluid sub sarcină mare.</translation>
+        <translation>Pornire mai rapidă, aplicații mai vioaie și funcționare mai fluidă sub sarcină mare.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="258"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="../show.qml" line="268"/>
         <source>29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.</source>
-        <translation>29 de desktopuri — 6 DE complete, 9 tilere, 14 sesiuni Wayland — la cerere din ATT.</translation>
+        <translation>29 de medii desktop — 6 medii desktop complete, 9 manageri de ferestre cu aranjare automată, 14 sesiuni Wayland — la cerere din ATT.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="273"/>
@@ -321,7 +321,7 @@
     <message>
         <location filename="../show.qml" line="297"/>
         <source>A bad update or a wrong move — just undo it.</source>
-        <translation>O actualizare proastă sau o mutare greșită — doar anulezi.</translation>
+        <translation>O actualizare nereușită sau o acțiune greșită — revino pur și simplu la starea anterioară.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="298"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
-        <translation>Ușor cu resursele, cu waybar și mako.</translation>
+        <translation>Consum redus de resurse, cu waybar și mako.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="353"/>
