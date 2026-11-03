@@ -12,11 +12,11 @@ Honours the boot-menu `driver=` kernel cmdline (three modes):
                           packages, system runs on mesa / the open stack.
   - driver=nonfree     -> skip chwd; keep the baked NVIDIA driver untouched
                           (the proven express lane for modern Turing+ GPUs).
-  - driver=nonfreechwd -> run chwd; kiro_remove_nvidia already wiped the baked
-                          NVIDIA driver first (or kept it when kiro-hwd picks
-                          those same packages) and this module drops the
-                          leftover libxnvctrl, so chwd installs exactly the
-                          profile it detects (any card) with nothing to conflict.
+  - driver=nonfreechwd -> run chwd; once kiro-hwd is in the target this module
+                          keeps the baked NVIDIA driver when kiro-hwd picks those
+                          same packages, else removes it and the leftover
+                          libxnvctrl, so kiro-hwd installs exactly the profile it
+                          detects (any card) with nothing to conflict.
 
 driver=nonfreechwd is the only install path that fetches packages online (the
 driver comes mainly from [cachyos], some from [chaotic-aur]). Before running chwd
@@ -209,6 +209,50 @@ def _chroot_pacman(root_mount_point, args):
         return 1
 
 
+def _baked_nvidia_stack(root_mount_point):
+    """The NVIDIA driver packages installed in the target, by real name (any branch)."""
+    try:
+        out = subprocess.run(
+            ["arch-chroot", root_mount_point, "pacman", "-Qq"],
+            check=False, capture_output=True, text=True, timeout=60,
+        ).stdout
+    except (subprocess.TimeoutExpired, OSError) as e:
+        libcalamares.utils.warning(f"chwd: pacman -Qq failed/timed out: {e}")
+        return []
+    return [n for n in out.split()
+            if (n.startswith("nvidia-") and n.rsplit("-", 1)[-1] in ("dkms", "utils", "settings"))
+            or n == "libva-nvidia-driver"]
+
+
+def _hwd_planned_packages(root_mount_point):
+    """Package names `kiro-hwd install --dry-run` would install; None if it can't tell."""
+    try:
+        out = subprocess.run(
+            ["arch-chroot", root_mount_point, "kiro-hwd", "install", "--dry-run"],
+            check=False, capture_output=True, text=True, timeout=120,
+        )
+    except (subprocess.TimeoutExpired, OSError) as e:
+        libcalamares.utils.warning(f"chwd: kiro-hwd --dry-run failed/timed out: {e}")
+        return None
+    if out.returncode != 0:
+        libcalamares.utils.debug(f"chwd: kiro-hwd --dry-run exited {out.returncode}")
+        return None
+    # Lines look like "Package  extra/nvidia-open-dkms".
+    return {line.split()[1].rsplit("/", 1)[-1]
+            for line in out.stdout.splitlines()
+            if line.startswith("Package") and len(line.split()) > 1}
+
+
+def _remove_baked_stack(root_mount_point, pkgs):
+    """pacman -Rns the baked NVIDIA stack; True on success."""
+    libcalamares.utils.debug(f"chwd: removing baked NVIDIA packages: {' '.join(pkgs)}")
+    # dkms + utils + settings together, so there's no dependency-order failure.
+    if _chroot_pacman(root_mount_point, ["-Rns", "--noconfirm", *pkgs]) != 0:
+        libcalamares.utils.warning(f"chwd: could not remove {' '.join(pkgs)}")
+        return False
+    return True
+
+
 def _drop_baked_libxnvctrl(root_mount_point):
     """Remove the ISO's libxnvctrl so a legacy chwd profile can install libxnvctrl-<branch>; True if removed."""
     # kiro_remove_nvidia's `pacman -Rns` leaves libxnvctrl behind because xfce4-sensors-plugin
@@ -265,25 +309,45 @@ def run():
             f"'{root_mount_point}' does not exist.",
         )
 
+    # kiro_remove_nvidia leaves the baked driver alone on nonfreechwd: the keep-or-remove decision needs
+    # kiro-hwd, which only exists in the target from here on. Every early exit below removes it, so a
+    # failed run still ends on the open driver (a baked nvidia-open can't drive a Pascal or older card).
+    baked = _baked_nvidia_stack(root_mount_point)
+
     if not _refresh_driver_mirrors(root_mount_point):
         libcalamares.utils.warning(
             "chwd: skipped because the system upgrade failed; running it now could leave "
             "linux-headers newer than the kernel. Continuing on the open driver (nouveau/mesa)."
         )
+        if baked:
+            _remove_baked_stack(root_mount_point, baked)
         _record_skip(root_mount_point, "pacman -Syu failed before chwd")
         libcalamares.job.setprogress(1.0)
         return None
-    dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
 
     # The target is unpacked from the ISO's squashfs, so kiro-hwd is only there if the ISO ships it.
     # The upgrade above refreshed the databases, so fetch it from [nemesis_repo] when it is missing.
     if _chroot_pacman(root_mount_point, ["-S", "--needed", "--noconfirm", "kiro-hwd"]) != 0:
         libcalamares.utils.warning("chwd: could not install kiro-hwd; continuing on the open driver (nouveau/mesa)")
-        if dropped_libxnvctrl and _chroot_pacman(root_mount_point, ["-S", "--noconfirm", "libxnvctrl"]) != 0:
-            libcalamares.utils.warning("chwd: could not reinstall libxnvctrl; xfce4-sensors-plugin lacks it")
+        if baked:
+            _remove_baked_stack(root_mount_point, baked)
         _record_skip(root_mount_point, "kiro-hwd could not be installed")
         libcalamares.job.setprogress(1.0)
         return None
+
+    # When the baked stack is exactly what kiro-hwd picks (nvidia-open ISO, Turing+ card), keep it:
+    # removing it only makes kiro-hwd reinstall the same packages and rebuild DKMS for every kernel
+    # (about 4 minutes). kiro-hwd's --needed install then adds only what is missing.
+    dropped_libxnvctrl = False
+    if baked:
+        planned = _hwd_planned_packages(root_mount_point)
+        if planned and set(baked) <= planned:
+            libcalamares.utils.debug(f"chwd: keeping baked NVIDIA packages, kiro-hwd picks them too: {' '.join(baked)}")
+        else:
+            _remove_baked_stack(root_mount_point, baked)
+            dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
+    else:
+        dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
 
     chwd_command = ["arch-chroot", root_mount_point, "kiro-hwd", "install"]
     libcalamares.utils.debug(f"Running: {' '.join(chwd_command)}")

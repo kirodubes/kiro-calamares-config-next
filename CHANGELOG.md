@@ -23,6 +23,9 @@
 - The NVIDIA auto-detect install no longer removes the NVIDIA driver only to put the same one back. When kiro-hwd
   picks exactly the driver the ISO already ships (the open driver on a Turing or newer card), the installer keeps
   it. That saves about 4 minutes of rebuilding the driver for both kernels. Found on a test box with an RTX 2060.
+- That first version never kept the driver: it asked kiro-hwd before kiro-hwd was installed in the new system. Seen
+  on a v26.11.03 Kiro ISO on the RTX 2060 test box, where the driver was still removed and rebuilt. The decision
+  now happens in the NVIDIA step itself, right after kiro-hwd is installed.
 
 ### Technical Details
 - `branding/kiro/show.qml`: 76 strings wrapped in `qsTr`; the `Kiro` wordmark, the `KiroTux` kicker and the app-name
@@ -59,6 +62,13 @@
   NVIDIA stack package is in that set, removal is skipped; kiro-hwd's `--needed` install then only adds the rest
   (`nvidia-settings`, `opencl-nvidia`) with no DKMS rebuild. A failed dry-run, an empty plan (Kepler) or a
   different branch (580xx) removes the stack as before. `driver=free` is unchanged.
+- Fix of the above: `kiro_remove_nvidia` runs before `chwd`, and the ISO doesn't ship kiro-hwd, so the dry-run
+  exited 127 (command not found) and the stack was always removed (Calamares log, 10:10:43). The decision moved to
+  `modules/chwd/main.py`: `_baked_nvidia_stack()` reads the stack before the upgrade, then after `pacman -S kiro-hwd`
+  `_hwd_planned_packages()` runs the dry-run; subset → keep, else `_remove_baked_stack()` (`-Rns`) plus the
+  libxnvctrl drop. The two early exits (failed `-Syu`, kiro-hwd not installable) remove the stack too, so a failed
+  run still ends on the open driver. `kiro_remove_nvidia` now removes only on `driver=free`; its dry-run helper is
+  gone. Checked with a stubbed libcalamares: Turing keep, 580xx remove, failed dry-run remove, failed upgrade remove.
 
 ### Files Modified
 - `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
