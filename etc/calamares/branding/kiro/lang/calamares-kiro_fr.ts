@@ -360,26 +360,87 @@
     </message>
     <message>
         <location filename="../show.qml" line="316"/>
-        <source>A lean Wayland ISO with Hyprland + DankMaterialShell.</source>
-        <translation>Une ISO Wayland légère avec Hyprland + DankMaterialShell.</translation>
+        <source>Five Wayland ISOs, built on Hyprland, Niri or Wayfire.</source>
+        <translation>Cinq ISO Wayland, basées sur Hyprland, Niri ou Wayfire.</translation>
     </message>
     <message>
         <location filename="../show.qml" line="317"/>
-        <source>Comes with KiroTux Hyprland Premium, the tweak tool for your desktop.</source>
-        <translation>Fourni avec KiroTux Hyprland Premium, l&apos;outil de réglage de votre bureau.</translation>
-    </message>
-    <message>
-        <location filename="../show.qml" line="318"/>
         <source>Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop</source>
         <translation>Retrouvez les ISO KiroTux sur Ko-fi : ko-fi.com/erikdubois/shop</translation>
     </message>
     <message>
         <location filename="../show.qml" line="323"/>
+        <source>Tiling with style.</source>
+        <translation>Le tiling avec style.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="325"/>
+        <source>Rounded corners, blur and smooth animations, ready from the first login.</source>
+        <translation>Coins arrondis, flou et animations fluides, prêts dès la première connexion.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="326"/>
+        <location filename="../show.qml" line="336"/>
+        <source>Two ISOs: with DankMaterialShell or with Noctalia.</source>
+        <translation>Deux ISO : avec DankMaterialShell ou avec Noctalia.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="332"/>
+        <source>Scroll through your windows.</source>
+        <translation>Faites défiler vos fenêtres.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="334"/>
+        <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
+        <translation>Les fenêtres s'ouvrent côte à côte sur un ruban sans fin ; une nouvelle ne comprime jamais les autres.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="335"/>
+        <source>One key shows an overview of all your workspaces.</source>
+        <translation>Une touche affiche une vue d'ensemble de tous vos espaces de travail.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="342"/>
+        <source>Desktop effects that wow.</source>
+        <translation>Des effets de bureau qui impressionnent.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="344"/>
+        <source>A 3D cube, wobbly windows and blur, all built in.</source>
+        <translation>Un cube 3D, des fenêtres ondulantes et du flou, tout est intégré.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="345"/>
+        <source>Light on resources, with waybar and mako.</source>
+        <translation>Léger en ressources, avec waybar et mako.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="350"/>
+        <source>KiroTux Premium settings app</source>
+        <translation>Application de réglages KiroTux Premium</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="351"/>
+        <source>Your desktop, set up in one window.</source>
+        <translation>Votre bureau, configuré dans une seule fenêtre.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="353"/>
+        <source>Theme, icons, cursor and wallpaper. No config files.</source>
+        <translation>Thème, icônes, curseur et fond d&apos;écran. Aucun fichier de configuration.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="354"/>
+        <source>One for each window manager: Hyprland, Niri and Wayfire.</source>
+        <translation>Une pour chaque gestionnaire de fenêtres : Hyprland, Niri et Wayfire.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="359"/>
         <source>Enjoy Kiro</source>
         <translation>Profitez de Kiro</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="324"/>
+        <location filename="../show.qml" line="360"/>
         <source>Sit back — your new system is being installed.</source>
         <translation>Détendez-vous — votre nouveau système s&apos;installe.</translation>
     </message>

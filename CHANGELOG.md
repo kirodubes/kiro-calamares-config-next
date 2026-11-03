@@ -10,6 +10,9 @@
 - The install slideshow now speaks the user's language. Its slides were hard-coded English, so a German or
   Russian user read English during the whole install while the rest of Calamares (sidebar, buttons, progress) was
   already in their language. All 13 installer languages now cover it. Spotted on a German VirtualBox test install.
+- The KiroTux slide was out of date: it only mentioned one Hyprland ISO with DankMaterialShell. It now names the five
+  KiroTux ISOs, and is followed by one slide each for Hyprland, Niri and Wayfire and one for the KiroTux Premium
+  settings app, so every edition gets seen during the install. Spotted on a French VirtualBox test install.
 - The "NVIDIA proprietary, auto-detect" boot entry now installs the driver with **kiro-hwd**, Kiro's own NVIDIA
   driver picker, instead of CachyOS chwd. It installs the open NVIDIA driver on Turing and newer cards and the
   580xx driver on Maxwell, Pascal and Volta. Kepler and older cards stay on the open nouveau driver; on a 470xx ISO,
@@ -26,6 +29,10 @@
 - 71 translations come from `kirotux-calamares-config` (same strings, drafted by Claude per the HQ register rules,
   German in the formal address, like Calamares itself; checked live in German on a KiroTux ISO). The 5 Kiro-only lines (the
   Xfce/Ohmychadwm line and the KiroTux-on-Ko-fi slide) were translated here.
+- Edition slides: 88 strings now (88/88 finished per `.qm`). The three Premium-slide strings reuse the
+  `kirotux-calamares-config` translations; 11 new lines were translated here. Each claim matches the edition configs
+  (Hyprland rounding/blur/animations, niri columns + `toggle-overview`, Wayfire cube/wobbly/blur plugins). The
+  `Hyprland`/`Niri`/`Wayfire` kickers stay plain strings. "tilers" stays in the French Xfce line (Erik).
 - `modules/chwd/main.py` (module name kept, so settings.conf is unchanged): runs `arch-chroot <root> kiro-hwd
   install` instead of `chwd --autoconfigure`. The CDN mirror lead, the full `-Syu`, the libxnvctrl drop (by the
   real package name, for 470xx/390xx ISOs) and the `/var/log/kiro-chwd-skipped.log` marker stay; the marker and

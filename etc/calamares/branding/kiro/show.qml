@@ -313,9 +313,45 @@ Presentation
         kicker: "KiroTux"
         headline: qsTr("Kiro, on Wayland.")
         lines: [
-            qsTr("A lean Wayland ISO with Hyprland + DankMaterialShell."),
-            qsTr("Comes with KiroTux Hyprland Premium, the tweak tool for your desktop."),
+            qsTr("Five Wayland ISOs, built on Hyprland, Niri or Wayfire."),
             qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Hyprland"
+        headline: qsTr("Tiling with style.")
+        lines: [
+            qsTr("Rounded corners, blur and smooth animations, ready from the first login."),
+            qsTr("Two ISOs: with DankMaterialShell or with Noctalia.")
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Niri"
+        headline: qsTr("Scroll through your windows.")
+        lines: [
+            qsTr("Windows open side by side on an endless strip; a new one never squeezes the others."),
+            qsTr("One key shows an overview of all your workspaces."),
+            qsTr("Two ISOs: with DankMaterialShell or with Noctalia.")
+        ]
+    }
+
+    KiroSlide {
+        kicker: "Wayfire"
+        headline: qsTr("Desktop effects that wow.")
+        lines: [
+            qsTr("A 3D cube, wobbly windows and blur, all built in."),
+            qsTr("Light on resources, with waybar and mako.")
+        ]
+    }
+
+    KiroSlide {
+        kicker: qsTr("KiroTux Premium settings app")
+        headline: qsTr("Your desktop, set up in one window.")
+        lines: [
+            qsTr("Theme, icons, cursor and wallpaper. No config files."),
+            qsTr("One for each window manager: Hyprland, Niri and Wayfire.")
         ]
     }
 
