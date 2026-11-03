@@ -214,7 +214,7 @@ def _drop_baked_libxnvctrl(root_mount_point):
     # depends on it. Legacy profiles (nvidia-dkms-580xx for Pascal) pull libxnvctrl-580xx, which
     # conflicts with it, and chwd's non-interactive pacman answers the removal prompt with "no",
     # so the whole driver install fails. -Rdd is safe: libxnvctrl-580xx provides libxnvctrl, and
-    # current profiles pull libxnvctrl back in through nvidia-settings.
+    # after an nvidia-open pick run() installs libxnvctrl again (nvidia-settings 615+ no longer pulls it).
     # On a 470xx/390xx/580xx ISO the baked one is libxnvctrl-<branch>, which provides libxnvctrl:
     # `pacman -Q libxnvctrl` resolves that provide but `-Rdd libxnvctrl` does not, so remove it by
     # the real name -Qq prints.
@@ -300,6 +300,13 @@ def run():
         _record_skip(root_mount_point, detail)
         libcalamares.job.setprogress(1.0)
         return None
+
+    # nvidia-settings no longer depends on libxnvctrl (615+), and kiro-hwd doesn't install it, so after an
+    # nvidia-open pick nothing brings it back; xfce4-sensors-plugin needs it. A 580xx pick installs
+    # libxnvctrl-580xx, which provides libxnvctrl, so -Q succeeds and nothing is added.
+    if dropped_libxnvctrl and _chroot_pacman(root_mount_point, ["-Q", "libxnvctrl"]) != 0:
+        if _chroot_pacman(root_mount_point, ["-S", "--noconfirm", "libxnvctrl"]) != 0:
+            libcalamares.utils.warning("chwd: could not reinstall libxnvctrl; xfce4-sensors-plugin lacks it")
 
     libcalamares.job.setprogress(1.0)
 

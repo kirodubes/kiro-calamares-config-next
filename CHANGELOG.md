@@ -22,6 +22,12 @@
 - The target is unpacked from the ISO's squashfs, so kiro-hwd is only there if the ISO ships it. The module first
   runs `pacman -S --needed kiro-hwd` in the chroot (from `[nemesis_repo]`; a no-op when present). If that fails,
   it puts libxnvctrl back if it dropped it, writes the skip marker and continues on the open driver.
+- libxnvctrl after a successful run: `nvidia-settings` 615 (`[extra]`) no longer depends on libxnvctrl and kiro-hwd
+  doesn't install it, so after an nvidia-open pick nothing brought back the libxnvctrl the module dropped, and
+  XFCE's `xfce4-sensors-plugin` (which needs it) would be left without it. The module now checks
+  `pacman -Q libxnvctrl` at the end and reinstalls it if it was dropped and nothing provides it. A 580xx pick keeps
+  `libxnvctrl-580xx` (pulled by `nvidia-580xx-settings`), which provides it, so the drop that avoids the
+  "libxnvctrl-580xx and libxnvctrl-615 are in conflict" stop still stands.
 
 ### Files Modified
 - `usr/lib/calamares/modules/chwd/main.py`
