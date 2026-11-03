@@ -7,6 +7,8 @@
 ## 2026.11.03
 
 ### What Changed
+- Removed the five unused `calamares-default_*.ts` files from the branding `lang/` folder. Calamares never loaded
+  them (wrong component name, never compiled); only `calamares-kiro_*.qm` is used.
 - Better slideshow wording in all 13 languages after a second review by Copilot (gpt-6-luna): unnatural phrases, wrong terms and literal translations fixed (e.g. Dutch "een leraar in de doos", German "Lehrer in der Box", Russian and Polish word choice). German keeps the formal address Calamares itself uses.
 - The install slideshow now speaks the user's language. Its slides were hard-coded English, so a German or
   Russian user read English during the whole install while the rest of Calamares (sidebar, buttons, progress) was
@@ -76,6 +78,8 @@
   7 s instead of 4 min 6 s, and the installed system runs nvidia-open 615.78.08 built for both kernels.
 
 ### Files Modified
+- `etc/calamares/branding/kiro/lang/calamares-default_{ar,en,eo,fr,nl}.ts` (deleted)
+- `CLAUDE.md`
 - `etc/calamares/branding/kiro/lang/calamares-kiro_*.ts` + `.qm` (13 languages)
 - `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
 - `etc/calamares/branding/kiro/show.qml`
