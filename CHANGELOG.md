@@ -28,9 +28,14 @@
   `pacman -Q libxnvctrl` at the end and reinstalls it if it was dropped and nothing provides it. A 580xx pick keeps
   `libxnvctrl-580xx` (pulled by `nvidia-580xx-settings`), which provides it, so the drop that avoids the
   "libxnvctrl-580xx and libxnvctrl-615 are in conflict" stop still stands.
+- `modules/kiro_packages/main.py`: `operation_try_remove` now skips a package that isn't installed in the target
+  (`pacman -Q` first) instead of calling `pacman -R` on it. Before, every remove-list entry the ISO doesn't ship
+  failed with "target not found", `num_retries` ran it a second time, and the install log got a false "Could not
+  remove package" warning. Ported from `kirotux-calamares-config`, where it runs on every install.
 
 ### Files Modified
 - `usr/lib/calamares/modules/chwd/main.py`
+- `usr/lib/calamares/modules/kiro_packages/main.py`
 - `CLAUDE.md`
 - `CHANGELOG.md`
 

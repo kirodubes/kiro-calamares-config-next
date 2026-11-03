@@ -229,6 +229,12 @@ class PackageManager(metaclass=abc.ABCMeta):
         NOTE: no package-installation exceptions should be raised
         """
         for package in package_list:
+            # Skip packages this ISO doesn't ship: otherwise pacman fails "target not found",
+            # num_retries runs it a second time, and the log gets a spurious warning.
+            name = package if isinstance(package, str) else package["package"]
+            if libcalamares.utils.target_env_call(["sh", "-c", "pacman -Q %s >/dev/null 2>&1" % name]) != 0:
+                libcalamares.utils.debug("Not installed, skipping removal: %s" % name)
+                continue
             try:
                 self.remove_package(package)
             except subprocess.CalledProcessError:
