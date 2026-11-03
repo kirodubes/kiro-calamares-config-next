@@ -365,6 +365,10 @@
     </message>
     <message>
         <location filename="../show.qml" line="317"/>
+        <location filename="../show.qml" line="327"/>
+        <location filename="../show.qml" line="338"/>
+        <location filename="../show.qml" line="348"/>
+        <location filename="../show.qml" line="358"/>
         <source>Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop</source>
         <translation>KiroTux の ISO は Ko-fi で：ko-fi.com/erikdubois/shop</translation>
     </message>
@@ -380,67 +384,67 @@
     </message>
     <message>
         <location filename="../show.qml" line="326"/>
-        <location filename="../show.qml" line="336"/>
+        <location filename="../show.qml" line="337"/>
         <source>Two ISOs: with DankMaterialShell or with Noctalia.</source>
         <translation>ISO は 2 種類：DankMaterialShell 版と Noctalia 版。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="332"/>
+        <location filename="../show.qml" line="333"/>
         <source>Scroll through your windows.</source>
         <translation>ウィンドウをスクロールで切り替え。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="334"/>
+        <location filename="../show.qml" line="335"/>
         <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
         <translation>ウィンドウは果てしなく続く帯の上に横並びで開き、新しいウィンドウがほかを押しつぶすことはありません。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="335"/>
+        <location filename="../show.qml" line="336"/>
         <source>One key shows an overview of all your workspaces.</source>
         <translation>キー 1 つで、すべてのワークスペースを一覧表示。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="342"/>
+        <location filename="../show.qml" line="344"/>
         <source>Desktop effects that wow.</source>
         <translation>目を引くデスクトップエフェクト。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="344"/>
+        <location filename="../show.qml" line="346"/>
         <source>A 3D cube, wobbly windows and blur, all built in.</source>
         <translation>3D キューブ、ぷるぷる揺れるウィンドウ、ぼかし。すべて標準搭載。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="345"/>
+        <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
         <translation>リソースは控えめ。waybar と mako 付き。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="350"/>
+        <location filename="../show.qml" line="353"/>
         <source>KiroTux Premium settings app</source>
         <translation>KiroTux Premium 設定アプリ</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="351"/>
+        <location filename="../show.qml" line="354"/>
         <source>Your desktop, set up in one window.</source>
         <translation>デスクトップの設定を、ひとつのウィンドウで。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="353"/>
+        <location filename="../show.qml" line="356"/>
         <source>Theme, icons, cursor and wallpaper. No config files.</source>
         <translation>テーマ、アイコン、カーソル、壁紙。設定ファイルは不要です。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="354"/>
+        <location filename="../show.qml" line="357"/>
         <source>One for each window manager: Hyprland, Niri and Wayfire.</source>
         <translation>ウィンドウマネージャーごとに 1 つ：Hyprland、Niri、Wayfire。</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="359"/>
+        <location filename="../show.qml" line="363"/>
         <source>Enjoy Kiro</source>
         <translation>Kiro をお楽しみください</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="360"/>
+        <location filename="../show.qml" line="364"/>
         <source>Sit back — your new system is being installed.</source>
         <translation>ゆったりお待ちください。新しいシステムをインストール中です。</translation>
     </message>

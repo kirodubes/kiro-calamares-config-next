@@ -12,7 +12,8 @@
   already in their language. All 13 installer languages now cover it. Spotted on a German VirtualBox test install.
 - The KiroTux slide was out of date: it only mentioned one Hyprland ISO with DankMaterialShell. It now names the five
   KiroTux ISOs, and is followed by one slide each for Hyprland, Niri and Wayfire and one for the KiroTux Premium
-  settings app, so every edition gets seen during the install. Spotted on a French VirtualBox test install.
+  settings app, so every edition gets seen during the install. Spotted on a French VirtualBox test install. Each of
+  those four slides ends with the Ko-fi shop link (the already translated KiroTux-slide line).
 - The "NVIDIA proprietary, auto-detect" boot entry now installs the driver with **kiro-hwd**, Kiro's own NVIDIA
   driver picker, instead of CachyOS chwd. It installs the open NVIDIA driver on Turing and newer cards and the
   580xx driver on Maxwell, Pascal and Volta. Kepler and older cards stay on the open nouveau driver; on a 470xx ISO,

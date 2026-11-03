@@ -323,7 +323,8 @@ Presentation
         headline: qsTr("Tiling with style.")
         lines: [
             qsTr("Rounded corners, blur and smooth animations, ready from the first login."),
-            qsTr("Two ISOs: with DankMaterialShell or with Noctalia.")
+            qsTr("Two ISOs: with DankMaterialShell or with Noctalia."),
+            qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
         ]
     }
 
@@ -333,7 +334,8 @@ Presentation
         lines: [
             qsTr("Windows open side by side on an endless strip; a new one never squeezes the others."),
             qsTr("One key shows an overview of all your workspaces."),
-            qsTr("Two ISOs: with DankMaterialShell or with Noctalia.")
+            qsTr("Two ISOs: with DankMaterialShell or with Noctalia."),
+            qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
         ]
     }
 
@@ -342,7 +344,8 @@ Presentation
         headline: qsTr("Desktop effects that wow.")
         lines: [
             qsTr("A 3D cube, wobbly windows and blur, all built in."),
-            qsTr("Light on resources, with waybar and mako.")
+            qsTr("Light on resources, with waybar and mako."),
+            qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
         ]
     }
 
@@ -351,7 +354,8 @@ Presentation
         headline: qsTr("Your desktop, set up in one window.")
         lines: [
             qsTr("Theme, icons, cursor and wallpaper. No config files."),
-            qsTr("One for each window manager: Hyprland, Niri and Wayfire.")
+            qsTr("One for each window manager: Hyprland, Niri and Wayfire."),
+            qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
         ]
     }
 

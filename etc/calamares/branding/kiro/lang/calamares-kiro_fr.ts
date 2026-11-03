@@ -365,6 +365,10 @@
     </message>
     <message>
         <location filename="../show.qml" line="317"/>
+        <location filename="../show.qml" line="327"/>
+        <location filename="../show.qml" line="338"/>
+        <location filename="../show.qml" line="348"/>
+        <location filename="../show.qml" line="358"/>
         <source>Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop</source>
         <translation>Retrouvez les ISO KiroTux sur Ko-fi : ko-fi.com/erikdubois/shop</translation>
     </message>
@@ -380,67 +384,67 @@
     </message>
     <message>
         <location filename="../show.qml" line="326"/>
-        <location filename="../show.qml" line="336"/>
+        <location filename="../show.qml" line="337"/>
         <source>Two ISOs: with DankMaterialShell or with Noctalia.</source>
-        <translation>Deux ISO : avec DankMaterialShell ou avec Noctalia.</translation>
+        <translation>Deux ISO&#xa0;: avec DankMaterialShell ou avec Noctalia.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="332"/>
+        <location filename="../show.qml" line="333"/>
         <source>Scroll through your windows.</source>
         <translation>Faites défiler vos fenêtres.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="334"/>
-        <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
-        <translation>Les fenêtres s'ouvrent côte à côte sur un ruban sans fin ; une nouvelle ne comprime jamais les autres.</translation>
-    </message>
-    <message>
         <location filename="../show.qml" line="335"/>
-        <source>One key shows an overview of all your workspaces.</source>
-        <translation>Une touche affiche une vue d'ensemble de tous vos espaces de travail.</translation>
+        <source>Windows open side by side on an endless strip; a new one never squeezes the others.</source>
+        <translation>Les fenêtres s&apos;ouvrent côte à côte sur un ruban sans fin&#xa0;; une nouvelle ne comprime jamais les autres.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="342"/>
+        <location filename="../show.qml" line="336"/>
+        <source>One key shows an overview of all your workspaces.</source>
+        <translation>Une touche affiche une vue d&apos;ensemble de tous vos espaces de travail.</translation>
+    </message>
+    <message>
+        <location filename="../show.qml" line="344"/>
         <source>Desktop effects that wow.</source>
         <translation>Des effets de bureau qui impressionnent.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="344"/>
+        <location filename="../show.qml" line="346"/>
         <source>A 3D cube, wobbly windows and blur, all built in.</source>
         <translation>Un cube 3D, des fenêtres ondulantes et du flou, tout est intégré.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="345"/>
+        <location filename="../show.qml" line="347"/>
         <source>Light on resources, with waybar and mako.</source>
         <translation>Léger en ressources, avec waybar et mako.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="350"/>
+        <location filename="../show.qml" line="353"/>
         <source>KiroTux Premium settings app</source>
         <translation>Application de réglages KiroTux Premium</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="351"/>
+        <location filename="../show.qml" line="354"/>
         <source>Your desktop, set up in one window.</source>
         <translation>Votre bureau, configuré dans une seule fenêtre.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="353"/>
+        <location filename="../show.qml" line="356"/>
         <source>Theme, icons, cursor and wallpaper. No config files.</source>
         <translation>Thème, icônes, curseur et fond d&apos;écran. Aucun fichier de configuration.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="354"/>
+        <location filename="../show.qml" line="357"/>
         <source>One for each window manager: Hyprland, Niri and Wayfire.</source>
-        <translation>Une pour chaque gestionnaire de fenêtres : Hyprland, Niri et Wayfire.</translation>
+        <translation>Une pour chaque gestionnaire de fenêtres&#xa0;: Hyprland, Niri et Wayfire.</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="359"/>
+        <location filename="../show.qml" line="363"/>
         <source>Enjoy Kiro</source>
         <translation>Profitez de Kiro</translation>
     </message>
     <message>
-        <location filename="../show.qml" line="360"/>
+        <location filename="../show.qml" line="364"/>
         <source>Sit back — your new system is being installed.</source>
         <translation>Détendez-vous — votre nouveau système s&apos;installe.</translation>
     </message>
