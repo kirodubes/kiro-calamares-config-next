@@ -4,6 +4,30 @@
 
 ---
 
+## 2026.11.03
+
+### What Changed
+- The "NVIDIA proprietary, auto-detect" boot entry now installs the driver with **kiro-hwd**, Kiro's own NVIDIA
+  driver picker, instead of CachyOS chwd. It installs the open NVIDIA driver on Turing and newer cards and the
+  580xx driver on Maxwell, Pascal and Volta. Kepler and older cards stay on the open nouveau driver; on a 470xx ISO,
+  the "keeps nvidia" entry still keeps the baked driver.
+- Same change as `kirotux-calamares-config`, where it was tested on a real RTX 2060 the same day: the driver was
+  installed, built for both kernels, and the installed system booted on it.
+
+### Technical Details
+- `modules/chwd/main.py` (module name kept, so settings.conf is unchanged): runs `arch-chroot <root> kiro-hwd
+  install` instead of `chwd --autoconfigure`. The CDN mirror lead, the full `-Syu`, the libxnvctrl drop (by the
+  real package name, for 470xx/390xx ISOs) and the `/var/log/kiro-chwd-skipped.log` marker stay; the marker and
+  warnings now point to `sudo kiro-hwd install`.
+- The target is unpacked from the ISO's squashfs, so kiro-hwd is only there if the ISO ships it. The module first
+  runs `pacman -S --needed kiro-hwd` in the chroot (from `[nemesis_repo]`; a no-op when present). If that fails,
+  it puts libxnvctrl back if it dropped it, writes the skip marker and continues on the open driver.
+
+### Files Modified
+- `usr/lib/calamares/modules/chwd/main.py`
+- `CLAUDE.md`
+- `CHANGELOG.md`
+
 ## 2026.10.18
 
 ### chwd removes the baked libxnvctrl by its real name

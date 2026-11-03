@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Calamares module for hardware-aware driver installation via chwd.
+Calamares module for the NVIDIA driver install via kiro-hwd (the module keeps its old name chwd).
 
-Runs `chwd --autoconfigure` inside the chroot to install the optimal driver
-profile for the detected hardware (GPU, network adapter, microcode-aware
-laptop tweaks, hybrid graphics, etc.).
+Runs `kiro-hwd install` inside the chroot: Kiro's own NVIDIA driver picker, which
+replaced CachyOS chwd on 2026-11-03 (only chwd's PCI ID lists are mirrored).
+It installs nvidia-open (Turing+), 580xx (Maxwell/Pascal/Volta) or nothing (older
+cards stay on nouveau), plus PRIME offload packages on laptops with an iGPU.
 
 Honours the boot-menu `driver=` kernel cmdline (three modes):
   - driver=free        -> skip chwd; kiro_remove_nvidia removed the baked NVIDIA
@@ -54,7 +55,7 @@ _TRUSTED_MIRRORS = {
 
 
 def pretty_name():
-    return "Installing hardware drivers via chwd..."
+    return "Installing the NVIDIA driver via kiro-hwd..."
 
 
 def kernel_cmdline(param_name, default=None):
@@ -94,7 +95,7 @@ def run_in_host(command, line_func):
             line_func(line)
     proc.wait()
     if proc.returncode != 0:
-        return ("chwd-failed", f"chwd exited with code {proc.returncode}")
+        return ("chwd-failed", f"kiro-hwd exited with code {proc.returncode}")
     return None
 
 
@@ -103,14 +104,12 @@ def _record_skip(root_mount_point, detail):
     try:
         with open(marker, "w") as f:
             f.write(
-                "chwd was skipped during installation because it could not complete.\n"
+                "kiro-hwd was skipped during installation because it could not complete.\n"
                 f"Reason: {detail}\n"
                 "The system booted on the open driver (nouveau/mesa). To retry:\n"
-                "  sudo pacman -Syu   (first, so the kernel matches the headers chwd installs)\n"
-                "  chwd --autoconfigure\n"
-                "Some driver packages come only from the [cachyos] repo, which Kiro ships\n"
-                "disabled by default. If the retry still cannot find a package, uncomment\n"
-                "[cachyos] in /etc/pacman.conf first, then run chwd --autoconfigure again.\n"
+                "  sudo kiro-hwd install   (it upgrades the system first, then installs the driver;\n"
+                "                           packages only in [cachyos] are found even with it off)\n"
+                "  kiro-hwd install --dry-run   shows what it would install, from which repo\n"
             )
     except OSError as e:
         libcalamares.utils.warning(f"Could not write chwd skip marker: {e}")
@@ -275,16 +274,26 @@ def run():
         return None
     dropped_libxnvctrl = _drop_baked_libxnvctrl(root_mount_point)
 
-    chwd_command = ["arch-chroot", root_mount_point, "chwd", "--autoconfigure"]
+    # The target is unpacked from the ISO's squashfs, so kiro-hwd is only there if the ISO ships it.
+    # The upgrade above refreshed the databases, so fetch it from [nemesis_repo] when it is missing.
+    if _chroot_pacman(root_mount_point, ["-S", "--needed", "--noconfirm", "kiro-hwd"]) != 0:
+        libcalamares.utils.warning("chwd: could not install kiro-hwd; continuing on the open driver (nouveau/mesa)")
+        if dropped_libxnvctrl and _chroot_pacman(root_mount_point, ["-S", "--noconfirm", "libxnvctrl"]) != 0:
+            libcalamares.utils.warning("chwd: could not reinstall libxnvctrl; xfce4-sensors-plugin lacks it")
+        _record_skip(root_mount_point, "kiro-hwd could not be installed")
+        libcalamares.job.setprogress(1.0)
+        return None
+
+    chwd_command = ["arch-chroot", root_mount_point, "kiro-hwd", "install"]
     libcalamares.utils.debug(f"Running: {' '.join(chwd_command)}")
 
     error = run_in_host(chwd_command, line_cb)
     if error:
         _title, detail = error
         libcalamares.utils.warning(
-            f"chwd did not complete ({detail}); continuing on the open "
+            f"kiro-hwd did not complete ({detail}); continuing on the open "
             "driver (nouveau/mesa). The system is usable; proprietary "
-            "drivers can be installed later with 'chwd --autoconfigure'."
+            "drivers can be installed later with 'sudo kiro-hwd install'."
         )
         if dropped_libxnvctrl and _chroot_pacman(root_mount_point, ["-S", "--noconfirm", "libxnvctrl"]) != 0:
             libcalamares.utils.warning("chwd: could not reinstall libxnvctrl; xfce4-sensors-plugin lacks it")
