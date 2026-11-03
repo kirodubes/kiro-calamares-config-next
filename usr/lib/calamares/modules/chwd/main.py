@@ -13,7 +13,8 @@ Honours the boot-menu `driver=` kernel cmdline (three modes):
   - driver=nonfree     -> skip chwd; keep the baked NVIDIA driver untouched
                           (the proven express lane for modern Turing+ GPUs).
   - driver=nonfreechwd -> run chwd; kiro_remove_nvidia already wiped the baked
-                          NVIDIA driver first and this module drops the
+                          NVIDIA driver first (or kept it when kiro-hwd picks
+                          those same packages) and this module drops the
                           leftover libxnvctrl, so chwd installs exactly the
                           profile it detects (any card) with nothing to conflict.
 

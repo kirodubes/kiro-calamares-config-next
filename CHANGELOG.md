@@ -20,6 +20,9 @@
   the "keeps nvidia" entry still keeps the baked driver.
 - Same change as `kirotux-calamares-config`, where it was tested on a real RTX 2060 the same day: the driver was
   installed, built for both kernels, and the installed system booted on it.
+- The NVIDIA auto-detect install no longer removes the NVIDIA driver only to put the same one back. When kiro-hwd
+  picks exactly the driver the ISO already ships (the open driver on a Turing or newer card), the installer keeps
+  it. That saves about 4 minutes of rebuilding the driver for both kernels. Found on a test box with an RTX 2060.
 
 ### Technical Details
 - `branding/kiro/show.qml`: 76 strings wrapped in `qsTr`; the `Kiro` wordmark, the `KiroTux` kicker and the app-name
@@ -51,8 +54,14 @@
   (`pacman -Q` first) instead of calling `pacman -R` on it. Before, every remove-list entry the ISO doesn't ship
   failed with "target not found", `num_retries` ran it a second time, and the install log got a false "Could not
   remove package" warning. Ported from `kirotux-calamares-config`, where it runs on every install.
+- `modules/kiro_remove_nvidia/main.py`: on `driver=nonfreechwd`, `kiro_hwd_planned_packages()` runs
+  `kiro-hwd install --dry-run` in the target and reads its `Package  <repo>/<name>` lines. If every installed
+  NVIDIA stack package is in that set, removal is skipped; kiro-hwd's `--needed` install then only adds the rest
+  (`nvidia-settings`, `opencl-nvidia`) with no DKMS rebuild. A failed dry-run, an empty plan (Kepler) or a
+  different branch (580xx) removes the stack as before. `driver=free` is unchanged.
 
 ### Files Modified
+- `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
 - `etc/calamares/branding/kiro/show.qml`
 - `etc/calamares/branding/kiro/lang/calamares-kiro_{nl,de,es,fr,pt_BR,ru,hu,it_IT,tr_TR,pl,ja,zh_CN,ro}.{ts,qm}`
 - `usr/lib/calamares/modules/chwd/main.py`

@@ -65,9 +65,33 @@ def installed_nvidia_stack():
         return []
     return nvidia_stack_from_names(out.split())
 
-def remove_nvidia_packages_from_target():
+def kiro_hwd_planned_packages():
+    """Package names `kiro-hwd install --dry-run` would install in the target; None if it can't tell."""
+    try:
+        out = check_target_env_output(["kiro-hwd", "install", "--dry-run"])
+    except (subprocess.CalledProcessError, OSError) as e:
+        libcalamares.utils.debug(f"kiro-hwd --dry-run failed ({e}); removing the NVIDIA stack as before.")
+        return None
+    # Lines look like "Package  extra/nvidia-open-dkms".
+    return {line.split()[1].rsplit("/", 1)[-1]
+            for line in out.splitlines()
+            if line.startswith("Package") and len(line.split()) > 1}
+
+
+def remove_nvidia_packages_from_target(keep_if_hwd_matches=False):
     """Remove the installed NVIDIA driver stack from the target (any variant)."""
     pkgs = installed_nvidia_stack()
+
+    if pkgs and keep_if_hwd_matches:
+        # When the baked stack is exactly what kiro-hwd would pick (nvidia-open on a Turing+ card),
+        # removing it only makes kiro-hwd reinstall the same packages and rebuild DKMS for every
+        # kernel: about 4 minutes for nothing. kiro-hwd's --needed install then just adds the rest.
+        planned = kiro_hwd_planned_packages()
+        if planned and set(pkgs) <= planned:
+            libcalamares.utils.debug(
+                f"Keeping NVIDIA packages: kiro-hwd picks the same driver ({' '.join(pkgs)})."
+            )
+            return None
 
     if not pkgs:
         libcalamares.utils.debug("No NVIDIA packages installed in target; skipping removal.")
@@ -109,11 +133,11 @@ def run():
     results["Wait for pacman lock"] = "SUCCESS"
 
     # Remove on 'free' (end up on mesa) and on 'nonfreechwd' (clean slate so chwd
-    # installs exactly its detected pick with nothing to conflict). Plain 'nonfree'
-    # keeps the baked NVIDIA driver untouched.
+    # installs exactly its detected pick with nothing to conflict), unless kiro-hwd
+    # picks the baked driver anyway. Plain 'nonfree' keeps the baked NVIDIA driver untouched.
     if selection in ("free", "nonfreechwd"):
         libcalamares.utils.debug(f"Removing NVIDIA packages because 'driver={selection}' was specified.")
-        error = remove_nvidia_packages_from_target()
+        error = remove_nvidia_packages_from_target(keep_if_hwd_matches=(selection == "nonfreechwd"))
         if error:
             results["Remove NVIDIA packages"] = "FAILED"
             return error
