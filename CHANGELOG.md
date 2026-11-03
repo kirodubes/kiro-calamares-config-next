@@ -69,6 +69,9 @@
   libxnvctrl drop. The two early exits (failed `-Syu`, kiro-hwd not installable) remove the stack too, so a failed
   run still ends on the open driver. `kiro_remove_nvidia` now removes only on `driver=free`; its dry-run helper is
   gone. Checked with a stubbed libcalamares: Turing keep, 580xx remove, failed dry-run remove, failed upgrade remove.
+- Verified on the RTX 2060 test box (v26.11.03 Kiro ISO, `driver=nonfreechwd`, `kiro-calamares-config` 26.11-07
+  installed in the live session): `chwd: keeping baked NVIDIA packages, kiro-hwd picks them too`, the chwd job took
+  7 s instead of 4 min 6 s, and the installed system runs nvidia-open 615.78.08 built for both kernels.
 
 ### Files Modified
 - `usr/lib/calamares/modules/kiro_remove_nvidia/main.py`
