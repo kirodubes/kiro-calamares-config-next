@@ -7,6 +7,9 @@
 ## 2026.11.03
 
 ### What Changed
+- The install slideshow now speaks the user's language. Its slides were hard-coded English, so a German or
+  Russian user read English during the whole install while the rest of Calamares (sidebar, buttons, progress) was
+  already in their language. All 13 installer languages now cover it. Spotted on a German VirtualBox test install.
 - The "NVIDIA proprietary, auto-detect" boot entry now installs the driver with **kiro-hwd**, Kiro's own NVIDIA
   driver picker, instead of CachyOS chwd. It installs the open NVIDIA driver on Turing and newer cards and the
   580xx driver on Maxwell, Pascal and Volta. Kepler and older cards stay on the open nouveau driver; on a 470xx ISO,
@@ -15,6 +18,14 @@
   installed, built for both kernels, and the installed system booted on it.
 
 ### Technical Details
+- `branding/kiro/show.qml`: 76 strings wrapped in `qsTr`; the `Kiro` wordmark, the `KiroTux` kicker and the app-name
+  kickers stay plain. "Kirotux Hyprland Premium" on the KiroTux slide is now spelled "KiroTux". New
+  `lang/calamares-kiro_<locale>.{ts,qm}` for 13 locales (76/76 finished each). Calamares already loads
+  `calamares-kiro_<locale>.qm` for the `kiro` branding component, and `Slideshow.cpp` retranslates the slideshow
+  engine on a language change, so `slideshowAPI: 2` follows the welcome-page choice.
+- 71 translations come from `kirotux-calamares-config` (same strings, drafted by Claude per the HQ register rules,
+  German in the formal address, like Calamares itself; checked live in German on a KiroTux ISO). The 5 Kiro-only lines (the
+  Xfce/Ohmychadwm line and the KiroTux-on-Ko-fi slide) were translated here.
 - `modules/chwd/main.py` (module name kept, so settings.conf is unchanged): runs `arch-chroot <root> kiro-hwd
   install` instead of `chwd --autoconfigure`. The CDN mirror lead, the full `-Syu`, the libxnvctrl drop (by the
   real package name, for 470xx/390xx ISOs) and the `/var/log/kiro-chwd-skipped.log` marker stay; the marker and
@@ -34,6 +45,8 @@
   remove package" warning. Ported from `kirotux-calamares-config`, where it runs on every install.
 
 ### Files Modified
+- `etc/calamares/branding/kiro/show.qml`
+- `etc/calamares/branding/kiro/lang/calamares-kiro_{nl,de,es,fr,pt_BR,ru,hu,it_IT,tr_TR,pl,ja,zh_CN,ro}.{ts,qm}`
 - `usr/lib/calamares/modules/chwd/main.py`
 - `usr/lib/calamares/modules/kiro_packages/main.py`
 - `CLAUDE.md`

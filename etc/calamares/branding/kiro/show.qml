@@ -152,176 +152,176 @@ Presentation
 
     KiroTitleSlide {
         wordmark: "Kiro"
-        tagline: "An Arch-based Linux distribution — without the setup."
+        tagline: qsTr("An Arch-based Linux distribution — without the setup.")
     }
 
     KiroSlide {
-        kicker: "Open & teachable"
-        headline: "Arch Linux, with a teacher in the box"
+        kicker: qsTr("Open & teachable")
+        headline: qsTr("Arch Linux, with a teacher in the box")
         lines: [
-            "The distro you can watch being made — every step, on YouTube.",
-            "Fork it, rebuild it, ship your own ISO.",
-            "Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda."
+            qsTr("The distro you can watch being made — every step, on YouTube."),
+            qsTr("Fork it, rebuild it, ship your own ISO."),
+            qsTr("Kiro: free and open, always. KiroTux: made possible by donations. No telemetry, no agenda.")
         ]
     }
 
     KiroSlide {
-        kicker: "Learn & grow"
-        headline: "Use Kiro today, master Linux for life."
+        kicker: qsTr("Learn & grow")
+        headline: qsTr("Use Kiro today, master Linux for life.")
         lines: [
-            "Real Arch underneath — what you learn here, you keep.",
-            "Hundreds of video tutorials to level up at your own pace.",
-            "From your first install to building your own ISO."
+            qsTr("Real Arch underneath — what you learn here, you keep."),
+            qsTr("Hundreds of video tutorials to level up at your own pace."),
+            qsTr("From your first install to building your own ISO.")
         ]
     }
 
     KiroSlide {
-        kicker: "Pure Arch"
-        headline: "Arch underneath, curated above"
+        kicker: qsTr("Pure Arch")
+        headline: qsTr("Arch underneath, curated above")
         lines: [
-            "Full pacman, rolling release, complete AUR access.",
-            "No fork, no surprises — just Arch, made approachable."
+            qsTr("Full pacman, rolling release, complete AUR access."),
+            qsTr("No fork, no surprises — just Arch, made approachable.")
         ]
     }
 
     KiroSlide {
-        kicker: "Software"
-        headline: "Everything ready to install"
+        kicker: qsTr("Software")
+        headline: qsTr("Everything ready to install")
         lines: [
-            "Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries.",
-            "Yay, paru and the pamac-aur GUI built in.",
-            "Erik's nemesis_repo enabled out of the box."
+            qsTr("Chaotic-aur enabled by default — thousands of AUR packages as pre-built binaries."),
+            qsTr("Yay, paru and the pamac-aur GUI built in."),
+            qsTr("Erik's nemesis_repo enabled out of the box.")
         ]
     }
 
     KiroSlide {
         kicker: "ArchLinux Tweak Tool"
-        headline: "Your Arch, one click at a time."
+        headline: qsTr("Your Arch, one click at a time.")
         lines: [
-            "The GUI for the tweaks you'd otherwise hunt down in the wiki.",
-            "Kernels, services, fixes and settings — point and click.",
-            "Swap between 29 desktops on demand."
+            qsTr("The GUI for the tweaks you'd otherwise hunt down in the wiki."),
+            qsTr("Kernels, services, fixes and settings — point and click."),
+            qsTr("Swap between 29 desktops on demand.")
         ]
     }
 
     KiroSlide {
         kicker: "Alacritty-tweak-tool"
-        headline: "Point, click, done. Your terminal, dialed in."
+        headline: qsTr("Point, click, done. Your terminal, dialed in.")
         lines: [
-            "Fonts, colours, opacity and themes — set in a window, not a TOML file.",
-            "Every Alacritty setting in one place, no config hunting."
+            qsTr("Fonts, colours, opacity and themes — set in a window, not a TOML file."),
+            qsTr("Every Alacritty setting in one place, no config hunting.")
         ]
     }
 
     KiroSlide {
         kicker: "Fish-tweak-tool"
-        headline: "A smarter shell, set up for you."
+        headline: qsTr("A smarter shell, set up for you.")
         lines: [
-            "Install a modern prompt: Tide, Starship, Hydro or Pure.",
-            "Toggle plugins, pick a colour theme, manage your abbreviations."
+            qsTr("Install a modern prompt: Tide, Starship, Hydro or Pure."),
+            qsTr("Toggle plugins, pick a colour theme, manage your abbreviations.")
         ]
     }
 
     KiroSlide {
         kicker: "Fastfetch-tweak-tool"
-        headline: "Your system info, your way."
+        headline: qsTr("Your system info, your way.")
         lines: [
-            "Pick modules, reorder them, choose from 500+ logos.",
-            "See the result live as you tweak."
+            qsTr("Pick modules, reorder them, choose from 500+ logos."),
+            qsTr("See the result live as you tweak.")
         ]
     }
 
     KiroSlide {
         kicker: "Archlinux-logout"
-        headline: "Go out in style."
+        headline: qsTr("Go out in style.")
         lines: [
-            "Log out, lock, reboot, suspend or shut down — one clean screen.",
-            "Every way to leave, a keystroke away."
+            qsTr("Log out, lock, reboot, suspend or shut down — one clean screen."),
+            qsTr("Every way to leave, a keystroke away.")
         ]
     }
 
     KiroSlide {
-        kicker: "Hardware"
-        headline: "Detects your hardware. Sorts the rest."
+        kicker: qsTr("Hardware")
+        headline: qsTr("Detects your hardware. Sorts the rest.")
         lines: [
-            "The right CPU microcode, installed automatically.",
-            "NVIDIA drivers if you need them.",
-            "Running in a VM? The guest tools sort themselves out."
+            qsTr("The right CPU microcode, installed automatically."),
+            qsTr("NVIDIA drivers if you need them."),
+            qsTr("Running in a VM? The guest tools sort themselves out.")
         ]
     }
 
     KiroSlide {
-        kicker: "Performance"
-        headline: "Tuned for speed"
+        kicker: qsTr("Performance")
+        headline: qsTr("Tuned for speed")
         lines: [
-            "Faster boot, snappier apps, smoother under heavy load.",
-            "The speed tuning is done before you ever log in.",
-            "Prefer a different kernel later? Swap it anytime."
+            qsTr("Faster boot, snappier apps, smoother under heavy load."),
+            qsTr("The speed tuning is done before you ever log in."),
+            qsTr("Prefer a different kernel later? Swap it anytime.")
         ]
     }
 
     KiroSlide {
-        kicker: "Desktop"
-        headline: "Your desktop, your way"
+        kicker: qsTr("Desktop")
+        headline: qsTr("Your desktop, your way")
         lines: [
-            "Xfce and Ohmychadwm ready at first login.",
-            "29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT."
+            qsTr("Xfce and Ohmychadwm ready at first login."),
+            qsTr("29 desktops — 6 full DEs, 9 tilers, 14 Wayland sessions — on demand from ATT.")
         ]
     }
 
     KiroSlide {
-        kicker: "Design"
-        headline: "Eye candy, out of the box."
+        kicker: qsTr("Design")
+        headline: qsTr("Eye candy, out of the box.")
         lines: [
-            "Curated themes, icons and wallpapers — already set up for you.",
-            "Consistent and polished from the very first login.",
-            "No ricing required."
+            qsTr("Curated themes, icons and wallpapers — already set up for you."),
+            qsTr("Consistent and polished from the very first login."),
+            qsTr("No ricing required.")
         ]
     }
 
     KiroSlide {
-        kicker: "Security"
-        headline: "Secure and resilient"
+        kicker: qsTr("Security")
+        headline: qsTr("Secure and resilient")
         lines: [
-            "Firewalld enabled by default.",
-            "A sysctl hardening layer, already applied.",
-            "No telemetry — your data stays on your machine."
+            qsTr("Firewalld enabled by default."),
+            qsTr("A sysctl hardening layer, already applied."),
+            qsTr("No telemetry — your data stays on your machine.")
         ]
     }
 
     KiroSlide {
-        kicker: "Rollback"
-        headline: "Break something? Roll back in minutes."
+        kicker: qsTr("Rollback")
+        headline: qsTr("Break something? Roll back in minutes.")
         lines: [
-            "Timeshift snapshots, ready from day one.",
-            "A bad update or a wrong move — just undo it.",
-            "Experiment freely. You can always go back."
+            qsTr("Timeshift snapshots, ready from day one."),
+            qsTr("A bad update or a wrong move — just undo it."),
+            qsTr("Experiment freely. You can always go back.")
         ]
     }
 
     KiroSlide {
-        kicker: "Learn as you go"
-        headline: "Stuck? There's already a video for that."
+        kicker: qsTr("Learn as you go")
+        headline: qsTr("Stuck? There's already a video for that.")
         lines: [
-            "Step-by-step video tutorials for nearly every task.",
-            "Install, customize, troubleshoot — all on screen.",
-            "The manual is a playlist."
+            qsTr("Step-by-step video tutorials for nearly every task."),
+            qsTr("Install, customize, troubleshoot — all on screen."),
+            qsTr("The manual is a playlist.")
         ]
     }
 
     KiroSlide {
         kicker: "KiroTux"
-        headline: "Kiro, on Wayland."
+        headline: qsTr("Kiro, on Wayland.")
         lines: [
-            "A lean Wayland ISO with Hyprland + DankMaterialShell.",
-            "Comes with Kirotux Hyprland Premium, the tweak tool for your desktop.",
-            "Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop"
+            qsTr("A lean Wayland ISO with Hyprland + DankMaterialShell."),
+            qsTr("Comes with KiroTux Hyprland Premium, the tweak tool for your desktop."),
+            qsTr("Find the KiroTux ISOs on Ko-fi: ko-fi.com/erikdubois/shop")
         ]
     }
 
     KiroTitleSlide {
-        wordmark: "Enjoy Kiro"
-        tagline: "Sit back — your new system is being installed."
+        wordmark: qsTr("Enjoy Kiro")
+        tagline: qsTr("Sit back — your new system is being installed.")
     }
 
     function onActivate() {
