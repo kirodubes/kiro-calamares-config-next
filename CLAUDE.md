@@ -89,7 +89,7 @@ partition → mount
 → services-systemd → packages@choice
 → removeuser → users → displaymanager
 → kiro_ucode → grubcfg → bootloader
-→ kiro_final → preservefiles → umount
+→ kiro_final → preservefiles → kiro_strip_secrets → umount
 ```
 
 **Finish phase:** `finished` page.
@@ -109,6 +109,7 @@ All four live in [usr/lib/calamares/modules/](usr/lib/calamares/modules/). Each 
 | `chwd`               | After kiro_remove_nvidia | Runs `kiro-hwd install` (Kiro's NVIDIA picker, replaced CachyOS chwd 2026-11-03; fetched from `[nemesis_repo]` if the ISO lacks it) **only** on `driver=nonfreechwd`; first leads cachyos/chaotic with a trusted geo-CDN mirror + a full `pacman -Syu` (chwd is skipped if that fails, to avoid headers newer than the kernel), then picks the right driver for the detected GPU |
 | `kiro_ucode`         | After displaymanager | Detects CPU (AMD/Intel via hwinfo), installs bundled `.pkg.tar.zst` from `/etc/calamares/packages/`              |
 | `kiro_final`         | Before preservefiles | Permissions, skel copy, live-only file cleanup, env config, bootloader cleanup, VM package removal, `broadcom-wl-dkms` removal unless Broadcom Wi-Fi (PCI 14e4, class 0280) is present, self-removal |
+| `kiro_strip_secrets` | After preservefiles  | Blanks every non-empty `*password*` / `*passphrase*` string (recursive, incl. `partitions[].luksPassphrase`) in `/var/log/Calamares-install.json`. Calamares only XOR-obscures them and the file stays 0644 on purpose, so the values go and the keys stay. Never fails the install |
 
 ### NVIDIA driver modes (`driver=` kernel cmdline)
 `kernel_cmdline("driver", default="free")`. Three modes drive `kiro_remove_nvidia` + `chwd` (packages checked: `nvidia-open-dkms`, `nvidia-utils`, `nvidia-settings`):

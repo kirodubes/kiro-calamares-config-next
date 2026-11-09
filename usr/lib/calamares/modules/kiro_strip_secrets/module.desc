@@ -1,0 +1,7 @@
+# Syntax is YAML 1.2
+---
+type:       "job"
+name:       "kiro_strip_secrets"
+interface:  "python"
+script:     "main.py"
+noconfig:   true

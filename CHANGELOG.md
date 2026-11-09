@@ -1,8 +1,33 @@
 # CHANGELOG — kiro-calamares-config
 
-> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_kernel`, `kiro_remove_nvidia`, `kiro_ucode`, `kiro_displaymanager`, `kiro_bootloader`, `kiro_packages`.
+> Calamares graphical installer configuration. Custom Python modules: `kiro_before`, `kiro_final`, `kiro_kernel`, `kiro_remove_nvidia`, `kiro_ucode`, `kiro_displaymanager`, `kiro_bootloader`, `kiro_packages`, `kiro_strip_secrets`.
 
 ---
+
+## 2026.11.09
+
+### What Changed
+- New install step `kiro_strip_secrets` removes the login password (and, on encrypted installs, the disk
+  passphrase) from `/var/log/Calamares-install.json`. That file stays world-readable on purpose so an install can be
+  checked without sudo, but Calamares only scrambles the password in a way that reverses in one line, and root
+  reuses the same password by default — so any local account could read the root password. Found in a security
+  audit of a default install on a test box. Testing line only; mirror to `kiro-calamares-config` after a full
+  install run.
+
+### Technical Details
+- Runs after `preservefiles` (which writes the file) and before `umount`; `kiro_final` runs before `preservefiles`,
+  so it could not do this. Walks the JSON recursively and blanks every non-empty string whose key contains
+  `password` or `passphrase`, so `partitions[].luksPassphrase` is covered too. Booleans such as
+  `reuseRootPassword` and every key stay, so verification still sees what was chosen. The file is rewritten in
+  place, so its 0644 mode is kept.
+- A missing or unreadable record only logs a warning: a log file must not fail the install at its last step.
+- Tested offline with a stub `libcalamares` against a real install record (only `password` changed, keys identical),
+  a synthetic encrypted layout (3 values blanked), and missing/broken files.
+
+### Files Modified
+- `usr/lib/calamares/modules/kiro_strip_secrets/main.py`, `usr/lib/calamares/modules/kiro_strip_secrets/module.desc`
+  (new)
+- `etc/calamares/settings.conf`, `CLAUDE.md`, `CHANGELOG.md`
 
 ## 2026.11.03
 
