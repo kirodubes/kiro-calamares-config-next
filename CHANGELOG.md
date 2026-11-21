@@ -4,6 +4,25 @@
 
 ---
 
+## 2026.11.21
+
+### What Changed
+- **Bundled `intel-ucode` refreshed to `20261110-1`** (was `20260925-1`), the same file production has carried since
+  2026-11-20. The `/kiro-ready` drift check found the beta config still installing the September Intel microcode
+  offline; now both tracks ship the same bundles.
+
+### Technical Details
+- Copied `intel-ucode-20261110-1-any.pkg.tar.zst` + `.sig` from kiro-calamares-config (byte-identical), removed the
+  `20260925-1` pair. `kiro_ucode` finds the file by glob, so no code change. `amd-ucode` was already current
+  (`20261019-1`). Reaches the ISO only after the `kiro-calamares-config-next` package is rebuilt.
+
+### Files Modified
+- `etc/calamares/packages/intel-ucode-20261110-1-any.pkg.tar.zst` (+ `.sig`), added
+- `etc/calamares/packages/intel-ucode-20260925-1-any.pkg.tar.zst` (+ `.sig`), removed
+- `CHANGELOG.md`
+
+---
+
 ## 2026.11.09
 
 ### What Changed
