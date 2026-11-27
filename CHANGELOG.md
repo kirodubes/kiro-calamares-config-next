@@ -4,6 +4,23 @@
 
 ---
 
+## 2026.11.27
+
+### What Changed
+- **Offline AMD microcode refreshed to 20261124-1** (from 20261019-1), the version Arch `[core]` released on
+  2026-11-25. `kiro_ucode` installs the bundled package when the install has no internet, so without the refresh
+  an offline install of the v26.12.01 ISO would have shipped October microcode to every AMD machine. Intel stays on
+  20261110-1, still current in `[extra]`.
+
+### Technical Details
+- Swapped `etc/calamares/packages/amd-ucode-20261019-1-any.pkg.tar.zst` (+ `.sig`) for the 20261124-1 package and
+  its signature; built as kiro-calamares-config-next 26.11-13 (2026-11-27 05:47) in kiro_repo, so the release ISO picks it up.
+- The `kiro_ucode` never-downgrade guard still applies: when the target already has newer microcode, the bundle
+  is left alone.
+
+### Files Modified
+- `etc/calamares/packages/amd-ucode-20261124-1-any.pkg.tar.zst` (+ `.sig`; 20261019-1 removed), `CHANGELOG.md`
+
 ## 2026.11.24
 
 ### What Changed
