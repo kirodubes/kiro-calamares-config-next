@@ -350,3 +350,9 @@ QScrollBar:horizontal{
 /* active selection text */
 QComboBox { color: #FFFFFF; }
 QComboBox QAbstractItemView { color: #E2E8F0; selection-color: #FFFFFF; selection-background-color: #0284C7; }
+
+/* "Encrypt system" on the Erase disk page sits small under the swap choice and is easy to miss */
+#m_encryptCheckBox {
+	font: bold 18px;
+	color: #0195F7;
+}

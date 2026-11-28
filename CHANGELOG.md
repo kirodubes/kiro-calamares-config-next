@@ -4,6 +4,26 @@
 
 ---
 
+## 2026.11.28
+
+### What Changed
+- **"Encrypt system" is harder to miss.** On the Erase disk page the checkbox sat small under the swap choice;
+  Erik missed it twice (11-24, 11-27) with the Calamares Tweak Tool set to encryption on, so the install went out
+  unencrypted. It is now bold, larger and Kiro blue, and the tool can pre-tick it.
+- `partition.conf` gains `preCheckEncryption: false`. The Calamares Tweak Tool sets it to `true` together with
+  `enableLuksAutomatedPartitioning`, so "encryption on" in CTT means the box is already ticked (the passphrase is
+  still asked).
+
+### Technical Details
+- `preCheckEncryption` is an upstream partition-module key: it ticks the encrypt checkbox the first time it is
+  shown on Erase, Replace or Alongside. It only has effect while `enableLuksAutomatedPartitioning` is true.
+- Styling: `#m_encryptCheckBox { font: bold 18px; color: #0195F7; }` in the branding stylesheet; the object
+  name comes from upstream `EncryptWidget.ui`. No Calamares patch to move the row.
+- Pairs with calamares-next 0002/0003 (KIRO-PKG-BUILD-CALAMARES) and kiro-calamares-tweak-tool-nemesis.
+
+### Files Modified
+- `etc/calamares/modules/partition.conf`, `etc/calamares/branding/kiro/stylesheet.qss`, `CHANGELOG.md`
+
 ## 2026.11.27
 
 ### What Changed
