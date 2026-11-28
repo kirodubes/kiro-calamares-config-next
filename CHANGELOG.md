@@ -14,6 +14,11 @@
   `enableLuksAutomatedPartitioning`, so "encryption on" in CTT means the box is already ticked (the passphrase is
   still asked).
 
+- **The NVIDIA auto-detect path keeps kiro-hwd-nemesis.** kiro-iso-next now ships `kiro-hwd-nemesis` (the testing
+  twin of kiro-hwd, same `/usr/bin/kiro-hwd`). The chwd module ran `pacman -S --needed kiro-hwd` in the target,
+  which would try to swap the production package in over it; it now installs kiro-hwd only when the target has no
+  `/usr/bin/kiro-hwd`.
+
 ### Technical Details
 - `preCheckEncryption` is an upstream partition-module key: it ticks the encrypt checkbox the first time it is
   shown on Erase, Replace or Alongside. It only has effect while `enableLuksAutomatedPartitioning` is true.
@@ -25,7 +30,8 @@
   improvement"). The install went out as LUKS2.
 
 ### Files Modified
-- `etc/calamares/modules/partition.conf`, `etc/calamares/branding/kiro/stylesheet.qss`, `CHANGELOG.md`
+- `etc/calamares/modules/partition.conf`, `etc/calamares/branding/kiro/stylesheet.qss`,
+  `usr/lib/calamares/modules/chwd/main.py`, `CHANGELOG.md`
 
 ## 2026.11.27
 

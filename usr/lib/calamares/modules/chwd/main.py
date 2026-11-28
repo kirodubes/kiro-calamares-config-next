@@ -327,7 +327,10 @@ def run():
 
     # The target is unpacked from the ISO's squashfs, so kiro-hwd is only there if the ISO ships it.
     # The upgrade above refreshed the databases, so fetch it from [nemesis_repo] when it is missing.
-    if _chroot_pacman(root_mount_point, ["-S", "--needed", "--noconfirm", "kiro-hwd"]) != 0:
+    # Check the binary, not the package name: kiro-iso-next ships kiro-hwd-nemesis (same /usr/bin/kiro-hwd), and
+    # "-S kiro-hwd" would try to swap the production package in over it.
+    has_hwd = os.path.exists(os.path.join(root_mount_point, "usr/bin/kiro-hwd"))
+    if not has_hwd and _chroot_pacman(root_mount_point, ["-S", "--needed", "--noconfirm", "kiro-hwd"]) != 0:
         libcalamares.utils.warning("chwd: could not install kiro-hwd; continuing on the open driver (nouveau/mesa)")
         if baked:
             _remove_baked_stack(root_mount_point, baked)
