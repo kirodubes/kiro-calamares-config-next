@@ -20,6 +20,9 @@
 - Styling: `#m_encryptCheckBox { font: bold 18px; color: #0195F7; }` in the branding stylesheet; the object
   name comes from upstream `EncryptWidget.ui`. No Calamares patch to move the row.
 - Pairs with calamares-next 0002/0003 (KIRO-PKG-BUILD-CALAMARES) and kiro-calamares-tweak-tool-nemesis.
+- Verified 2026-11-28 (kiro-calamares-config-next 26.11-14, VirtualBox UEFI): with CTT encryption on, the Erase
+  disk page opened with "Encrypt system" already ticked, and the bold blue checkbox stood out (Erik: "great
+  improvement"). The install went out as LUKS2.
 
 ### Files Modified
 - `etc/calamares/modules/partition.conf`, `etc/calamares/branding/kiro/stylesheet.qss`, `CHANGELOG.md`
